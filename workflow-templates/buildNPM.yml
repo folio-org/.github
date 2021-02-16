@@ -1,0 +1,73 @@
+# This workflow will do a clean install of node dependencies, build the source code and run tests across different versions of node
+# For more information see: https://help.github.com/actions/language-and-framework-guides/using-nodejs-with-github-actions
+
+name: buildNPM CI
+
+on:
+  push:
+    branches: [FOLIO-2913]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: folio-org/checkout@v2
+        with:
+          ref: FOLIO-2913
+      - run: echo "Set up folio registry..."
+      - run: yarn config set @folio:registry $FOLIO_REGISTRY
+        env:
+          FOLIO_REGISTRY: https://repository.folio.org/repository/npm-folioci/
+      - run: echo "Installing dependencies..."
+      - run: yarn install
+      - run: yarn list --pattern @folio
+      - run: mkdir -p artifacts/yarn/
+      - run: cp yarn.git lock artifacts/yarn/yarn.lock
+      - run: bzip2 artifacts/yarn/yarn.lock
+      - run: echo "Setting NPM snapshot version..."
+      - run: chmod +x org/folio/folioci_npmver.sh
+      - run: npm --no-git-tag-version version `org/folio/folioci_npmver.sh`
+      - run: echo "Running Lint..."
+      - run: mkdir -p ci 
+      - run: echo "<html><body><pre>" ci/lint.html
+      - run: yarn lint 2>&1 >>  ci/lint.html
+      - run: echo "</pre><body></html>" >> ci/lint.html
+      - run: rm -rf ci
+      - run: echo "Running Test..."
+      - run: xvfb-run --server-args="-screen 0 1024x768x24" yarn test $runTestOptions
+        env:
+          runTestOptions: ''
+  sonarQube:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+        with:
+          ref: ${{ github.REF }}
+      - run: echo "repository name is ${{ github.REPOSITORY }}"
+      - uses: sonarsource/sonarcloud-github-action@master
+        with:
+          args: >
+            -Dsonar.projectKey=org.folio:ui-orders
+            -Dsonar.projectName=ui-orders
+            -Dsonar.branch.name=${GITHUB_REF}
+            -Dsonar.sources=. 
+            -Dsonar.language=js 
+            -Dsonar.javascript.lcov.reportPaths=artifacts/coverage/lcov.info,coverage/lcov.info
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+  publishModDescriptor:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+        with:
+          ref: ${{ github.REF }}
+      - if: ${{ github.REF }} == 'master'
+        run: > 
+          echo "Generating stripes module descriptor from package.json" && mkdir -p artifacts/md && 
+          stripes mod descriptor --full --strict | jq '.[]' > artifacts/md/$folioName.json
+        env:
+          folioName: folio_orders
+      - run: echo "Step completed.."
+
+      
