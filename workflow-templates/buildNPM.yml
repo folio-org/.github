@@ -5,7 +5,7 @@ name: buildNPM CI
 
 on:
   push:
-    branches: [FOLIO-2913]
+    branches: [$default-branch]
 
 jobs:
   build:
@@ -22,11 +22,15 @@ jobs:
       - run: yarn install
       - run: yarn list --pattern @folio
       - run: mkdir -p artifacts/yarn/
-      - run: cp yarn.git lock artifacts/yarn/yarn.lock
+      - run: cp yarn.lock artifacts/yarn/yarn.lock
       - run: bzip2 artifacts/yarn/yarn.lock
       - run: echo "Setting NPM snapshot version..."
-      - run: chmod +x org/folio/folioci_npmver.sh
-      - run: npm --no-git-tag-version version `org/folio/folioci_npmver.sh`
+      - run: git clone $npmSnapshotScript
+        env:
+          npmSnapshotScript: https://github.com/folio-org/jenkins-pipeline-libs.git
+      - run: chmod +x jenkins-pipeline-libs/resources/org/folio/folioci_npmver.sh
+      - run: npm --no-git-tag-version version `jenkins-pipeline-libs/resources/org/folio/folioci_npmver.sh`
+      - run: rm -rf jenkins-pipeline-libs
       - run: echo "Running Lint..."
       - run: mkdir -p ci 
       - run: echo "<html><body><pre>" ci/lint.html
