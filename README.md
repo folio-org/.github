@@ -16,4 +16,12 @@
 - RAML-Lint: Lint jobs for Maven projects
 - Maven-Deploy: Deploy jobs 
 
+### Setting up shared workflow within a project
+
+Click on the `Actions` tab and click on the `New Workflow`.
+The workflows provided by FOLIO Org should be listed there. Chose a workflow depending on the module type (**ui-** modules generally need **NPM based** workflows and **mod-** modules need **Maven based** modules)
+
+
+### TODO
+This is the Proof of conept version. Detailed CI/CD pipelines still need to be developed. The CI workflows can be used to test the working of Github Actions
 
