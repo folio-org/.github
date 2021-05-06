@@ -3,9 +3,7 @@
 
 name: Java CI with Maven
 
-on:
-  push:
-    branches: [ $default-branch ]
+on: [push, pull_request]
 jobs:
   build:
     runs-on: ubuntu-latest
@@ -69,6 +67,7 @@ jobs:
           name: ci-raml-lint
           path: ci/lintRamlCop.html
       - run: rm -rf ci && rm -rf folio-tools
+
       
 
         
