@@ -1,0 +1,8 @@
+{
+    "name": "FOLIO NPM Release Workflow",
+    "description": "FOLIO NPM Release CI workflow template.",
+    "iconName": "npm-icon",
+    "categories": [
+        "JavaScript"
+    ]
+}
