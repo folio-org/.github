@@ -1,7 +1,7 @@
-# This workflow will do a clean install of node dependencies, build the source code, 
-# run unit tests, and perform a SonarCloud scan ONLY on a `release`. 
+# This workflow will do a clean install of node dependencies, build the source code,
+# run unit tests, and perform a SonarCloud scan ONLY on a `release`.
 
-# For more information see: 
+# For more information see:
 # https://help.github.com/actions/language-and-framework-guides/using-nodejs-with-github-actions
 
 # Common FOLIO configurable env:
@@ -12,7 +12,7 @@
 #   - COMPILE_TRANSLATION_FILES (boolean 'true' or 'false')
 
 name: buildNPM release
-on: 
+on:
     release:
       tags:
         - 'v*.*.*'
@@ -53,7 +53,7 @@ jobs:
         run: yarn config set @folio:registry $FOLIO_NPM_REGISTRY
 
       - name: Set FOLIO NPM  release version from package.json
-        run: | 
+        run: |
           PACKAGE_VERSION=$(cat package.json | grep version | head -1 | awk -F: '{ print $2 }' | sed 's/[\",]//g' | tr -d '[[:space:]]') && git tag v$PACKAGE_VERSION
 
       - name: Run yarn install
@@ -98,7 +98,7 @@ jobs:
           docker run --name okapiLatest -t -detach folioorg/okapi:latest dev
           echo "OKAPI_IP = $(docker inspect --format='{{range .NetworkSettings.Networks}}{{.IPAddress}}{{end}}' okapiLatest)" >> $GITHUB_ENV
           sleep 10
-      
+
       - name: Pull all Module descriptors to local Okapi instance
         if: ${{ env.PUBLISH_MOD_DESCRIPTOR }}
         uses: fjogeleit/http-request-action@master
@@ -126,7 +126,7 @@ jobs:
       - name: Publish Jest unit test results
         uses: docker://ghcr.io/enricomi/publish-unit-test-result-action:v1
         if: always()
-        with: 
+        with:
           github_token: ${{ github.token }}
           files: "${{ env.JEST_JUNIT_OUTPUT_DIR }}/*.xml"
           check_name: Jest Unit Test Results
@@ -135,16 +135,16 @@ jobs:
 
       - name: Publish Jest coverage report
         uses: actions/upload-artifact@v2
-        if: always() 
-        with: 
-          name: jest-coverage-report 
+        if: always()
+        with:
+          name: jest-coverage-report
           path: ${{ env.JEST_COVERAGE_REPORT_DIR }}
           retention-days: 30
 
       - name: Publish BigTest unit test results
         uses: docker://ghcr.io/enricomi/publish-unit-test-result-action:v1
         if: always()
-        with: 
+        with:
           github_token: ${{ github.token }}
           files: "${{ env.BIGTEST_JUNIT_OUTPUT_DIR }}/*.xml"
           check_name: BigTest Unit Test Results
@@ -153,31 +153,31 @@ jobs:
 
       - name: Publish BigTest coverage report
         uses: actions/upload-artifact@v2
-        if: always() 
-        with: 
-          name: bigtest-coverage-report 
+        if: always()
+        with:
+          name: bigtest-coverage-report
           path: ${{ env.BIGTEST_COVERAGE_REPORT_DIR }}
           retention-days: 30
- 
-      - name: Publish yarn.lock 
+
+      - name: Publish yarn.lock
         uses: actions/upload-artifact@v2
         if: failure()
-        with: 
+        with:
           name: yarn.lock
           path: yarn.lock
           retention-days: 5
       - name: Fetch branches for SonarCloud
         run: git fetch --no-tags ${GITHUB_SERVER_URL}/${GITHUB_REPOSITORY} +refs/heads/master:refs/remotes/origin/master
-        
+
       - name: Run SonarCloud scan
         uses: sonarsource/sonarcloud-github-action@master
         with:
           args: >
-            -Dsonar.organization=folio-org 
+            -Dsonar.organization=folio-org
             -Dsonar.projectKey=org.folio:${{ github.event.repository.name }}
             -Dsonar.projectName=${{ github.event.repository.name }}
             -Dsonar.sources=${{ env.SQ_ROOT_DIR }}
-            -Dsonar.language=js 
+            -Dsonar.language=js
             -Dsonar.javascript.lcov.reportPaths=${{ env.SQ_LCOV_REPORT }}
             -Dsonar.exclusions=${{ env.SQ_EXCLUSIONS }}
         env:
@@ -195,7 +195,7 @@ jobs:
       - name: Set _auth in .npmrc
         if: ${{ github.ref == 'refs/heads/master' || github.ref  == 'refs/heads/main' || github.ref == 'refs/heads/FOLIO-3067-Ankita' }}
         run: npm config set @folio:registry https://repository.folio.org/repository/npm-folio-test/ &&  npm config set _auth ${{ env.NODE_AUTH_TOKEN }}
-        env: 
+        env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
 
       - name: Publish NPM to FOLIO NPM registry
@@ -203,9 +203,9 @@ jobs:
         run: npm publish
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
-      
+
       - name: Publish module descriptor to FOLIO registry
-        if: ${{ env.PUBLISH_MOD_DESCRIPTOR && github.ref == 'refs/heads/master' || github.ref  == 'refs/heads/main' || github.ref == 'refs/heads/FOLIO-3067-Ankita' }} 
+        if: ${{ env.PUBLISH_MOD_DESCRIPTOR && github.ref == 'refs/heads/master' || github.ref  == 'refs/heads/main' || github.ref == 'refs/heads/FOLIO-3067-Ankita' }}
         id: modDescriptorPost
         uses: fjogeleit/http-request-action@master
         with:
@@ -216,4 +216,4 @@ jobs:
           data: ${{ steps.moduleDescriptor.outputs.content }}
           username: ${{ secrets.FOLIO_REGISTRY_USERNAME }}
           password: ${{ secrets.FOLIO_REGISTRY_PASSWORD }}
-      
+
