@@ -167,7 +167,6 @@ jobs:
         run: | 
           echo ".github" >> .npmignore
           echo ".scannerwork" >> .npmignore
-          echo "artifacts" >> .npmignore
           cat .npmignore
 
       - name: Publish NPM
