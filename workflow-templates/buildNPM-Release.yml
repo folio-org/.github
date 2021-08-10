@@ -1,35 +1,38 @@
 # This workflow will do a clean install of node dependencies, build the source code,
-# run unit tests, and perform a SonarCloud scan ONLY on a `release`.
+# run unit tests, perform a SonarCloud scan and publish NPM package ONLY on a tagged release.
 
 # For more information see:
 # https://help.github.com/actions/language-and-framework-guides/using-nodejs-with-github-actions
 
 # Common FOLIO configurable env:
 #   - YARN_TEST_OPTIONS (options to pass to 'yarn test')
-#   - SQ_ROOT_DIR (where to scan relative to top-level directory)
-#   - FOLIO_NAME
+#   - SQ_ROOT_DIR (root SQ directory to scan relative to top-level directory)
 #   - PUBLISH_MOD_DESCRIPTOR (boolean 'true' or 'false')
 #   - COMPILE_TRANSLATION_FILES (boolean 'true' or 'false')
 
-name: buildNPM release
+name: buildNPM Release
 on: 
-    create:
+  push:
+    tags:
+      - 'v[0-9]+.[0-9]+.[0-9]+*'
+  workflow_dispatch:
+
 jobs:
-  Build:
+  build:
     if : ${{ startsWith(github.ref, 'refs/tags/v') }}
     env:
-      YARN_TEST_OPTIONS: <replace>
-      FOLIO_NAME: <replace>
+      YARN_TEST_OPTIONS: <options to pass to 'yarn test'>
+      SQ_ROOT_DIR: <replace>
+      COMPILE_TRANSLATION_FILES: true
+      PUBLISH_MOD_DESCRIPTOR: <publish mod desc to FOLIO registry (true|false)>
       FOLIO_NPM_REGISTRY: 'https://repository.folio.org/repository/npm-folio/'
+      FOLIO_MD_REGISTRY: 'https://folio-registry.dev.folio.org'
       NODEJS_VERSION: '12'
       JEST_JUNIT_OUTPUT_DIR: 'artifacts/jest-junit'
       JEST_COVERAGE_REPORT_DIR: 'artifacts/coverage-jest/lcov-report/'
       BIGTEST_JUNIT_OUTPUT_DIR: 'artifacts/runTest'
       BIGTEST_COVERAGE_REPORT_DIR: 'artifacts/coverage/lcov-report/'
-      PUBLISH_MOD_DESCRIPTOR: true
       OKAPI_PULL: '{ "urls" : [ "https://folio-registry.dev.folio.org" ] }'
-      SQ_ROOT_DIR: <replace>
-      COMPILE_TRANSLATION_FILES: true
       SQ_LCOV_REPORT: 'artifacts/coverage-jest/lcov.info'
       SQ_EXCLUSIONS: '**/platform/alias-service.js,**/docs/**,**/node_modules/**,**/examples/**,**/artifacts/**,**/ci/**,Jenkinsfile,**/LICENSE,**/*.css,**/*.md,**/*.json,**/tests/**,**/stories/*.js,**/test/**,**/.stories.js,**/resources/bigtest/interactors/**,**/resources/bigtest/network/**,**/*-test.js,**/*.test.js,**/*-spec.js,**/karma.conf.js,**/jest.config.js'
 
@@ -39,19 +42,27 @@ jobs:
         with:
           fetch-depth: 0
 
-      - name: Extract tag 
-        run: echo "TAG=$(echo ${GITHUB_REF##*/})" >> $GITHUB_ENV
+      # Runs a single command using the runners shell
+      - name: Print tag info
+        run: echo "Building release tag, ${GITHUB_REF}"
+
+      - name: Set TAG_VERSION
+        run: echo "TAG_VERSION=$(echo ${GITHUB_REF#refs/tags/v})" >> $GITHUB_ENV
 
       - name: Get version from package.json
-        id: version
+        id: package_version
         uses: notiz-dev/github-action-json-property@release
         with: 
           path: 'package.json'
           prop_path: 'version'
       
       - name: Check matching tag and version in package.json
-        if: ${{ env.TAG != steps.version.outputs.prop }}
-        run: exit 1
+        if: ${{ env.TAG_VERSION != steps.package_version.outputs.prop }}
+        run: |
+          echo "Tag version, ${TAG_VERSION}, does not match package.json version, ${PACKAGE_VERSION}."
+          exit 1
+        env:
+          PACKAGE_VERSION: ${{ steps.package_version.outputs.prop }} 
 
       - name: Setup kernel for react native, increase watchers
         run: echo fs.inotify.max_user_watches=524288 | sudo tee -a /etc/sysctl.conf && sudo sysctl -p
@@ -82,11 +93,11 @@ jobs:
         if : ${{ env.COMPILE_TRANSLATION_FILES }}
         run: yarn formatjs-compile
 
-      - name: Generate Module descriptor
+      - name: Generate FOLIO module descriptor
         if: ${{ env.PUBLISH_MOD_DESCRIPTOR }}
         run: yarn build-mod-descriptor
 
-      - name: debug mod descriptor
+      - name: Print FOLIO module descriptor
         if: ${{ env.PUBLISH_MOD_DESCRIPTOR }}
         run: cat module-descriptor.json
 
@@ -104,8 +115,8 @@ jobs:
         if: ${{ env.PUBLISH_MOD_DESCRIPTOR }}
         run: |
           docker pull folioorg/okapi:latest
-          docker run --name okapiLatest -t -detach folioorg/okapi:latest dev
-          echo "OKAPI_IP = $(docker inspect --format='{{range .NetworkSettings.Networks}}{{.IPAddress}}{{end}}' okapiLatest)" >> $GITHUB_ENV
+          docker run --name okapi -t -detach folioorg/okapi:latest dev
+          echo "OKAPI_IP=$(docker inspect --format='{{range .NetworkSettings.Networks}}{{.IPAddress}}{{end}}' okapi)" >> $GITHUB_ENV
           sleep 10
 
       - name: Pull all Module descriptors to local Okapi instance
@@ -123,7 +134,7 @@ jobs:
         if: ${{ env.PUBLISH_MOD_DESCRIPTOR }}
         uses: fjogeleit/http-request-action@master
         with:
-          url: 'http://172.17.0.2:9130/_/proxy/modules?preRelease=false&npmSnapshot=false'
+          url: http://${{ env.OKAPI_IP }}:9130/_/proxy/modules?preRelease=false&npmSnapshot=false
           method: 'POST'
           contentType: 'application/json; charset=utf-8'
           customHeaders: '{ "Accept": "application/json; charset=utf-8" }'
@@ -172,6 +183,7 @@ jobs:
           name: yarn.lock
           path: yarn.lock
           retention-days: 5
+
       - name: Fetch branches for SonarCloud
         run: git fetch --no-tags ${GITHUB_SERVER_URL}/${GITHUB_REPOSITORY} +refs/heads/master:refs/remotes/origin/master
 
@@ -198,9 +210,17 @@ jobs:
           always-auth: true
 
       - name: Set _auth in .npmrc
-        run: npm config set @folio:registry https://repository.folio.org/repository/npm-folio/ &&  npm config set _auth ${{ env.NODE_AUTH_TOKEN }}
+        run: |
+          npm config set @folio:registry $FOLIO_NPM_REGISTRY 
+          npm config set _auth $NODE_AUTH_TOKEN 
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+
+      - name: Exclude some CI-generated artifacts in package
+        run: | 
+          echo ".github" >> .npmignore
+          echo ".scannerwork" >> .npmignore
+          cat .npmignore
 
       - name: Publish NPM to FOLIO NPM registry
         run: npm publish
@@ -212,7 +232,7 @@ jobs:
         id: modDescriptorPost
         uses: fjogeleit/http-request-action@master
         with:
-          url: 'http://ec2-3-88-110-24.compute-1.amazonaws.com/_/proxy/modules'
+          url: ${{ FOLIO_MD_REGISTRY }}/_/proxy/modules
           method: 'POST'
           contentType: 'application/json; charset=utf-8'
           customHeaders: '{ "Accept": "application/json; charset=utf-8" }'

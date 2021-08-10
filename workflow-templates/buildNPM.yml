@@ -1,13 +1,12 @@
 # This workflow will do a clean install of node dependencies, build the source code,
-# run unit tests, and perform a SonarCloud scan.
+# run unit tests, perform a Sonarqube scan, and publish NPM artifacts from master/main.
 
 # For more information see:
 # https://help.github.com/actions/language-and-framework-guides/using-nodejs-with-github-actions
 
-# Common FOLIO configurable env:
+# Common FOLIO configurable environment variables to set:
 #   - YARN_TEST_OPTIONS (options to pass to 'yarn test')
-#   - SQ_ROOT_DIR (where to scan relative to top-level directory)
-#   - FOLIO_NAME
+#   - SQ_ROOT_DIR (root SQ directory to scan relative to top-level directory)
 #   - PUBLISH_MOD_DESCRIPTOR (boolean 'true' or 'false')
 #   - COMPILE_TRANSLATION_FILES (boolean 'true' or 'false')
 
@@ -16,19 +15,20 @@ name: buildNPM Snapshot
 on: [push, pull_request]
 
 jobs:
-  Build:
+  build:
     env:
-      YARN_TEST_OPTIONS: <replace>
-      FOLIO_NAME: <replace>
+      YARN_TEST_OPTIONS: <options to pass to 'yarn test'>
+      SQ_ROOT_DIR: <set to to root SQ directory relative to top-level directory)
+      COMPILE_TRANSLATION_FILES: true
+      PUBLISH_MOD_DESCRIPTOR: <publish mod desc to FOLIO registry (true|false)>
+      COMPILE_TRANSLATION_FILES: true
       FOLIO_NPM_REGISTRY: 'https://repository.folio.org/repository/npm-folioci/'
+      FOLIO_MD_REGISTRY: 'https://folio-registry.dev.folio.org'
       NODEJS_VERSION: '12'
       JEST_JUNIT_OUTPUT_DIR: 'artifacts/jest-junit'
       JEST_COVERAGE_REPORT_DIR: 'artifacts/coverage-jest/lcov-report/'
       BIGTEST_JUNIT_OUTPUT_DIR: 'artifacts/runTest'
       BIGTEST_COVERAGE_REPORT_DIR: 'artifacts/coverage/lcov-report/'
-      PUBLISH_MOD_DESCRIPTOR: true
-      SQ_ROOT_DIR: <replace>
-      COMPILE_TRANSLATION_FILES: true
       SQ_LCOV_REPORT: 'artifacts/coverage-jest/lcov.info'
       SQ_EXCLUSIONS: '**/platform/alias-service.js,**/docs/**,**/node_modules/**,**/examples/**,**/artifacts/**,**/ci/**,Jenkinsfile,**/LICENSE,**/*.css,**/*.md,**/*.json,**/tests/**,**/stories/*.js,**/test/**,**/.stories.js,**/resources/bigtest/interactors/**,**/resources/bigtest/network/**,**/*-test.js,**/*.test.js,**/*-spec.js,**/karma.conf.js,**/jest.config.js'
 
@@ -37,12 +37,6 @@ jobs:
       - uses: folio-org/checkout@v2
         with:
           fetch-depth: 0
-
-      - name: Extract Branch Name
-        run: echo "BRANCH=$(echo ${GITHUB_REF##*/})" >> $GITHUB_ENV
-
-      - name: Test BRANCH contents are
-        run: echo ${{ env.BRANCH }}
 
       - name: Setup kernel for react native, increase watchers
         run: echo fs.inotify.max_user_watches=524288 | sudo tee -a /etc/sysctl.conf && sudo sysctl -p
@@ -81,11 +75,11 @@ jobs:
         if : ${{ env.COMPILE_TRANSLATION_FILES }}
         run: yarn formatjs-compile
 
-      - name: Generate Module descriptor
+      - name: Generate FOLIO module descriptor
         if: ${{ env.PUBLISH_MOD_DESCRIPTOR }}
         run: yarn build-mod-descriptor
 
-      - name: debug mod descriptor
+      - name: Print FOLIO module descriptor
         if: ${{ env.PUBLISH_MOD_DESCRIPTOR }}
         run: cat module-descriptor.json
 
@@ -161,9 +155,18 @@ jobs:
 
       - name: Set _auth in .npmrc
         if: ${{ github.ref == 'refs/heads/master' || github.ref  == 'refs/heads/main' }}
-        run: npm config set @folio:registry https://repository.folio.org/repository/npm-folioci-test/ &&  npm config set _auth ${{ env.NODE_AUTH_TOKEN }}
+        run: |
+          npm config set @folio:registry $FOLIO_NPM_REGISTRY
+          npm config set _auth $NODE_AUTH_TOKEN
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+
+      - name: Exclude some CI-generated artifacts in package
+        if: ${{ github.ref == 'refs/heads/master' || github.ref  == 'refs/heads/main' }}
+        run: | 
+          echo ".github" >> .npmignore
+          echo ".scannerwork" >> .npmignore
+          cat .npmignore
 
       - name: Publish NPM
         if: ${{ github.ref == 'refs/heads/master' || github.ref  == 'refs/heads/main' }}
@@ -183,7 +186,7 @@ jobs:
         id: modDescriptorPost
         uses: fjogeleit/http-request-action@master
         with:
-          url: 'http://ec2-3-88-110-24.compute-1.amazonaws.com/_/proxy/modules'
+          url: ${{ FOLIO_MD_REGISTRY }}/_/proxy/modules
           method: 'POST'
           contentType: 'application/json; charset=utf-8'
           customHeaders: '{ "Accept": "application/json; charset=utf-8" }'
