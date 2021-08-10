@@ -232,7 +232,7 @@ jobs:
         id: modDescriptorPost
         uses: fjogeleit/http-request-action@master
         with:
-          url: ${{ FOLIO_MD_REGISTRY }}/_/proxy/modules
+          url: ${{ env.FOLIO_MD_REGISTRY }}/_/proxy/modules
           method: 'POST'
           contentType: 'application/json; charset=utf-8'
           customHeaders: '{ "Accept": "application/json; charset=utf-8" }'
