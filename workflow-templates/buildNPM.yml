@@ -9,6 +9,7 @@
 #   - SQ_ROOT_DIR (root SQ directory to scan relative to top-level directory)
 #   - PUBLISH_MOD_DESCRIPTOR (boolean 'true' or 'false')
 #   - COMPILE_TRANSLATION_FILES (boolean 'true' or 'false')
+#   - DEFAULT_BRANCH (set default branch 'master' or 'main')
 
 
 name: buildNPM Snapshot
@@ -18,9 +19,10 @@ jobs:
   build:
     env:
       YARN_TEST_OPTIONS: <options to pass to 'yarn test'>
-      SQ_ROOT_DIR: <set to to root SQ directory relative to top-level directory>
-      COMPILE_TRANSLATION_FILES: false
+      SQ_ROOT_DIR: <replace>
+      COMPILE_TRANSLATION_FILES: <boolean set 'true' or 'false'>
       PUBLISH_MOD_DESCRIPTOR: <publish mod desc to FOLIO registry (true|false)>
+      DEFAULT_BRANCH: <set to 'master' or 'main'>
       FOLIO_NPM_REGISTRY: 'https://repository.folio.org/repository/npm-folioci/'
       FOLIO_MD_REGISTRY: 'https://folio-registry.dev.folio.org'
       NODEJS_VERSION: '12'
@@ -127,7 +129,7 @@ jobs:
           retention-days: 5
 
       - name: Fetch branches for SonarCloud
-        run: git fetch --no-tags ${GITHUB_SERVER_URL}/${GITHUB_REPOSITORY} +refs/heads/master:refs/remotes/origin/master
+        run: git fetch --no-tags ${GITHUB_SERVER_URL}/${GITHUB_REPOSITORY} +refs/heads/${{ env.DEFAULT_BRANCH }}:refs/remotes/origin/${{ env.DEFAULT_BRANCH }}
 
       - name: Run SonarCloud scan
         uses: sonarsource/sonarcloud-github-action@master
