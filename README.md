@@ -1,12 +1,16 @@
-### Shared GitHub workflows for FOLIO
+# Shared GitHub workflows for FOLIO
 
-#### Added on : 15.02.2021
+## Introduction
 
-#### Directory `workflow-templates` contains all the CI/CD workflows for the project
+The directory `workflow-templates` contains all of the CI/CD workflows for the project.
 
-### Usage
+## Status
 
-**Currently, the ui- and the stripes- repositories are being migrated to GitHub Actions.**
+The front-end `ui-` and `stripes-` repositories are currently being migrated to GitHub Actions.
 
-For setting up the GitHub Actions workflow please refer to the following documentations
-- [for front-end repos](https://dev.folio.org/guidelines/github-actions-frontend/)
+Workflows for back-end repositories are not yet in progress.
+
+## Usage
+
+For setting up the GitHub Actions workflows please refer to the following documentation:
+- [Front-end repos](https://dev.folio.org/guidelines/github-actions-frontend/)
