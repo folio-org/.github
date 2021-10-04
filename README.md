@@ -1,27 +1,16 @@
-### Shared GitHub workflows for FOLIO
+# Shared GitHub workflows for FOLIO
 
-#### Added on : 15.02.2021
+## Introduction
 
-#### Directory `workflow-templates` contains all the CI/CD workflows for the project
+The directory `workflow-templates` contains all of the CI/CD workflows for the project.
 
-### Usage
+## Status
 
-**buildNPM.yml** is the template for NPM-based CI jobs. The YAML file has the following jobs:
+The front-end `ui-` and `stripes-` repositories are currently being migrated to GitHub Actions.
 
-- build: Contains yarn install, lint and test jobs
-- sonarQube: Contains the SonarCloud check jobs
-- publishModDescriptor: Contains step for publishing module descriptor
+Workflows for back-end repositories are not yet in progress.
 
-**buildMaven.yml** is the template for Maven/Java based CI jobs. The YAML file configures the following jobs:
+## Usage
 
-- set-up: Application set-up and build jobs. Step publishes Docker image and Mod descriptor
-- RAML-Lint: Lint jobs for Maven projects
-
-### Setting up shared workflow within a project
-
-Click on the `Actions` tab and click on the `New Workflow` button.
-The workflows provided by folio-org should be listed there. Chose a workflow depending on the module type. **ui-** modules generally need **NPM based** workflows and **mod-** modules need **Maven based** modules.
-
-### TODO
-
-This is the Proof of concept version. Detailed CI/CD pipelines still need to be developed. The CI workflows can be used to test the working of Github Actions.
+For setting up the GitHub Actions workflows please refer to the following documentation:
+- [Front-end repos](https://dev.folio.org/guidelines/github-actions-frontend/)
