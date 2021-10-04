@@ -1,0 +1,8 @@
+{
+    "name": "FOLIO NPM Workflow for Forked Repositories",
+    "description": "FOLIO NPM CI workflow template.",
+    "iconName": "npm-icon",
+    "categories": [
+        "JavaScript"
+    ]
+}
