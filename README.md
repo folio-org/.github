@@ -6,7 +6,7 @@
 
 ### Usage
 
-**Currently, the ui-* and the stripes-* repositories are being migrated to GitHub Actions.**
+**Currently, the ui- and the stripes- repositories are being migrated to GitHub Actions.**
 
 For setting up the GitHub Actions workflow please refer to the following documentations
 - [for front-end repos](https://dev.folio.org/guidelines/github-actions-frontend/)
