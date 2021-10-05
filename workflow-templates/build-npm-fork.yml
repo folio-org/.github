@@ -24,10 +24,10 @@ jobs:
   build-npm:
     if: ${{ github.event.pull_request.labels.*.name == 'safe fork' }}
     env:
-      YARN_TEST_OPTIONS: ''
-      SQ_ROOT_DIR: ''
-      PUBLISH_MOD_DESCRIPTOR: ''
-      COMPILE_TRANSLATION_FILES: ''
+      YARN_TEST_OPTIONS: <options to pass to 'yarn test'>
+      SQ_ROOT_DIR: <replace>
+      COMPILE_TRANSLATION_FILES: <boolean set 'true' or 'false'>
+      PUBLISH_MOD_DESCRIPTOR: <publish mod desc to FOLIO registry (true|false)>
       FOLIO_NPM_REGISTRY: 'https://repository.folio.org/repository/npm-folioci/'
       FOLIO_MD_REGISTRY: 'https://folio-registry.dev.folio.org'
       NODEJS_VERSION: '12'
@@ -78,14 +78,14 @@ jobs:
         run: xvfb-run --server-args="-screen 0 1024x768x24" yarn test $YARN_TEST_OPTIONS
 
       - name: Run yarn formatjs-compile
-        if : ${{ env.COMPILE_TRANSLATION_FILES == 'true' }}
+        if: ${{ env.COMPILE_TRANSLATION_FILES == 'true' }}
         run: yarn formatjs-compile
 
-      - name: Generate Module descriptor
+      - name: Generate FOLIO module descriptor
         if: ${{ env.PUBLISH_MOD_DESCRIPTOR == 'true' }}
         run: yarn build-mod-descriptor
 
-      - name: debug mod descriptor
+      - name: Print FOLIO module descriptor
         if: ${{ env.PUBLISH_MOD_DESCRIPTOR == 'true' }}
         run: cat module-descriptor.json
 
@@ -164,9 +164,18 @@ jobs:
 
       - name: Set _auth in .npmrc
         if: ${{ github.ref == 'refs/heads/master' || github.ref  == 'refs/heads/main' }}
-        run: npm config set @folio:registry ${{ env.FOLIO_NPM_REGISTRY }} &&  npm config set _auth ${{ env.NODE_AUTH_TOKEN }}
+        run: |
+          npm config set @folio:registry $FOLIO_NPM_REGISTRY
+          npm config set _auth $NODE_AUTH_TOKEN
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+
+      - name: Exclude some CI-generated artifacts in package
+        if: ${{ github.ref == 'refs/heads/master' || github.ref  == 'refs/heads/main' }}
+        run: |
+          echo ".github" >> .npmignore
+          echo ".scannerwork" >> .npmignore
+          cat .npmignore
 
       - name: Publish NPM
         if: ${{ github.ref == 'refs/heads/master' || github.ref  == 'refs/heads/main' }}
@@ -193,3 +202,4 @@ jobs:
           data: ${{ steps.moduleDescriptor.outputs.content }}
           username: ${{ secrets.FOLIO_REGISTRY_USERNAME }}
           password: ${{ secrets.FOLIO_REGISTRY_PASSWORD }}
+
