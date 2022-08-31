@@ -1,0 +1,4 @@
+{
+  "name": "FOLIO api-schema-lint",
+  "description": "Lint JSON Schema to ensure 'description' properties."
+}
