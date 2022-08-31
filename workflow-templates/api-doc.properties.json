@@ -1,0 +1,4 @@
+{
+  "name": "FOLIO api-doc",
+  "description": "Generate API documentation from RAML and OpenAPI (OAS) descriptions."
+}
