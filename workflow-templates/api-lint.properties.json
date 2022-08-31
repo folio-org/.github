@@ -1,0 +1,4 @@
+{
+  "name": "FOLIO api-lint",
+  "description": "Lint RAML and OpenAPI (OAS) descriptions."
+}
