@@ -14,6 +14,9 @@
 
 name: buildNPM Snapshot
 on: [push, pull_request]
+  paths-ignore:
+    - '**/*.[mM][dD]'
+    - '**/*.[tT][xX][tT]'
 
 jobs:
   github-actions-ci:
