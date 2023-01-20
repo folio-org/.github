@@ -1,8 +1,0 @@
-{
-    "name": "FOLIO Maven Workflow",
-    "description": "FOLIO Maven CI workflow template.",
-    "iconName": "java-icon",
-    "categories": [
-        "Java"
-    ]
-}
