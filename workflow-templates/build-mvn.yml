@@ -46,12 +46,12 @@ jobs:
           mvn dependency:list | { grep -i snapshot || true; }
           mvn clean org.jacoco:jacoco-maven-plugin:prepare-agent install org.jacoco:jacoco-maven-plugin:report
 
-      - name: Set Default branch as env variable 
+      - name: Set Default branch as env variable
         run: echo "DEFAULT_BRANCH=${{ github.event.repository.default_branch }}" >> $GITHUB_ENV
 
       - name: Fetch branches for SonarCloud Scan
         run: git fetch --no-tags ${GITHUB_SERVER_URL}/${GITHUB_REPOSITORY} +refs/heads/${{ env.DEFAULT_BRANCH }}:refs/remotes/origin/${{ env.DEFAULT_BRANCH }}
-      
+
       - name: Run SonarCloud scan
         run: >
           mvn -B org.sonarsource.scanner.maven:sonar-maven-plugin:${{ env.SONAR_MVN_PLUGIN_VER }}:sonar
