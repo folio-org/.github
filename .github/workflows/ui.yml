@@ -57,36 +57,3 @@ jobs:
     with:
       node-version: ${{ inputs.node-version }}
       folio-npm-registry: ${{ inputs.folio-npm-registry }}
-
-  debug:
-    needs: [install-and-lint, version-number]
-    runs-on: ubuntu-latest
-    steps:
-      - name: echo version-number
-        run: echo ${{ needs.version-number.outputs.version-number }}
-
-      - name: Checkout ${{ github.repository }}
-        uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
-          show-progress: false # spammy
-
-      - name: Install Node ${{ inputs.node-version }}
-        uses: actions/setup-node@v4
-        with:
-          node-version: ${{ inputs.node-version }}
-          check-latest: true
-          always-auth: true
-
-      - name: Download yarn.lock
-        uses: actions/download-artifact@v4
-        with:
-          name: yarn.lock
-          path: .
-
-      - name: ls
-        run: ls -la
-
-      # cached??
-      - name: Install dependencies
-        run: yarn install --ignore-scripts --non-interactive --prefer-offline
