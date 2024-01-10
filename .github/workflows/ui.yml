@@ -3,6 +3,7 @@ name: FOLIO UI Workflows
 on:
   workflow_call:
     inputs:
+      # node/yarn configuration
       node-version:
         description: Node version to use, in semver notation.
           Examples include 12.x, 10.15.1, >=10.15.0, lts/Hydrogen, 16-nightly, latest, node
@@ -23,23 +24,43 @@ on:
         type: boolean
         default: false
 
+      # linting
+      allow-lint-errors:
+        description: Whether to allow lint errors; if false, errors will fail the build. Defaults to true
+        required: false
+        type: boolean
+        default: true
+
+      # translations
+      compile-translations:
+        description: Whether to compile translation files. Defaults to true
+        required: true
+        type: boolean
+        default: true
+
 jobs:
   version-number:
     uses: ./.github/workflows/ui-version-number.yml
 
-  install:
-    uses: ./.github/workflows/ui-install.yml
+  install-and-lint:
+    uses: ./.github/workflows/ui-install-and-lint.yml
     with:
       node-version: ${{ inputs.node-version }}
       folio-npm-registry: ${{ inputs.folio-npm-registry }}
+      allow-lint-errors: ${{ inputs.allow-lint-errors }}
+      # responsible for printing install information and publishing yarn.lock if needed
       debug-yarn-packages: ${{ inputs.debug-yarn-packages }}
 
+  translations:
+    uses: ./.github/workflows/ui-translations.yml
+    if: ${{ inputs.compile-translations }}
+    with:
+      node-version: ${{ inputs.node-version }}
+
   debug:
-    needs: [install, version-number]
+    needs: [install-and-lint, version-number]
     runs-on: ubuntu-latest
     steps:
-      - name: echo install key
-        run: echo ${{ needs.install.outputs.cache-key }}
       - name: echo version-number
         run: echo ${{ needs.version-number.outputs.version-number }}
 

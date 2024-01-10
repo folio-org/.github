@@ -3,31 +3,31 @@ name: FOLIO UI Install Packages
 on:
   workflow_call:
     inputs:
+      # yarn configuration
       node-version:
         description: Node version to use, in semver notation
         required: true
         type: string
       folio-npm-registry:
-        description: Full URL to the registry to use for @folio modules.
-          Defaults to "https://repository.folio.org/repository/npm-folioci/"
+        description: Full URL to the registry to use for @folio modules
         required: true
         type: string
       debug-yarn-packages:
-        description: Whether to print all packages installed by yarn. Defaults to "false"
+        description: Whether to print all packages installed by yarn. Defaults to false
         required: false
         type: boolean
         default: false
-    outputs:
-      cache-key:
-        description: Actions cache key to use for caching node_modules and yarn.lock. Derived from yarn.lock hash
-        value: ${{ jobs.install.outputs.cache-key }}
-jobs:
-  install:
-    name: Install dependencies
-    runs-on: ubuntu-latest
 
-    outputs:
-      cache-key: ${{ steps.get-cache-key.outputs.key }}
+      # linting
+      allow-lint-errors:
+        description: Whether to allow lint errors
+        required: true
+        type: boolean
+
+jobs:
+  run:
+    name: Install and lint
+    runs-on: ubuntu-latest
 
     steps:
       - name: Checkout ${{ github.repository }}
@@ -56,13 +56,16 @@ jobs:
         if: ${{ inputs.debug-yarn-packages }}
         run: yarn list
 
-      - id: get-cache-key
-        name: Calculate cache key
-        run: echo key=node-modules-${{ hashFiles('**/yarn.lock') }} | tee -a $GITHUB_OUTPUT
-
       - name: Publish yarn.lock
+        if: ${{ inputs.debug-yarn-packages }}
         uses: actions/upload-artifact@v4
         with:
           name: yarn.lock
           path: yarn.lock
-          retention-days: 5
+          retention-days: 1
+
+      # TODO: something like https://github.com/marketplace/actions/lint-action would be cool
+      # Particularly as we consider something like Prettier
+      - name: Lint
+        run: yarn lint
+        continue-on-error: ${{ inputs.allow-lint-errors }}

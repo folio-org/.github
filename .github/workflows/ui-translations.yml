@@ -1,0 +1,41 @@
+name: FOLIO UI Compile Translations
+
+on:
+  workflow_call:
+    inputs:
+      node-version:
+        description: Node version to use, in semver notation
+        required: true
+        type: string
+
+jobs:
+  run:
+    name: Compile translations
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout ${{ github.repository }}
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          show-progress: false # spammy
+
+      - name: Install Node ${{ inputs.node-version }}
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ inputs.node-version }}
+          check-latest: true
+          always-auth: true
+
+      # we do it this way to avoid installing al modules
+      - name: Install @formatjs/cli
+        run: yarn add "@formatjs/cli@$(jq -r '.devDependencies["$formatjs/cli"]' package.json)"
+
+      - name: Compile translations
+        run: yarn formatjs-compile
+
+      - name: Publish translations
+        uses: actions/upload-artifact@v4
+        with:
+          name: translations
+          path: translations/*/compiled
