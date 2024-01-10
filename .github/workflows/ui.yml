@@ -22,11 +22,21 @@ jobs:
     needs: inner1
     runs-on: ubuntu-latest
     steps:
-      - name: my-step2
+      - name: my-step3a
         run: echo "Hello World!"
+      - name: my-step3b
+        run: sleep 10
+      - name: my-step3c
+        run: echo "Hello World!"
+      - name: my-step3d
+        run: sleep 10
+      - name: my-step3e
+        run: echo "Hello World!"
+      - name: my-step3f
+        run: sleep 10
 
   inner4:
-    needs: [inner2, inner3]
+    needs: [innerinner, inner2, inner3]
     runs-on: ubuntu-latest
     steps:
       - name: my-step4
