@@ -3,7 +3,7 @@ name: test
 on: workflow_call
 
 jobs:
-  my-job:
+  inner:
     runs-on: ubuntu-latest
     steps:
       - name: my-step
