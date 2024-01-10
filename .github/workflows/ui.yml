@@ -60,7 +60,7 @@ jobs:
         uses: actions/download-artifact@v4
         with:
           name: yarn.lock
-          path: yarn.lock
+          path: .
 
       - name: ls
         run: ls -la
