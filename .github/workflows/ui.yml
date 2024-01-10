@@ -24,10 +24,10 @@ on:
 jobs:
   version-number:
     name: Get version number
-    uses: ./.github/actions/ui-version-number.yml
+    uses: ./.github/workflows/ui-version-number.yml
 
   install:
-    uses: ./.github/actions/ui-install.yml
+    uses: ./.github/workflows/ui-install.yml
 
   inner2:
     runs-on: ubuntu-latest
