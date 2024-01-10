@@ -16,7 +16,9 @@ on:
         type: string
         default: "https://repository.folio.org/repository/npm-folioci/"
       debug-yarn-packages:
-        description: Whether to print all packages installed by yarn. Defaults to "false"
+        description:
+          Whether to print all packages installed by yarn and force publish yarn.lock.
+          This should not be enabled except during debugging. Defaults to false
         required: false
         type: boolean
         default: false
@@ -30,7 +32,7 @@ jobs:
     with:
       node-version: ${{ github.event.inputs.node-version }}
       folio-npm-registry: ${{ github.event.inputs.folio-npm-registry }}
-      debug-yarn-packages: ${{ github.event.inputs.debug-yarn-packages }}
+      # debug-yarn-packages: ${{ github.event.inputs.debug-yarn-packages }}
 
   debug:
     needs: [install, version-number]
