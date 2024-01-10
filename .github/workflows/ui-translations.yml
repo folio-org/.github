@@ -34,9 +34,16 @@ jobs:
       - name: Set FOLIO NPM registry
         run: yarn config set @folio:registry ${{ inputs.folio-npm-registry }}
 
+      - id: get-version
+        name: Get current @formatjs/cli version
+        run: echo version=$(jq -r '.devDependencies["@formatjs/cli"]' package.json)
+
       # we do it this way to avoid installing al modules
       - name: Install @formatjs/cli
-        run: yarn add "@formatjs/cli@$(jq -r '.devDependencies["@formatjs/cli"]' package.json)"
+        run: |-
+          rm package.json
+          yarn add @formatjs/cli@${{ steps.get-version.outputs.version }}
+          git checkout package.json
 
       - name: Compile translations
         run: yarn formatjs-compile
