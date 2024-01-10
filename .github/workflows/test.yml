@@ -3,7 +3,13 @@ name: test
 on: workflow_call
 
 jobs:
-  inner:
+  inner1:
+    runs-on: ubuntu-latest
+    steps:
+      - name: my-step
+        run: echo "Hello World!"
+
+  inner2:
     runs-on: ubuntu-latest
     steps:
       - name: my-step
