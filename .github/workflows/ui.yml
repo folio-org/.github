@@ -34,7 +34,7 @@ jobs:
     steps:
       - uses: actions/setup-node@v3
         with:
-          node-version: "18.x"
+          node-version: "20.x"
           check-latest: true
           always-auth: true
 
