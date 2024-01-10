@@ -1,4 +1,4 @@
-name: FOLIO UI Workflows
+name: FOLIO UI Install Packages
 
 on:
   workflow_call:
@@ -22,33 +22,30 @@ on:
         default: false
 
 jobs:
-  version-number:
-    name: Get version number
-    uses: ./.github/actions/ui-version-number.yml
-
   install:
-    uses: ./.github/actions/ui-install.yml
-
-  inner2:
+    name: Install dependencies
     runs-on: ubuntu-latest
     steps:
-      - name: my-step2
-        run: node -v
-
-  inner3:
-    runs-on: ubuntu-latest
-    steps:
-      - name: my-step1
-        run: node -v
-
-  inner4:
-    needs: [inner2, inner3]
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/setup-node@v3
+      - uses: actions/checkout@v4
         with:
-          node-version: "20.x"
+          fetch-depth: 0
+          show-progress: false # spammy
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: ${{inputs.node-version}}
           check-latest: true
           always-auth: true
-      - name: my-step4
-        run: node -v
+
+      - name: Set FOLIO NPM registry
+        run: yarn config set @folio:registry ${{inputs.folio-npm-registry}}
+
+      - name: Install dependencies
+        run: yarn install --ignore-scripts --non-interactive
+
+      - name: List installed FOLIO package versions
+        run: yarn list --pattern @folio
+
+      - name: List all installed package versions (enable via debug-yarn-packages)
+        if: ${{inputs.debug-yarn-packages}}
+        run: yarn list
