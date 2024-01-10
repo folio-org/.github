@@ -34,7 +34,7 @@ on:
       # translations
       compile-translations:
         description: Whether to compile translation files. Defaults to true
-        required: true
+        required: false
         type: boolean
         default: true
 
