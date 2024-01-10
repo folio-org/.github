@@ -1,0 +1,16 @@
+name: testinner
+
+on: workflow_call
+
+jobs:
+  inner1job1:
+    runs-on: ubuntu-latest
+    steps:
+      - name: my-step1-1
+        run: echo "Hello World!"
+
+  inner1job2:
+    runs-on: ubuntu-latest
+    steps:
+      - name: my-step1-2
+        run: echo "Hello World!"

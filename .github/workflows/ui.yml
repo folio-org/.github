@@ -1,0 +1,33 @@
+name: test
+
+on: workflow_call
+
+jobs:
+  innerinner:
+    uses: ./.github/workflows/ui/innerinner1.yml
+
+  inner1:
+    runs-on: ubuntu-latest
+    steps:
+      - name: my-step1
+        run: echo "Hello World!"
+
+  inner2:
+    runs-on: ubuntu-latest
+    steps:
+      - name: my-step2
+        run: echo "Hello World!"
+
+  inner3:
+    needs: inner1
+    runs-on: ubuntu-latest
+    steps:
+      - name: my-step2
+        run: echo "Hello World!"
+
+  inner4:
+    needs: [inner2, inner3]
+    runs-on: ubuntu-latest
+    steps:
+      - name: my-step4
+        run: echo "Hello World!"
