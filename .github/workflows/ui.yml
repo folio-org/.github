@@ -8,7 +8,7 @@ on:
           Examples include 12.x, 10.15.1, >=10.15.0, lts/Hydrogen, 16-nightly, latest, node
         required: false
         type: string
-        default: "18.x"
+        default: "20.x"
 
 jobs:
   innerinner:
@@ -18,7 +18,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: echo
-        run: echo ${{ github.event.inputs.node-version }}
+        run: echo ${{ inputs.node-version }}
       - name: my-step1
         run: node -v
 
