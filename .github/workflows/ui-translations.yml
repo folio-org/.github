@@ -36,7 +36,7 @@ jobs:
 
       # we do it this way to avoid installing al modules
       - name: Install @formatjs/cli
-        run: yarn add "@formatjs/cli@$(jq -r '.devDependencies["$formatjs/cli"]' package.json)"
+        run: yarn add "@formatjs/cli@$(jq -r '.devDependencies["@formatjs/cli"]' package.json)"
 
       - name: Compile translations
         run: yarn formatjs-compile
