@@ -1,6 +1,14 @@
-name: test
+name: FOLIO UI Workflows
 
-on: workflow_call
+on:
+  workflow_call:
+    inputs:
+      node-version:
+        description: Node version to use, in semver notation
+          Examples include 12.x, 10.15.1, >=10.15.0, lts/Hydrogen, 16-nightly, latest, node
+        required: true
+        type: string
+        default: "18.x"
 
 jobs:
   innerinner:
@@ -10,34 +18,27 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: my-step1
-        run: echo "Hello World!"
+        run: node -v
 
   inner2:
     runs-on: ubuntu-latest
     steps:
       - name: my-step2
-        run: echo "Hello World!"
+        run: node -v
 
   inner3:
     needs: inner1
     runs-on: ubuntu-latest
     steps:
-      - name: my-step3a
-        run: echo "Hello World!"
-      - name: my-step3b
-        run: sleep 10
-      - name: my-step3c
-        run: echo "Hello World!"
-      - name: my-step3d
-        run: sleep 10
-      - name: my-step3e
-        run: echo "Hello World!"
-      - name: my-step3f
-        run: sleep 10
+      - uses: actions/setup-node@v3
+        with:
+          node-version: "18.x"
+          check-latest: true
+          always-auth: true
 
   inner4:
     needs: [innerinner, inner2, inner3]
     runs-on: ubuntu-latest
     steps:
       - name: my-step4
-        run: echo "Hello World!"
+        run: node -v
