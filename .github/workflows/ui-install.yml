@@ -4,27 +4,31 @@ on:
   workflow_call:
     inputs:
       node-version:
-        description: Node version to use, in semver notation.
-          Examples include 12.x, 10.15.1, >=10.15.0, lts/Hydrogen, 16-nightly, latest, node
-        required: false
+        description: Node version to use, in semver notation
+        required: true
         type: string
-        default: "20.x"
       folio-npm-registry:
         description: Full URL to the registry to use for @folio modules.
           Defaults to "https://repository.folio.org/repository/npm-folioci/"
-        required: false
+        required: true
         type: string
-        default: "https://repository.folio.org/repository/npm-folioci/"
       debug-yarn-packages:
         description: Whether to print all packages installed by yarn. Defaults to "false"
         required: false
         type: boolean
         default: false
-
+    outputs:
+      cache-key:
+        description: Actions cache key to use for caching node_modules and yarn.lock. Derived from yarn.lock hash
+        value: ${{ jobs.install.outputs.cache-key }}
 jobs:
   install:
     name: Install dependencies
     runs-on: ubuntu-latest
+
+    outputs:
+      cache-key: ${{ steps.get-cache-key.outputs.key }}
+
     steps:
       - uses: actions/checkout@v4
         with:
@@ -33,12 +37,12 @@ jobs:
 
       - uses: actions/setup-node@v4
         with:
-          node-version: ${{inputs.node-version}}
+          node-version: ${{ inputs.node-version }}
           check-latest: true
           always-auth: true
 
       - name: Set FOLIO NPM registry
-        run: yarn config set @folio:registry ${{inputs.folio-npm-registry}}
+        run: yarn config set @folio:registry ${{ inputs.folio-npm-registry }}
 
       - name: Install dependencies
         run: yarn install --ignore-scripts --non-interactive
@@ -47,5 +51,18 @@ jobs:
         run: yarn list --pattern @folio
 
       - name: List all installed package versions (enable via debug-yarn-packages)
-        if: ${{inputs.debug-yarn-packages}}
+        if: ${{ inputs.debug-yarn-packages }}
         run: yarn list
+
+      - id: get-cache-key
+        name: Calculate cache key
+        run: echo key=node-modules-${{ hashFiles('**/yarn.lock') }} | tee -a $GITHUB_OUTPUT
+
+      - name: Cache node_modules and yarn.lock
+        id: cache
+        uses: actions/cache@v2
+        with:
+          path: |
+            node_modules
+            yarn.lock
+          key: ${{ steps.get-cache-key.outputs.key }}

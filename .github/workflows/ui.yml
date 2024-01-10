@@ -23,17 +23,23 @@ on:
 
 jobs:
   version-number:
-    name: Get version number
     uses: ./.github/workflows/ui-version-number.yml
 
   install:
     uses: ./.github/workflows/ui-install.yml
+    with:
+      node-version: ${{ github.event.inputs.node-version }}
+      folio-npm-registry: ${{ github.event.inputs.folio-npm-registry }}
+      debug-yarn-packages: ${{ github.event.inputs.debug-yarn-packages }}
 
   inner2:
+    needs: [install, version-number]
     runs-on: ubuntu-latest
     steps:
-      - name: my-step2
-        run: node -v
+      - name: echo install key
+        run: echo ${{ needs.install.outputs.cache-key }}
+      - name: echo version-number
+        run: echo ${{ needs.version-number.outputs.version-number }}
 
   inner3:
     runs-on: ubuntu-latest
