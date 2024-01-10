@@ -11,9 +11,6 @@ on:
         default: "20.x"
 
 jobs:
-  innerinner:
-    uses: ./.github/workflows/ui-innerinner1.yml
-
   inner1:
     runs-on: ubuntu-latest
     steps:
@@ -32,16 +29,12 @@ jobs:
     needs: inner1
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/setup-node@v3
-        with:
-          node-version: "20.x"
-          check-latest: true
-          always-auth: true
+      - uses: ./.github/workflows/ui-innerinner1.yml
       - name: my-step1
         run: node -v
 
   inner4:
-    needs: [innerinner, inner2, inner3]
+    needs: [inner2, inner3]
     runs-on: ubuntu-latest
     steps:
       - uses: actions/setup-node@v3

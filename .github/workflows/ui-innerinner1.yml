@@ -3,14 +3,11 @@ name: testinner
 on: workflow_call
 
 jobs:
-  inner1job1:
+  setup-node:
     runs-on: ubuntu-latest
     steps:
-      - name: my-step1-1
-        run: echo "Hello World!"
-
-  inner1job2:
-    runs-on: ubuntu-latest
-    steps:
-      - name: my-step1-2
-        run: echo "Hello World!"
+      - uses: actions/setup-node@v3
+        with:
+          node-version: "20.x"
+          check-latest: true
+          always-auth: true
