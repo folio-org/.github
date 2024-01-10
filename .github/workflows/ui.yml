@@ -24,12 +24,6 @@ on:
         default: false
 
 jobs:
-  test:
-    runs-on: ubuntu-latest
-    steps:
-      - name: test
-        run: echo ${{ inputs.node-version }}
-
   version-number:
     uses: ./.github/workflows/ui-version-number.yml
 

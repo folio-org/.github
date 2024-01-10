@@ -30,12 +30,14 @@ jobs:
       cache-key: ${{ steps.get-cache-key.outputs.key }}
 
     steps:
-      - uses: actions/checkout@v4
+      - name: Checkout ${{ github.repository }}
+        uses: actions/checkout@v4
         with:
           fetch-depth: 0
           show-progress: false # spammy
 
-      - uses: actions/setup-node@v4
+      - name: Install Node ${{ inputs.node-version }}
+        uses: actions/setup-node@v4
         with:
           node-version: ${{ inputs.node-version }}
           check-latest: true
