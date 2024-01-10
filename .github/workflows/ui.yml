@@ -37,10 +37,17 @@ jobs:
           node-version: "20.x"
           check-latest: true
           always-auth: true
+      - name: my-step1
+        run: node -v
 
   inner4:
     needs: [innerinner, inner2, inner3]
     runs-on: ubuntu-latest
     steps:
+      - uses: actions/setup-node@v3
+        with:
+          node-version: "20.x"
+          check-latest: true
+          always-auth: true
       - name: my-step4
         run: node -v
