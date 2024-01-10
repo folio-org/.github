@@ -24,15 +24,21 @@ on:
         default: false
 
 jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - name: test
+        run: echo ${{ inputs.node-version }}
+
   version-number:
     uses: ./.github/workflows/ui-version-number.yml
 
   install:
     uses: ./.github/workflows/ui-install.yml
     with:
-      node-version: ${{ github.event.inputs.node-version }}
-      folio-npm-registry: ${{ github.event.inputs.folio-npm-registry }}
-      # debug-yarn-packages: ${{ github.event.inputs.debug-yarn-packages }}
+      node-version: ${{ inputs.node-version }}
+      folio-npm-registry: ${{ inputs.folio-npm-registry }}
+      debug-yarn-packages: ${{ inputs.debug-yarn-packages }}
 
   debug:
     needs: [install, version-number]
