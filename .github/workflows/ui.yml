@@ -62,6 +62,9 @@ jobs:
           name: yarn.lock
           path: yarn.lock
 
+      - name: ls
+        run: ls -la
+
       # cached??
       - name: Install dependencies
         run: yarn install --ignore-scripts --non-interactive --prefer-offline
