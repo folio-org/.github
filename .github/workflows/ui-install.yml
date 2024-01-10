@@ -59,3 +59,10 @@ jobs:
       - id: get-cache-key
         name: Calculate cache key
         run: echo key=node-modules-${{ hashFiles('**/yarn.lock') }} | tee -a $GITHUB_OUTPUT
+
+      - name: Publish yarn.lock
+        uses: actions/upload-artifact@v4
+        with:
+          name: yarn.lock
+          path: yarn.lock
+          retention-days: 5
