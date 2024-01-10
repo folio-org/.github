@@ -6,7 +6,7 @@ on:
       node-version:
         description: Node version to use, in semver notation
           Examples include 12.x, 10.15.1, >=10.15.0, lts/Hydrogen, 16-nightly, latest, node
-        required: true
+        required: false
         type: string
         default: "18.x"
 
@@ -17,6 +17,8 @@ jobs:
   inner1:
     runs-on: ubuntu-latest
     steps:
+      - name: echo
+        run: echo ${{ github.event.inputs.node-version }}
       - name: my-step1
         run: node -v
 
