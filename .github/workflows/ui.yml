@@ -95,6 +95,7 @@ on:
         description: |
           A comma-separated list of wildcards to exclude from analysis. If overriding, you'll probably want to use YAML folded newlines (https://yaml-multiline.info/)
           Defaults to all of (without the comments):
+            ```
              # documentation
             docs/**,
             examples/**,
@@ -123,6 +124,7 @@ on:
              # misc
             *.css,
             *.json,
+            ```
         required: false
         type: string
         default: >
