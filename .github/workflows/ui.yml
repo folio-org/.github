@@ -51,11 +51,11 @@ on:
         default: artifacts/jest-junit
       jest-coverage-report-dir:
         description:
-          Directory in which Jest coverage reports are stored in, with trailing slash.
-          Defaults to "artifacts/coverage-jest/lcov-report/"
+          Directory in which Jest coverage reports are stored in, with trailing slash. LCOV data should be in "lcov.info".
+          Defaults to "artifacts/coverage-jest/"
         required: false
         type: string
-        default: artifacts/coverage-jest/lcov-report/
+        default: artifacts/coverage-jest/
 
       # unit tests (Bigtest)
       bigtest-enabled:
@@ -77,11 +77,76 @@ on:
         default: artifacts/runTest
       bigtest-coverage-report-dir:
         description:
-          Directory in which Jest coverage reports are stored in, with trailing slash.
-          Defaults to "artifacts/coverage/lcov-report/"
+          Directory in which Jest coverage reports are stored in, with trailing slash. LCOV data should be in "lcov.info".
+          Defaults to "artifacts/coverage/"
         required: false
         type: string
-        default: artifacts/coverage/lcov-report/
+        default: artifacts/coverage/
+
+      # sonar
+      sonar-sources:
+        description:
+          A comma-separated list of directories containing code to analyze (no wildcards).
+          Defaults to "./src".  See https://docs.sonarsource.com/sonarcloud/advanced-setup/analysis-parameters/#analysis-scope for more.
+        required: false
+        type: string
+        default: ./src
+      sonar-exclusions:
+        description: |
+          A comma-separated list of wildcards to exclude from analysis. If overriding, you'll probably want to use YAML folded newlines (https://yaml-multiline.info/)
+          Defaults to all of (without the comments):
+             # documentation
+            docs/**,
+            examples/**,
+            **/*.md,
+            **/stories/*.js,
+            **/.stories.js,
+            **/stories/*.tsx?,
+            **/.stories.tsx?,
+            LICENSE,
+
+             # build/CI artifacts
+            artifacts/**,
+            ci/**,
+            node_modules/**,
+
+             # tests
+            **/tests/**,
+            **/test/**,
+            resources/bigtest/interactors/**,
+            resources/bigtest/network/**,
+            *-test.js,
+            *.test.js,
+            karma.conf.js,
+            jest.config.js,
+
+             # misc
+            *.css,
+            *.json,
+        required: false
+        type: string
+        default: >
+          docs/**,
+          examples/**,
+          **/*.md,
+          **/stories/*.js,
+          **/.stories.js,
+          **/stories/*.tsx?,
+          **/.stories.tsx?,
+          LICENSE,
+          artifacts/**,
+          ci/**,
+          node_modules/**,
+          **/tests/**,
+          **/test/**,
+          resources/bigtest/interactors/**,
+          resources/bigtest/network/**,
+          *-test.js,
+          *.test.js,
+          karma.conf.js,
+          jest.config.js,
+          *.css,
+          *.json
 
       # translations
       compile-translations:
@@ -90,9 +155,11 @@ on:
         type: boolean
         default: true
     secrets:
+      # these need to be non-required to allow anything here for forks
+      # however, the sub-workflows will fail appropriately if these are not present, as applicable
       SONAR_TOKEN:
-        description: Token for performing a SonarCloud analysis
-        required: true # needed to not explode in forks?
+        description: Token for performing SonarCloud analysis
+        required: false
       # DOCKER_PASSWORD
       # DOCKER_USER
       # NPM_TOKEN
@@ -139,14 +206,16 @@ jobs:
       folio-npm-registry: ${{ inputs.folio-npm-registry }}
 
   sonarcloud:
-    runs-on: ubuntu-latest
-
-    steps:
-      - name: "check if SONAR_TOKEN exists"
-        env:
-          super_secret: ${{ secrets.SONAR_TOKEN }}
-        if: ${{ env.super_secret == '' }}
-        run: 'echo "echo the secret \"SONAR_TOKEN\" has not been made; echo please go to \"settings \> secrets \> actions\" to create it"'
+    needs: [jest-tests, bigtest-tests]
+    # todo: run even if those fail
+    uses: ./.github/workflows/ui-sonarcloud.yml
+    with:
+      sonar-sources: ${{ inputs.sonar-sources }}
+      sonar-exclusions: ${{ inputs.sonar-exclusions }}
+      bigtest-coverage-report-dir: ${{ inputs.bigtest-coverage-report-dir }}
+      jest-coverage-report-dir: ${{ inputs.jest-coverage-report-dir }}
+    secrets:
+      SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
 
   version-number:
     uses: ./.github/workflows/ui-version-number.yml
