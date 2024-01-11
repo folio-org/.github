@@ -101,6 +101,7 @@ jobs:
       debug-yarn-packages: ${{ inputs.debug-yarn-packages }}
 
   jest-tests:
+    name: Run Jest tests
     uses: ./.github/workflows/ui-tests-jest.yml
     if: ${{ inputs.jest-enabled }}
     with:
@@ -111,6 +112,7 @@ jobs:
       jest-coverage-report-dir: ${{ inputs.jest-coverage-report-dir }}
 
   bigtest-tests:
+    name: Run Bigtest tests
     uses: ./.github/workflows/ui-tests-bigtest.yml
     if: ${{ inputs.bigtest-enabled }}
     with:
@@ -131,11 +133,11 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: "check if FOLIO_REGISTRY_USERNAME exists"
+      - name: "check if GITHUB_TOKEN exists"
         env:
-          super_secret: ${{ secrets.FOLIO_REGISTRY_USERNAME }}
+          super_secret: ${{ secrets.GITHUB_TOKEN }}
         if: ${{ env.super_secret == '' }}
-        run: 'echo "echo the secret \"FOLIO_REGISTRY_USERNAME\" has not been made; echo please go to \"settings \> secrets \> actions\" to create it"'
+        run: 'echo "echo the secret \"GITHUB_TOKEN\" has not been made; echo please go to \"settings \> secrets \> actions\" to create it"'
 
   version-number:
     uses: ./.github/workflows/ui-version-number.yml
