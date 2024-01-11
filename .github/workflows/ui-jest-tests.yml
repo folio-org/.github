@@ -51,6 +51,10 @@ jobs:
 
       - name: Run Jest tests
         run: ${{ inputs.jest-test-command }}
+        env:
+          # needed for projects that do not specify in package.json
+          # see https://github.com/jest-community/jest-junit?tab=readme-ov-file#configuration
+          JEST_JUNIT_OUTPUT_DIR: ${{ inputs.jest-junit-output-dir }}
 
       - name: tree
         run: ls -R artifacts
