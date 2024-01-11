@@ -10,6 +10,8 @@ on:
         required: false
         type: string
         default: "20.x"
+      # It should be straightforward to add a customizable Yarn version via a simple `yarn set version 3.x` or similar
+      # https://yarnpkg.com/cli/set/version
       folio-npm-registry:
         description: Full URL to the registry to use for @folio modules.
           Defaults to "https://repository.folio.org/repository/npm-folioci/"
