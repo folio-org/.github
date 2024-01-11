@@ -142,11 +142,11 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: "check if GITHUB_TOKEN exists"
+      - name: "check if SONAR_TOKEN exists"
         env:
-          super_secret: ${{ secrets.GITHUB_TOKEN }}
+          super_secret: ${{ secrets.SONAR_TOKEN }}
         if: ${{ env.super_secret == '' }}
-        run: 'echo "echo the secret \"GITHUB_TOKEN\" has not been made; echo please go to \"settings \> secrets \> actions\" to create it"'
+        run: 'echo "echo the secret \"SONAR_TOKEN\" has not been made; echo please go to \"settings \> secrets \> actions\" to create it"'
 
   version-number:
     uses: ./.github/workflows/ui-version-number.yml
