@@ -31,7 +31,7 @@ on:
         type: boolean
         default: true
 
-      # unit tests
+      # unit tests (Jest)
       jest-enabled:
         description: Whether to run Jest tests. Defaults to true
         required: false
@@ -43,15 +43,45 @@ on:
         type: string
         default: yarn test
       jest-junit-output-dir:
-        description: Directory in which Jest reports are stored in. Defaults to "artifacts/jest-junit"
+        description:
+          Directory in which Jest reports are stored in, without trailing slash.
+          Defaults to "artifacts/jest-junit"
         required: false
         type: string
         default: artifacts/jest-junit
       jest-coverage-report-dir:
-        description: Directory in which Jest coverage reports are stored in. Defaults to "artifacts/coverage-jest/lcov-report/"
+        description:
+          Directory in which Jest coverage reports are stored in, with trailing slash.
+          Defaults to "artifacts/coverage-jest/lcov-report/"
         required: false
         type: string
         default: artifacts/coverage-jest/lcov-report/
+
+      # unit tests (Bigtest)
+      bigtest-enabled:
+        description: Whether to run Bigtest tests. Defaults to false
+        required: false
+        type: boolean
+        default: false
+      bigtest-test-command:
+        description: Command to run Bigtest tests. Defaults to "yarn test"
+        required: false
+        type: string
+        default: yarn test
+      bigtest-junit-output-dir:
+        description:
+          Directory in which Bigtest reports are stored in, without trailing slash.
+          Defaults to "artifacts/runTest"
+        required: false
+        type: string
+        default: artifacts/runTest
+      bigtest-coverage-report-dir:
+        description:
+          Directory in which Jest coverage reports are stored in, with trailing slash.
+          Defaults to "artifacts/coverage/lcov-report/"
+        required: false
+        type: string
+        default: artifacts/coverage/lcov-report/
 
       # translations
       compile-translations:
@@ -61,10 +91,7 @@ on:
         default: true
 
 jobs:
-  version-number:
-    uses: ./.github/workflows/ui-version-number.yml
-
-  # responsible for printing install information and publishing yarn.lock if debug is enabled
+  # this job is responsible for printing install information and publishing yarn.lock if debug is enabled
   install-and-lint:
     uses: ./.github/workflows/ui-install-and-lint.yml
     with:
@@ -74,7 +101,7 @@ jobs:
       debug-yarn-packages: ${{ inputs.debug-yarn-packages }}
 
   jest-tests:
-    uses: ./.github/workflows/ui-jest-tests.yml
+    uses: ./.github/workflows/ui-tests-jest.yml
     if: ${{ inputs.jest-enabled }}
     with:
       node-version: ${{ inputs.node-version }}
@@ -83,9 +110,32 @@ jobs:
       jest-junit-output-dir: ${{ inputs.jest-junit-output-dir }}
       jest-coverage-report-dir: ${{ inputs.jest-coverage-report-dir }}
 
+  bigtest-tests:
+    uses: ./.github/workflows/ui-tests-bigtest.yml
+    if: ${{ inputs.bigtest-enabled }}
+    with:
+      node-version: ${{ inputs.node-version }}
+      folio-npm-registry: ${{ inputs.folio-npm-registry }}
+      bigtest-test-command: ${{ inputs.bigtest-test-command }}
+      bigtest-junit-output-dir: ${{ inputs.bigtest-junit-output-dir }}
+      bigtest-coverage-report-dir: ${{ inputs.bigtest-coverage-report-dir }}
+
   translations:
     uses: ./.github/workflows/ui-translations.yml
     if: ${{ inputs.compile-translations }}
     with:
       node-version: ${{ inputs.node-version }}
       folio-npm-registry: ${{ inputs.folio-npm-registry }}
+
+  sonarcloud:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: "check if FOLIO_REGISTRY_USERNAME exists"
+        env:
+          super_secret: ${{ secrets.FOLIO_REGISTRY_USERNAME }}
+        if: ${{ env.super_secret == '' }}
+        run: 'echo "echo the secret \"FOLIO_REGISTRY_USERNAME\" has not been made; echo please go to \"settings \> secrets \> actions\" to create it"'
+
+  version-number:
+    uses: ./.github/workflows/ui-version-number.yml
