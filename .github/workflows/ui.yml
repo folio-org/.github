@@ -209,7 +209,7 @@ jobs:
 
   sonarcloud:
     needs: [jest-tests, bigtest-tests]
-    if: ${{ !cancelled() }}
+    if: ${{ always() }}
     uses: ./.github/workflows/ui-sonarcloud.yml
     with:
       sonar-sources: ${{ inputs.sonar-sources }}
