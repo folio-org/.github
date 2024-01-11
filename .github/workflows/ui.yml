@@ -89,6 +89,15 @@ on:
         required: false
         type: boolean
         default: true
+    secrets:
+      SONAR_TOKEN:
+        description: Token for performing a SonarCloud analysis
+        required: true # needed to not explode in forks?
+      # DOCKER_PASSWORD
+      # DOCKER_USER
+      # NPM_TOKEN
+      # FOLIO_REGISTRY_USERNAME
+      # FOLIO_REGISTRY_PASSWORD
 
 jobs:
   # this job is responsible for printing install information and publishing yarn.lock if debug is enabled
