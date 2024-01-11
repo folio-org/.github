@@ -58,6 +58,11 @@ jobs:
       - name: debug
         run: tree
 
+      # It's so long that it's awful to maintain without this
+      - id: format-exclusions
+        name: Format exclusions list
+        run: echo formatted=$(tr -d '[:blank:]' <<< "${{ inputs.sonar-exclusions }}") | tee -a $GITHUB_OUTPUT
+
       - name: Run SonarCloud scan
         uses: sonarsource/sonarcloud-github-action@master
         with:
@@ -65,9 +70,9 @@ jobs:
             -Dsonar.organization=folio-org
             -Dsonar.projectKey=org.folio:${{ github.event.repository.name }}
             -Dsonar.projectName=${{ github.event.repository.name }}
-            -Dsonar.sources='${{ inputs.sonar-sources }}'
+            -Dsonar.sources=${{ inputs.sonar-sources }}
             -Dsonar.javascript.lcov.reportPaths=${{ format('{0}lcov.info,{1}lcov.info', inputs.bigtest-coverage-report-dir, inputs.jest-coverage-report-dir) }}
-            -Dsonar.exclusions='${{ inputs.sonar-exclusions }}'
+            -Dsonar.exclusions=${{ steps.format-exclusions.outputs.formatted }}
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
