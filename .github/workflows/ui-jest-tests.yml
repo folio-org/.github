@@ -56,12 +56,6 @@ jobs:
           # see https://github.com/jest-community/jest-junit?tab=readme-ov-file#configuration
           JEST_JUNIT_OUTPUT_DIR: ${{ inputs.jest-junit-output-dir }}
 
-      - name: tree
-        run: ls -R artifacts
-
-      - name: treee
-        run: tree artifacts
-
       - name: Publish Jest unit test results
         uses: EnricoMi/publish-unit-test-result-action@v2
         if: ${{ always() }}
