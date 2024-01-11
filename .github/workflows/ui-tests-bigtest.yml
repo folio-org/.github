@@ -54,14 +54,14 @@ jobs:
 
       - name: Publish Bigtest unit test results
         uses: EnricoMi/publish-unit-test-result-action@v2
-        if: ${{ always() }}
+        if: ${{ !cancelled() }}
         with:
           check_name: Bigtest Unit Test Results
           files: "${{ inputs.bigtest-junit-output-dir }}/*.xml"
 
       - name: Publish Bigtest coverage report
         uses: actions/upload-artifact@v4
-        if: ${{ always() }}
+        if: ${{ !cancelled() }}
         with:
           name: bigtest-coverage-report
           path: ${{ inputs.bigtest-coverage-report-dir }}
