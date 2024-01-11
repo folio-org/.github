@@ -208,8 +208,8 @@ jobs:
       folio-npm-registry: ${{ inputs.folio-npm-registry }}
 
   sonarcloud:
-    needs: [jest-tests, bigtest-tests]
-    if: ${{ !cancelled() }}
+    # needs: [jest-tests, bigtest-tests]
+    # if: ${{ !cancelled() }}
     uses: ./.github/workflows/ui-sonarcloud.yml
     with:
       sonar-sources: ${{ inputs.sonar-sources }}
