@@ -31,6 +31,28 @@ on:
         type: boolean
         default: true
 
+      # unit tests
+      jest-enabled:
+        description: Whether to run Jest tests. Defaults to true
+        required: false
+        type: boolean
+        default: true
+      jest-test-command:
+        description: Command to run Jest tests. Defaults to "yarn test"
+        required: false
+        type: string
+        default: yarn test
+      jest-junit-output-dir:
+        description: Directory in which Jest reports are stored in. Defaults to "artifacts/jest-junit"
+        required: false
+        type: string
+        default: artifacts/jest-junit
+      jest-coverage-report-dir:
+        description: Directory in which Jest coverage reports are stored in. Defaults to "artifacts/coverage-jest/lcov-report/"
+        required: false
+        type: string
+        default: artifacts/coverage-jest/lcov-report/
+
       # translations
       compile-translations:
         description: Whether to compile translation files. Defaults to true
@@ -42,14 +64,24 @@ jobs:
   version-number:
     uses: ./.github/workflows/ui-version-number.yml
 
+  # responsible for printing install information and publishing yarn.lock if debug is enabled
   install-and-lint:
     uses: ./.github/workflows/ui-install-and-lint.yml
     with:
       node-version: ${{ inputs.node-version }}
       folio-npm-registry: ${{ inputs.folio-npm-registry }}
       allow-lint-errors: ${{ inputs.allow-lint-errors }}
-      # responsible for printing install information and publishing yarn.lock if needed
       debug-yarn-packages: ${{ inputs.debug-yarn-packages }}
+
+  jest-tests:
+    uses: ./.github/workflows/ui-jest-tests.yml
+    if: ${{ inputs.jest-enabled }}
+    with:
+      node-version: ${{ inputs.node-version }}
+      folio-npm-registry: ${{ inputs.folio-npm-registry }}
+      jest-test-command: ${{ inputs.jest-test-command }}
+      jest-junit-output-dir: ${{ inputs.jest-junit-output-dir }}
+      jest-coverage-report-dir: ${{ inputs.jest-coverage-report-dir }}
 
   translations:
     uses: ./.github/workflows/ui-translations.yml

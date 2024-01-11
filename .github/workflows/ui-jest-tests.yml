@@ -1,9 +1,8 @@
-name: FOLIO UI Install Packages
+name: FOLIO UI Unit Tests (Jest)
 
 on:
   workflow_call:
     inputs:
-      # yarn configuration
       node-version:
         description: Node version to use, in semver notation
         required: true
@@ -12,20 +11,22 @@ on:
         description: Full URL to the registry to use for @folio modules
         required: true
         type: string
-      debug-yarn-packages:
-        description: Whether to print all packages installed by yarn. Defaults to false
-        required: false
-        type: boolean
-        default: false
-      # linting
-      allow-lint-errors:
-        description: Whether to allow lint errors
+      jest-test-command:
+        description: Command to run Jest tests
         required: true
-        type: boolean
+        type: string
+      jest-junit-output-dir:
+        description: Directory in which Jest reports are stored in
+        required: true
+        type: string
+      jest-coverage-report-dir:
+        description: Directory in which Jest coverage reports are stored in
+        required: true
+        type: string
 
 jobs:
   run:
-    name: Install and lint
+    name: Run Jest tests
     runs-on: ubuntu-latest
 
     steps:
@@ -48,23 +49,28 @@ jobs:
       - name: Install dependencies
         run: yarn install --ignore-scripts --non-interactive
 
-      - name: List installed FOLIO package versions
-        run: yarn list --pattern @folio
+      - name: Run Jest tests
+        run: ${{ inputs.jest-test-command }}
 
-      - name: List all installed package versions (enable via debug-yarn-packages)
-        if: ${{ inputs.debug-yarn-packages }}
-        run: yarn list
+      - name: Publish Jest unit test results
+        uses: EnricoMi/publish-unit-test-result-action@v2
+        if: ${{ always() }}
+        with:
+          check_name: Jest Unit Test Results
+          files: "${{ inputs.jest-junit-output-dir }}/*.xml"
+
+      - name: Publish Jest coverage report
+        uses: actions/upload-artifact@v4
+        if: ${{ always() }}
+        with:
+          name: jest-coverage-report
+          path: ${{ inputs.jest-coverage-report-dir }}
+          retention-days: 5
 
       - name: Publish yarn.lock
-        if: ${{ inputs.debug-yarn-packages }}
+        if: ${{ failure() }}
         uses: actions/upload-artifact@v4
         with:
           name: yarn.lock
           path: yarn.lock
           retention-days: 1
-
-      # TODO: something like https://github.com/marketplace/actions/lint-action would be cool
-      # Particularly as we consider something like Prettier
-      - name: Lint
-        run: yarn lint
-        continue-on-error: ${{ inputs.allow-lint-errors }}
