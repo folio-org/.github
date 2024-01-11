@@ -19,7 +19,7 @@ jobs:
       - name: Checkout ${{ github.repository }}
         uses: actions/checkout@v4
         with:
-          fetch-depth: 0
+          fetch-depth: 1
           show-progress: false # spammy
 
       - name: Checkout folio-org/folio-tools
@@ -27,7 +27,7 @@ jobs:
         with:
           repository: folio-org/folio-tools
           path: folio-tools
-          fetch-depth: 0
+          fetch-depth: 1
           show-progress: false # spammy
 
       - id: calculate
