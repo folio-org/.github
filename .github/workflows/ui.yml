@@ -209,7 +209,7 @@ jobs:
 
   sonarcloud:
     needs: [jest-tests, bigtest-tests]
-    # todo: run even if those fail
+    if: ${{ !cancelled() }}
     uses: ./.github/workflows/ui-sonarcloud.yml
     with:
       sonar-sources: ${{ inputs.sonar-sources }}
