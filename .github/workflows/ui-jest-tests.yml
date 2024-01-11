@@ -52,6 +52,12 @@ jobs:
       - name: Run Jest tests
         run: ${{ inputs.jest-test-command }}
 
+      - name: tree
+        run: ls -R artifacts
+
+      - name: treee
+        run: tree artifacts
+
       - name: Publish Jest unit test results
         uses: EnricoMi/publish-unit-test-result-action@v2
         if: ${{ always() }}
