@@ -1,4 +1,4 @@
-name: FOLIO UI Generate module descriptor
+name: FOLIO UI Generate Module Descriptor
 
 on:
   workflow_call:

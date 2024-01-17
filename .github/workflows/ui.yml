@@ -173,6 +173,11 @@ on:
         required: false
         type: boolean
         default: true
+      module-descriptor-registry:
+        description: Okapi instance to publish the module descriptor to. Defaults to "https://folio-registry.dev.folio.org"
+        required: false
+        type: string
+        default: https://folio-registry.dev.folio.org
     secrets:
       # these need to be non-required to allow anything here for forks
       # however, the sub-workflows will fail appropriately if these are not present, as applicable
@@ -182,8 +187,12 @@ on:
       # DOCKER_PASSWORD
       # DOCKER_USER
       # NPM_TOKEN
-      # FOLIO_REGISTRY_USERNAME
-      # FOLIO_REGISTRY_PASSWORD
+      FOLIO_REGISTRY_USERNAME:
+        description: Username for publishing module descriptor
+        required: false
+      FOLIO_REGISTRY_PASSWORD:
+        description: Password for publishing module descriptor
+        required: false
 
 jobs:
   # this job is responsible for printing install information and publishing yarn.lock if debug is enabled
@@ -238,6 +247,7 @@ jobs:
       SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
 
   version-number:
+    if: ${{ inputs.publish-module-descriptor }}
     uses: ./.github/workflows/ui-version-number.yml
 
   generate-module-descriptor:
@@ -249,3 +259,14 @@ jobs:
       node-version: ${{ inputs.node-version }}
       folio-npm-registry: ${{ inputs.folio-npm-registry }}
       package-version: ${{ needs.version-number.outputs.version-number }}
+
+  publish-module-descriptor:
+    name: Publish module descriptor
+    needs: [version-number, generate-module-descriptor]
+    # if: ${{ inputs.publish-module-descriptor && github.ref_name == github.event.repository.default_branch }}
+    uses: ./.github/workflows/ui-module-descriptor-publish.yml
+    with:
+      module-descriptor-registry: ${{ inputs.module-descriptor-registry }}
+    secrets:
+      registry-username: ${{ secrets.FOLIO_REGISTRY_USERNAME }}
+      registry-password: ${{ secrets.FOLIO_REGISTRY_PASSWORD }}

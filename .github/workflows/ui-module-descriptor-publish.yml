@@ -1,0 +1,51 @@
+name: FOLIO UI Publish Module Descriptor
+
+on:
+  workflow_call:
+    inputs:
+      module-descriptor-registry:
+        description: Registry to publish the descriptor to
+        required: true
+        type: string
+    secrets:
+      registry-username:
+        description: Username for the registry (basic auth)
+        required: true
+      registry-password:
+        description: Password for the registry (basic auth)
+        required: true
+
+jobs:
+  run:
+    name: Publish module descriptor
+    runs-on: ubuntu-latest
+    steps:
+      # from previous step
+      - name: Download module descriptor
+        uses: actions/download-artifact@v4
+        with:
+          name: module-descriptor.json
+
+      - name: test
+        run: ls
+
+      - name: Print module descriptor
+        run: cat module-descriptor.json
+
+        # needed to pull into github context
+      - name: Read descriptor into context
+        id: read-descriptor
+        uses: juliangruber/read-file-action@v1
+        with:
+          path: module-descriptor.json
+
+      - name: Publish module descriptor
+        uses: fjogeleit/http-request-action@v1
+        with:
+          url: ${{ inputs.module-descriptor-registry }}/_/proxy/modules
+          method: "POST"
+          contentType: "application/json; charset=utf-8"
+          customHeaders: '{ "Accept": "application/json; charset=utf-8" }'
+          data: ${{ steps.read-descriptor.outputs.content }}
+          username: ${{ secrets.FOLIO_REGISTRY_USERNAME }}
+          password: ${{ secrets.FOLIO_REGISTRY_PASSWORD }}
