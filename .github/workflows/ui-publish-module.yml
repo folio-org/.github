@@ -19,14 +19,18 @@ on:
         description: The version of the package to use in the module descriptor. For snapshot builds, this contains the build number to guarantee a unique version per run.
         required: true
         type: string
-      module-descriptor-available:
-        description: Whether a module descriptor was generated
-        required: true
-        type: boolean
       publish-exclusions:
         description: A list of files to exclude from the published package
         required: true
         type: string
+      module-descriptor-available:
+        description: Whether a module descriptor is available to include
+        required: true
+        type: boolean
+      compiled-translations-available:
+        description: Whether compiled translations are available to include
+        required: true
+        type: boolean
     secrets:
       npm-token:
         description: NPM auth token
@@ -61,6 +65,15 @@ jobs:
         uses: actions/download-artifact@v4
         with:
           name: module-descriptor.json
+
+      - name: Download compiled translations
+        if: ${{ inputs.compiled-translations-available }}
+        uses: actions/download-artifact@v4
+        with:
+          name: translations
+
+      - name: test
+        run: tree
 
       - name: Configure package exclusions
         uses: DamianReeves/write-file-action@v1.2

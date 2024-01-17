@@ -162,7 +162,7 @@ on:
 
       # translations
       compile-translations:
-        description: Whether to compile translation files. Defaults to true
+        description: Whether to compile translation files. Defaults to true; if disabled, none will be included in the published module, either.
         required: false
         type: boolean
         default: true
@@ -299,7 +299,7 @@ jobs:
 
   publish-module:
     name: Publish module (main branch only)
-    needs: [version-number, generate-module-descriptor]
+    needs: [version-number, generate-module-descriptor, translations]
     # todo: add tests, sonar as dep
 
     # we want to run this iff publish-module-descriptor succeeds or is skipped
@@ -308,7 +308,8 @@ jobs:
     if: |
       !cancelled() &&
       needs.version-number.result == 'success' &&
-      (needs.generate-module-descriptor.result == 'success' || needs.generate-module-descriptor.result == 'skipped')
+      (needs.generate-module-descriptor.result == 'success' || needs.generate-module-descriptor.result == 'skipped') &&
+      (needs.translations.result == 'success' || needs.translations.result == 'skipped')
 
     # todo: put this back
     # github.ref_name == github.event.repository.default_branch
@@ -319,7 +320,8 @@ jobs:
       folio-npm-registry: ${{ inputs.folio-npm-registry }}
       folio-npm-registry-auth: ${{ inputs.folio-npm-registry-auth }}
       package-version: ${{ needs.version-number.outputs.version-number }}
-      module-descriptor-available: ${{ inputs.generate-module-descriptor }}
       publish-exclusions: ${{ inputs.publish-exclusions }}
+      module-descriptor-available: ${{ inputs.generate-module-descriptor }}
+      compiled-translations-available: ${{ inputs.compile-translations }}
     secrets:
       npm-token: ${{ secrets.NPM_TOKEN }}
