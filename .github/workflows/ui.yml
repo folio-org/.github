@@ -300,16 +300,18 @@ jobs:
   publish-module:
     name: Publish module (main branch only)
     needs:
+      - install-and-lint
       - version-number
       - generate-module-descriptor
       - translations
       - jest-tests
       - bigtest-tests
-    # we want to run this iff publish-module-descriptor succeeds or is skipped
+    # we want to run this iff module descriptor/tests/etc succeed or are skipped (e.g. no bigtests are present means bigtest-tests is skipped)
     # by default, if a needed job is skipped, this job is skipped too. So we have to say
     # always (!cancelled), and then check specifically.
     if: |
       !cancelled() &&
+      needs.install-and-lint.result == 'success' &&
       needs.version-number.result == 'success' &&
       (needs.generate-module-descriptor.result == 'success' || needs.generate-module-descriptor.result == 'skipped') &&
       (needs.translations.result == 'success' || needs.translations.result == 'skipped') &&
