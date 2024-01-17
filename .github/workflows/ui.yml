@@ -166,6 +166,13 @@ on:
         required: false
         type: boolean
         default: true
+
+      # module descriptor
+      publish-module-descriptor:
+        description: Whether to generate and publish a module descriptor. Defaults to true
+        required: false
+        type: boolean
+        default: true
     secrets:
       # these need to be non-required to allow anything here for forks
       # however, the sub-workflows will fail appropriately if these are not present, as applicable
@@ -201,8 +208,8 @@ jobs:
 
   bigtest-tests:
     name: Run Bigtest tests
-    uses: ./.github/workflows/ui-tests-bigtest.yml
     if: ${{ inputs.bigtest-enabled }}
+    uses: ./.github/workflows/ui-tests-bigtest.yml
     with:
       node-version: ${{ inputs.node-version }}
       folio-npm-registry: ${{ inputs.folio-npm-registry }}
@@ -211,8 +218,9 @@ jobs:
       bigtest-coverage-report-dir: ${{ inputs.bigtest-coverage-report-dir }}
 
   translations:
-    uses: ./.github/workflows/ui-translations.yml
+    name: Compile translations
     if: ${{ inputs.compile-translations }}
+    uses: ./.github/workflows/ui-translations.yml
     with:
       node-version: ${{ inputs.node-version }}
       folio-npm-registry: ${{ inputs.folio-npm-registry }}
@@ -231,3 +239,13 @@ jobs:
 
   version-number:
     uses: ./.github/workflows/ui-version-number.yml
+
+  generate-module-descriptor:
+    name: Generate module descriptor
+    needs: [version-number]
+    if: ${{ inputs.publish-module-descriptor }}
+    uses: ./.github/workflows/ui-module-descriptor-generate.yml
+    with:
+      node-version: ${{ inputs.node-version }}
+      folio-npm-registry: ${{ inputs.folio-npm-registry }}
+      package-version: ${{ needs.version-number.outputs.version-number }}

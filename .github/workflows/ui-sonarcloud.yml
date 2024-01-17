@@ -28,7 +28,7 @@ on:
 
 jobs:
   run:
-    name: SonarCloud Analysis
+    name: SonarCloud analysis
     runs-on: ubuntu-latest
 
     steps:

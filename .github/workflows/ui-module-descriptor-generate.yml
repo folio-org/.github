@@ -1,0 +1,68 @@
+name: FOLIO UI Generate module descriptor
+
+on:
+  workflow_call:
+    inputs:
+      node-version:
+        description: Node version to use, in semver notation
+        required: true
+        type: string
+      folio-npm-registry:
+        description: Full URL to the registry to use for @folio modules
+        required: true
+        type: string
+      package-version:
+        description: The version of the package to use in the module descriptor. For snapshot builds, this contains the build number to guarantee a unique version per run.
+        required: true
+        type: string
+
+jobs:
+  run:
+    name: Generate module descriptor
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout ${{ github.repository }}
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 1
+          show-progress: false # spammy
+
+      - name: Install Node ${{ inputs.node-version }}
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ inputs.node-version }}
+          check-latest: true
+          always-auth: true
+
+      - name: Set FOLIO NPM registry
+        run: yarn config set @folio:registry ${{ inputs.folio-npm-registry }}
+
+      - id: get-version
+        name: Get current @folio/stripes-cli version
+        # some packages may not specify @folio/stripes-cli as a dependency (e.g. stripes itself)
+        # in this case, we default to @latest
+        run: echo version=$(jq -r '.devDependencies["@folio/stripes-cli"]' package.json | sed s/null/latest/)
+
+      # we do it this way to avoid installing all modules
+      - name: Install @folio/stripes-cli
+        run: |-
+          rm package.json
+          yarn add @folio/stripes-cli@${{ steps.get-version.outputs.version }}
+          git checkout package.json
+
+      - name: Set package version number to ${{ inputs.package-version }}
+        run: yarn version --new-version --no-git-tag-version ${{ inputs.package-version }}
+
+      - name: Generate module descriptor
+        run: yarn build-mod-descriptor
+
+      - name: Print module descriptor
+        run: cat module-descriptor.json
+
+      # we publish it to the registry as a separate job
+      - name: Upload module descriptor as build artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: module-descriptor.json
+          path: module-descriptor.json

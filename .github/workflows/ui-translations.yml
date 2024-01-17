@@ -38,7 +38,7 @@ jobs:
         name: Get current @formatjs/cli version
         run: echo version=$(jq -r '.devDependencies["@formatjs/cli"]' package.json)
 
-      # we do it this way to avoid installing al modules
+      # we do it this way to avoid installing all modules
       - name: Install @formatjs/cli
         run: |-
           rm package.json
