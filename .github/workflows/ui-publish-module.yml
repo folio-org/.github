@@ -71,6 +71,7 @@ jobs:
         uses: actions/download-artifact@v4
         with:
           name: translations
+          path: translations
 
       - name: test
         run: tree
