@@ -14,10 +14,10 @@ on:
       # https://yarnpkg.com/cli/set/version
       folio-npm-registry:
         description: Full URL to the registry to use for @folio modules.
-          Defaults to "https://repository.folio.org/repository/npm-folioci/"
+          Defaults to "https://repository.folio.org/repository/npm-folioci/" or "https://repository.folio.org/repository/npm-folio/" for tags
         required: false
         type: string
-        default: "https://repository.folio.org/repository/npm-folioci/"
+        default: ${{ startsWith(github.ref, 'refs/tags/v') && 'https://repository.folio.org/repository/npm-folio/' || 'https://repository.folio.org/repository/npm-folioci/' }}
       debug-yarn-packages:
         description:
           Whether to print all packages installed by yarn and force publish yarn.lock.
@@ -186,10 +186,10 @@ on:
 
       # module publishing
       folio-npm-registry-auth:
-        description: NPM config key for authentication to the FOLIO NPM registry. Defaults to "//repository.folio.org/repository/npm-folioci/"
+        description: NPM config key for authentication to the FOLIO NPM registry. Defaults to "//repository.folio.org/repository/npm-folioci/" or "//repository.folio.org/repository/npm-folio/" for tags
         required: false
         type: string
-        default: "//repository.folio.org/repository/npm-folioci/"
+        default: ${{ startsWith(github.ref, 'refs/tags/v') && '//repository.folio.org/repository/npm-folio/' || '//repository.folio.org/repository/npm-folioci/' }}
       publish-exclusions:
         description: Files not to include in the published package, in addition to the .npmignore. Defaults to artifacts, .github, and .scannerwork.
         required: false
@@ -206,7 +206,9 @@ on:
         required: false
       # DOCKER_PASSWORD
       # DOCKER_USER
-      # NPM_TOKEN
+      NPM_TOKEN:
+        description: Token for publishing to NPM
+        required: false
       FOLIO_REGISTRY_USERNAME:
         description: Username for publishing module descriptor
         required: false
