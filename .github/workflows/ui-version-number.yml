@@ -13,7 +13,7 @@ jobs:
     runs-on: ubuntu-latest
 
     outputs:
-      version-number: ${{ steps.calculate.outputs.version }}
+      version-number: ${{ steps.final.outputs.version }}
 
     steps:
       - name: Checkout ${{ github.repository }}
@@ -33,17 +33,17 @@ jobs:
 
       - id: calculate
         if: ${{ !startsWith(github.ref, 'refs/tags/v') }}
-        name: Calculate version number
+        name: Calculate version number, if not a tag
         run: echo version=`./folio-tools/github-actions-scripts/folioci_npmver.sh` | tee -a $GITHUB_OUTPUT
         env:
           JOB_ID: ${{ github.run_number }}
 
       - id: tag-version
         if: ${{ startsWith(github.ref, 'refs/tags/v') }}
-        name: Get tag version number
+        name: Get tag version number, if applicable
         run: echo version=${GITHUB_REF#refs/tags/v} | tee -a $GITHUB_OUTPUT
 
-      - name: test
-        run: |
-          echo "version-number: ${{ steps.calculate.outputs.version }}"
-          echo "version-number by tag: ${{ steps.tag-version.outputs.version }}"
+      # used to aggregate tag and non-tag versions into a single output
+      - id: final
+        name: Get version from above steps
+        run: echo version=${{ steps.calculate.outputs.version }}${{ steps.tag-version.outputs.version }} | tee -a $GITHUB_OUTPUT
