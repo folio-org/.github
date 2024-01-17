@@ -183,6 +183,21 @@ on:
         required: false
         type: string
         default: https://folio-registry.dev.folio.org
+
+      # module publishing
+      folio-npm-registry-auth:
+        description: NPM config key for authentication to the FOLIO NPM registry. Defaults to "//repository.folio.org/repository/npm-folioci/"
+        required: false
+        type: string
+        default: "//repository.folio.org/repository/npm-folioci/"
+      publish-exclusions:
+        description: Files not to include in the published package, in addition to the .npmignore. Defaults to artifacts, .github, and .scannerwork.
+        required: false
+        type: string
+        default: |
+          artifacts
+          .github
+          .scannerwork
     secrets:
       # these need to be non-required to allow anything here for forks
       # however, the sub-workflows will fail appropriately if these are not present, as applicable
@@ -284,23 +299,27 @@ jobs:
 
   publish-module:
     name: Publish module (main branch only)
-    needs: [version-number, publish-module-descriptor]
+    needs: [version-number, generate-module-descriptor]
+    # todo: add tests, sonar as dep
+
     # we want to run this iff publish-module-descriptor succeeds or is skipped
     # by default, if a needed job is skipped, this job is skipped too. So we have to say
     # always (!cancelled), and then check specifically.
     if: |
       !cancelled() &&
       needs.version-number.result == 'success' &&
-      (needs.publish-module-descriptor.result == 'success' || needs.publish-module-descriptor.result == 'skipped')
+      (needs.generate-module-descriptor.result == 'success' || needs.generate-module-descriptor.result == 'skipped')
 
+    # todo: put this back
     # github.ref_name == github.event.repository.default_branch
-    runs-on: ubuntu-latest
-    steps:
-      - run: echo "publishing module!"
 
-    # uses: ./.github/workflows/ui-module-descriptor-publish.yml
-    # with:
-    #   module-descriptor-registry: ${{ inputs.module-descriptor-registry }}
-    # secrets:
-    #   registry-username: ${{ secrets.FOLIO_REGISTRY_USERNAME }}
-    #   registry-password: ${{ secrets.FOLIO_REGISTRY_PASSWORD }}
+    uses: ./.github/workflows/ui-publish-module.yml
+    with:
+      node-version: ${{ inputs.node-version }}
+      folio-npm-registry: ${{ inputs.folio-npm-registry }}
+      folio-npm-registry-auth: ${{ inputs.folio-npm-registry-auth }}
+      package-version: ${{ needs.version-number.outputs.version-number }}
+      module-descriptor-available: ${{ inputs.generate-module-descriptor }}
+      publish-exclusions: ${{ inputs.publish-exclusions }}
+    secrets:
+      npm-token: ${{ secrets.NPM_TOKEN }}

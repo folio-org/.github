@@ -1,0 +1,73 @@
+name: FOLIO UI Publish Module
+
+on:
+  workflow_call:
+    inputs:
+      node-version:
+        description: Node version to use, in semver notation
+        required: true
+        type: string
+      folio-npm-registry:
+        description: Full URL to the registry to use for @folio modules
+        required: true
+        type: string
+      folio-npm-registry-auth:
+        description: NPM config key for authentication to the FOLIO NPM registry
+        required: true
+        type: string
+      package-version:
+        description: The version of the package to use in the module descriptor. For snapshot builds, this contains the build number to guarantee a unique version per run.
+        required: true
+        type: string
+      module-descriptor-available:
+        description: Whether a module descriptor was generated
+        required: true
+        type: boolean
+      publish-exclusions:
+        description: A list of files to exclude from the published package
+        required: true
+        type: string
+    secrets:
+      npm-token:
+        description: NPM auth token
+        required: true
+
+jobs:
+  run:
+    name: Publish module
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout ${{ github.repository }}
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 1
+          show-progress: false # spammy
+
+      - name: Install Node ${{ inputs.node-version }}
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ inputs.node-version }}
+          check-latest: true
+          always-auth: true
+
+      - name: Set FOLIO NPM registry
+        run: npm config set @folio:registry ${{ inputs.folio-npm-registry }}
+
+      - name: Authenticate to FOLIO NPM registry
+        run: npm config set ${{ inputs.folio-npm-registry-auth }}:_auth ${{ secrets.npm-token }}
+
+      - name: Download module descriptor
+        if: ${{ inputs.module-descriptor-available }}
+        uses: actions/download-artifact@v4
+        with:
+          name: module-descriptor.json
+
+      - name: Configure package exclusions
+        uses: DamianReeves/write-file-action@v1.2
+        with:
+          path: .npmignore
+          contents: ${{ inputs.publish-exclusions }}
+          write-mode: append
+
+      - name: Print package exclusions
+        run: cat .npmignore
