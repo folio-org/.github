@@ -299,9 +299,12 @@ jobs:
 
   publish-module:
     name: Publish module (main branch only)
-    needs: [version-number, generate-module-descriptor, translations]
-    # todo: add tests, sonar as dep
-
+    needs:
+      - version-number
+      - generate-module-descriptor
+      - translations
+      - jest-tests
+      - bigtest-tests
     # we want to run this iff publish-module-descriptor succeeds or is skipped
     # by default, if a needed job is skipped, this job is skipped too. So we have to say
     # always (!cancelled), and then check specifically.
@@ -309,10 +312,10 @@ jobs:
       !cancelled() &&
       needs.version-number.result == 'success' &&
       (needs.generate-module-descriptor.result == 'success' || needs.generate-module-descriptor.result == 'skipped') &&
-      (needs.translations.result == 'success' || needs.translations.result == 'skipped')
-
-    # todo: put this back
-    # github.ref_name == github.event.repository.default_branch
+      (needs.translations.result == 'success' || needs.translations.result == 'skipped') &&
+      (needs.jest-tests.result == 'success' || needs.jest-tests.result == 'skipped') &&
+      (needs.bigtest-tests.result == 'success' || needs.bigtest-tests.result == 'skipped') &&
+      github.ref_name == github.event.repository.default_branch
 
     uses: ./.github/workflows/ui-publish-module.yml
     with:

@@ -73,9 +73,6 @@ jobs:
           name: translations
           path: translations
 
-      - name: test
-        run: tree
-
       - name: Configure package exclusions
         uses: DamianReeves/write-file-action@v1.2
         with:
