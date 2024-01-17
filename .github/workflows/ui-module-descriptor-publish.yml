@@ -36,6 +36,15 @@ jobs:
         with:
           path: module-descriptor.json
 
+      - name: Fix oopsie
+        uses: fjogeleit/http-request-action@v1
+        with:
+          url: https://folio-registry.dev.folio.org/_/proxy/modules/folio_lists-12.0.10000018
+          method: "DELETE"
+          customHeaders: '{ "Accept": "*/*" }'
+          username: ${{ secrets.registry-username }}
+          password: ${{ secrets.registry-password }}
+
       - name: Publish module descriptor
         uses: fjogeleit/http-request-action@v1
         with:
