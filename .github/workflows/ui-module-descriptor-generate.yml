@@ -45,7 +45,7 @@ jobs:
         run: echo version=$(jq -r '.devDependencies["@folio/stripes-cli"]' package.json | sed s/null/latest/)
 
       # we do it this way to avoid installing all modules
-      - name: Install @folio/stripes-cli@${{ steps.get-version.outputs.version }}
+      - name: Install @folio/stripes-cli
         run: |-
           rm package.json
           yarn add @folio/stripes-cli@${{ steps.get-version.outputs.version }}
