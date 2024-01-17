@@ -4,7 +4,7 @@ on:
   workflow_call:
     outputs:
       version-number:
-        description: The derived version number unique to this run
+        description: If a tag, we'll return that tag's version number; otherwise, it will be the derived version number unique to this run
         value: ${{ jobs.get-version-number.outputs.version-number }}
 
 jobs:
@@ -23,6 +23,7 @@ jobs:
           show-progress: false # spammy
 
       - name: Checkout folio-org/folio-tools
+        if: ${{ !startsWith(github.ref, 'refs/tags/v') }}
         uses: actions/checkout@v4
         with:
           repository: folio-org/folio-tools
@@ -31,7 +32,18 @@ jobs:
           show-progress: false # spammy
 
       - id: calculate
+        if: ${{ !startsWith(github.ref, 'refs/tags/v') }}
         name: Calculate version number
         run: echo version=`./folio-tools/github-actions-scripts/folioci_npmver.sh` | tee -a $GITHUB_OUTPUT
         env:
           JOB_ID: ${{ github.run_number }}
+
+      - id: tag-version
+        if: ${{ startsWith(github.ref, 'refs/tags/v') }}
+        name: Get tag version number
+        run: echo version=${GITHUB_REF#refs/tags/v} | tee -a $GITHUB_OUTPUT
+
+      - name: test
+        run: |
+          echo "version-number: ${{ steps.calculate.outputs.version }}"
+          echo "version-number by tag: ${{ steps.calculate.tag-version.version }}"

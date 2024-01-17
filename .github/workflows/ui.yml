@@ -269,9 +269,6 @@ jobs:
 
   version-number:
     # used for module descriptor and publishing to NPM
-    if: |
-      inputs.generate-module-descriptor ||
-      github.ref_name == github.event.repository.default_branch
     uses: ./.github/workflows/ui-version-number.yml
 
   generate-module-descriptor:
