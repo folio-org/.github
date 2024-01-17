@@ -46,4 +46,4 @@ jobs:
       - name: test
         run: |
           echo "version-number: ${{ steps.calculate.outputs.version }}"
-          echo "version-number by tag: ${{ steps.calculate.tag-version.version }}"
+          echo "version-number by tag: ${{ steps.tag-version.outputs.version }}"
