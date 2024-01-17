@@ -241,6 +241,7 @@ jobs:
 
   sonarcloud:
     needs: [jest-tests, bigtest-tests]
+    # run even if tests fail
     if: ${{ !cancelled() }}
     uses: ./.github/workflows/ui-sonarcloud.yml
     with:
@@ -253,7 +254,9 @@ jobs:
 
   version-number:
     # used for module descriptor and publishing to NPM
-    if: ${{ inputs.generate-module-descriptor || github.ref_name == github.event.repository.default_branch }}
+    if: |
+      inputs.generate-module-descriptor ||
+      github.ref_name == github.event.repository.default_branch
     uses: ./.github/workflows/ui-version-number.yml
 
   generate-module-descriptor:
@@ -269,7 +272,9 @@ jobs:
   publish-module-descriptor:
     name: Publish module descriptor (main branch only)
     needs: [version-number, generate-module-descriptor]
-    if: ${{ inputs.generate-module-descriptor && inputs.publish-module-descriptor && github.ref_name == github.event.repository.default_branch }}
+    if: |
+      inputs.publish-module-descriptor &&
+      github.ref_name == github.event.repository.default_branch
     uses: ./.github/workflows/ui-module-descriptor-publish.yml
     with:
       module-descriptor-registry: ${{ inputs.module-descriptor-registry }}
@@ -280,10 +285,18 @@ jobs:
   publish-module:
     name: Publish module (main branch only)
     needs: [version-number, publish-module-descriptor]
-    # if: ${{ inputs.publish-module-descriptor && github.ref_name == github.event.repository.default_branch }}
+    # we want to run this iff publish-module-descriptor succeeds or is skipped
+    # by default, if a needed job is skipped, this job is skipped too. So we have to say
+    # always (!cancelled), and then check specifically.
+    if: |
+      !cancelled() &&
+      needs.version-number.result == 'success' &&
+      (needs.publish-module-descriptor.result == 'success' || needs.publish-module-descriptor.result == 'skipped') &&
+      github.ref_name == github.event.repository.default_branch
     runs-on: ubuntu-latest
     steps:
       - run: echo "publishing module!"
+
     # uses: ./.github/workflows/ui-module-descriptor-publish.yml
     # with:
     #   module-descriptor-registry: ${{ inputs.module-descriptor-registry }}
