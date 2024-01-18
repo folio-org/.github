@@ -204,8 +204,12 @@ on:
       SONAR_TOKEN:
         description: Token for performing SonarCloud analysis
         required: false
-      # DOCKER_PASSWORD
-      # DOCKER_USER
+      DOCKER_USER:
+        description: Username for pulling Okapi docker image
+        required: false
+      DOCKER_PASSWORD:
+        description: Password for pulling Okapi docker image
+        required: false
       NPM_TOKEN:
         description: Token for publishing to NPM
         required: false
@@ -219,6 +223,7 @@ on:
 jobs:
   # this job is responsible for printing install information and publishing yarn.lock if debug is enabled
   install-and-lint:
+    name: Install and lint
     uses: ./.github/workflows/ui-install-and-lint.yml
     with:
       node-version: ${{ inputs.node-version }}
@@ -257,6 +262,7 @@ jobs:
       folio-npm-registry: ${{ inputs.folio-npm-registry }}
 
   sonarcloud:
+    name: SonarCloud analysis
     needs: [jest-tests, bigtest-tests]
     # run even if tests fail
     if: ${{ !cancelled() }}
@@ -283,11 +289,25 @@ jobs:
       folio-npm-registry: ${{ inputs.folio-npm-registry }}
       package-version: ${{ needs.version-number.outputs.version-number }}
 
+  okapi-dependency-check:
+    name: Okapi dependency check (main branch only)
+    needs: [generate-module-descriptor]
+    if: ${{ inputs.generate-module-descriptor && startsWith(github.ref, 'refs/tags/v') }}
+    uses: ./.github/workflows/ui-module-descriptor-verify.yml
+    with:
+      okapi-pull-contents: '{"urls": ["https://folio-registry.dev.folio.org"]}'
+    secrets:
+      docker-username: ${{ secrets.DOCKER_USER }}
+      docker-password: ${{ secrets.DOCKER_PASSWORD }}
+
   publish-module-descriptor:
     name: Publish module descriptor (main branch only)
-    needs: [generate-module-descriptor]
+    needs: [generate-module-descriptor, okapi-dependency-check]
+    # okapi-dependency-check is optional, but if it's enabled, we want to require it (for tag releases)
     if: |
+      !cancelled() &&
       inputs.publish-module-descriptor &&
+      (needs.okapi-dependency-check.result == 'success' || needs.okapi-dependency-check.result == 'skipped') &&
       github.ref_name == github.event.repository.default_branch
     uses: ./.github/workflows/ui-module-descriptor-publish.yml
     with:
@@ -302,6 +322,7 @@ jobs:
       - install-and-lint
       - version-number
       - generate-module-descriptor
+      - okapi-dependency-check
       - translations
       - jest-tests
       - bigtest-tests
@@ -313,6 +334,7 @@ jobs:
       needs.install-and-lint.result == 'success' &&
       needs.version-number.result == 'success' &&
       (needs.generate-module-descriptor.result == 'success' || needs.generate-module-descriptor.result == 'skipped') &&
+      (needs.okapi-dependency-check.result == 'success' || needs.okapi-dependency-check.result == 'skipped') &&
       (needs.translations.result == 'success' || needs.translations.result == 'skipped') &&
       (needs.jest-tests.result == 'success' || needs.jest-tests.result == 'skipped') &&
       (needs.bigtest-tests.result == 'success' || needs.bigtest-tests.result == 'skipped') &&

@@ -1,0 +1,69 @@
+name: FOLIO UI Okapi Dependency Check
+
+on:
+  workflow_call:
+    inputs:
+      okapi-pull-contents:
+        description: JSON array of module descriptors to pull
+        required: true
+        type: string
+    secrets:
+      docker-username:
+        description: Username for pulling Okapi docker image
+        required: true
+      docker-password:
+        description: Password for pulling Okapi docker image
+        required: true
+
+jobs:
+  run:
+    name: Okapi dependency check
+    runs-on: ubuntu-latest
+    steps:
+      - name: Login to Docker registry
+        run: echo "${{ secrets.docker-password }}" | docker login https://docker.io/v2/ -u "${{ secrets.docker-username }}" --password-stdin
+
+      - name: Pull Okapi image
+        run: docker pull folioorg/okapi:latest
+
+      - name: Run Okapi
+        run: docker run --name okapi -t -detach folioorg/okapi:latest dev
+
+      - id: okapi-ip
+        name: Get container IP address
+        run: echo "ip=$(docker inspect --format='{{range .NetworkSettings.Networks}}{{.IPAddress}}{{end}}' okapi)" | tee -a $GITHUB_OUTPUT
+
+      - name: Timeout for Okapi to start
+        run: sleep 10
+
+      - name: Pull all module descriptors into Okapi
+        uses: fjogeleit/http-request-action@v1
+        with:
+          url: http://${{ steps.okapi-ip.outputs.ip }}:9130/_/proxy/pull/modules
+          method: "POST"
+          contentType: "application/json; charset=utf-8"
+          customHeaders: '{ "Accept": "application/json; charset=utf-8" }'
+          data: ${{ inputs.okapi-pull-contents }}
+          timeout: 60000
+
+      # from previous step
+      - name: Download module descriptor
+        uses: actions/download-artifact@v4
+        with:
+          name: module-descriptor.json
+
+      # needed to pull into github context
+      - name: Read descriptor into context
+        id: read-descriptor
+        uses: juliangruber/read-file-action@v1
+        with:
+          path: module-descriptor.json
+
+      - name: Post our module
+        uses: fjogeleit/http-request-action@v1
+        with:
+          url: http://${{ steps.okapi-ip.outputs.ip }}:9130/_/proxy/modules?preRelease=false&npmSnapshot=false
+          method: "POST"
+          contentType: "application/json; charset=utf-8"
+          customHeaders: '{ "Accept": "application/json; charset=utf-8" }'
+          data: ${{ steps.read-descriptor.outputs.content }}

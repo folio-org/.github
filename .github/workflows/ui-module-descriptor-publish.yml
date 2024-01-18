@@ -29,7 +29,7 @@ jobs:
       - name: Print module descriptor
         run: cat module-descriptor.json
 
-        # needed to pull into github context
+      # needed to pull into github context
       - name: Read descriptor into context
         id: read-descriptor
         uses: juliangruber/read-file-action@v1
