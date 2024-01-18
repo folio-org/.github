@@ -55,9 +55,6 @@ jobs:
           path: ${{ inputs.jest-coverage-report-dir }}
         continue-on-error: true # jest may be disabled or have failed
 
-      - name: debug
-        run: tree
-
       # It's so long that it's awful to maintain without this
       - id: format-exclusions
         name: Format exclusions list
@@ -73,6 +70,7 @@ jobs:
             -Dsonar.sources=${{ inputs.sonar-sources }}
             -Dsonar.javascript.lcov.reportPaths=${{ format('{0}lcov.info,{1}lcov.info', inputs.bigtest-coverage-report-dir, inputs.jest-coverage-report-dir) }}
             -Dsonar.exclusions=${{ steps.format-exclusions.outputs.formatted }}
+            -Dsonar.verbose=true
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
