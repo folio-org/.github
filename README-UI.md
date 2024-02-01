@@ -66,7 +66,9 @@ with:
   jest-test-command: yarn test --ci --color --coverage
 ```
 
-In general, however, **it is preferred that you alter your repository to not need to customize the workflow**, particularly for file paths for coverage/etc. This will make it easier to update the workflow in the future, and will help to standardize the CI/CD process across the FOLIO front-end repositories.
+
+> [!CAUTION]
+> In general, **it is preferred that you alter your repository to not need to customize the workflow**, particularly for file paths for coverage/etc. This will make it easier to update the workflow in the future, and will help to standardize the CI/CD process across the FOLIO front-end repositories.
 
 ### Node/Yarn configuration
 
