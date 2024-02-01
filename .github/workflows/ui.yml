@@ -9,7 +9,7 @@ on:
           Examples include 12.x, 10.15.1, >=10.15.0, lts/Hydrogen, 16-nightly, latest, node
         required: false
         type: string
-        default: "20.x"
+        default: "18.x"
       # It should be straightforward to add a customizable Yarn version via a simple `yarn set version 3.x` or similar
       # https://yarnpkg.com/cli/set/version
       folio-npm-registry:
