@@ -40,7 +40,6 @@ on:
   # todo: what would be best here?
   - push
   - pull_request
-  - pull_request_target
   - workflow_dispatch
 
 jobs:
