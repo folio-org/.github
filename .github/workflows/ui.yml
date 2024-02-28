@@ -141,12 +141,12 @@ on:
           **/test/**,
           resources/bigtest/interactors/**,
           resources/bigtest/network/**,
-          *-test.*,
-          *.test.*,
+          **/*-test.*,
+          **/*.test.*,
           karma.conf.*,
           jest.config.*,
-          *.css,
-          *.json
+          **/*.css,
+          **/*.json
 
       # translations
       compile-translations:
