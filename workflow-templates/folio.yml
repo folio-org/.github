@@ -3,6 +3,7 @@ name: Folio Test CI Workflow
 on:
   push:
     branches: [ $default-branch ]
+  workflow_dispatch:
 
 jobs:
   build:

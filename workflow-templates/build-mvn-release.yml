@@ -12,6 +12,7 @@ on:
     paths-ignore:
       - "**/*.[mM][dD]"
       - "**/*.[tT][xX][tT]"
+  workflow_dispatch:
 
 jobs:
   github-actions-ci:
