@@ -1,0 +1,27 @@
+<diagram program="umletino" version="15.1"><zoom_level>10</zoom_level><element><id>UMLClass</id><coordinates><x>270</x><y>330</y><w>190</w><h>60</h></coordinates><panel_attributes>_Install and Lint_
+--
+Installs the module's packages
+and lints the module.</panel_attributes><additional_attributes></additional_attributes></element><element><id>UMLClass</id><coordinates><x>270</x><y>420</y><w>180</w><h>40</h></coordinates><panel_attributes>_Jest Tests_
+--
+Runs Jest tests</panel_attributes><additional_attributes></additional_attributes></element><element><id>UMLClass</id><coordinates><x>270</x><y>480</y><w>180</w><h>40</h></coordinates><panel_attributes>_Bigtest Tests_
+--
+Runs Bigtest tests</panel_attributes><additional_attributes></additional_attributes></element><element><id>UMLClass</id><coordinates><x>270</x><y>550</y><w>210</w><h>50</h></coordinates><panel_attributes>_Compile Translations_
+--
+Compiles translation with formatjs</panel_attributes><additional_attributes></additional_attributes></element><element><id>UMLClass</id><coordinates><x>600</x><y>420</y><w>210</w><h>50</h></coordinates><panel_attributes>_SonarCloud Analysis_
+--
+Compiles translation with formatjs</panel_attributes><additional_attributes></additional_attributes></element><element><id>Relation</id><coordinates><x>440</x><y>430</y><w>180</w><h>30</h></coordinates><panel_attributes>lt=&lt;&lt;.</panel_attributes><additional_attributes>160;10;10;10</additional_attributes></element><element><id>Relation</id><coordinates><x>440</x><y>430</y><w>180</w><h>90</h></coordinates><panel_attributes>lt=&lt;&lt;.</panel_attributes><additional_attributes>160;10;10;70</additional_attributes></element><element><id>UMLClass</id><coordinates><x>270</x><y>240</y><w>200</w><h>60</h></coordinates><panel_attributes>_Compute Version Number_
+--
+Derives snapshot number or tag
+version, as applicable</panel_attributes><additional_attributes></additional_attributes></element><element><id>UMLClass</id><coordinates><x>520</x><y>240</y><w>200</w><h>60</h></coordinates><panel_attributes>_Generate Module Descriptor_
+--
+Generates a Module Descriptor
+for the package</panel_attributes><additional_attributes></additional_attributes></element><element><id>Relation</id><coordinates><x>460</x><y>250</y><w>80</w><h>30</h></coordinates><panel_attributes>lt=&lt;&lt;-</panel_attributes><additional_attributes>60;10;10;10</additional_attributes></element><element><id>UMLFrame</id><coordinates><x>760</x><y>210</y><w>220</w><h>110</h></coordinates><panel_attributes>tags only</panel_attributes><additional_attributes></additional_attributes></element><element><id>UMLClass</id><coordinates><x>780</x><y>240</y><w>180</w><h>60</h></coordinates><panel_attributes>_Okapi Dependency Check_
+--
+Verifies Okapi can resolve and
+enable the module with deps</panel_attributes><additional_attributes></additional_attributes></element><element><id>Relation</id><coordinates><x>710</x><y>250</y><w>90</w><h>30</h></coordinates><panel_attributes>lt=&lt;&lt;-</panel_attributes><additional_attributes>70;10;10;10</additional_attributes></element><element><id>UMLClass</id><coordinates><x>1020</x><y>240</y><w>190</w><h>60</h></coordinates><panel_attributes>_Publish Module Descriptor_
+--
+Publishes the module descriptor
+to the registry</panel_attributes><additional_attributes></additional_attributes></element><element><id>UMLFrame</id><coordinates><x>1000</x><y>210</y><w>230</w><h>260</h></coordinates><panel_attributes>main branch only</panel_attributes><additional_attributes></additional_attributes></element><element><id>Relation</id><coordinates><x>950</x><y>250</y><w>90</w><h>30</h></coordinates><panel_attributes>lt=&lt;&lt;-</panel_attributes><additional_attributes>70;10;10;10</additional_attributes></element><element><id>UMLClass</id><coordinates><x>1020</x><y>390</y><w>190</w><h>60</h></coordinates><panel_attributes>_Publish Module_
+--
+Publishes the module to the
+FOLIO NPM repository</panel_attributes><additional_attributes></additional_attributes></element><element><id>Relation</id><coordinates><x>450</x><y>340</y><w>590</w><h>90</h></coordinates><panel_attributes>lt=&lt;&lt;-</panel_attributes><additional_attributes>570;70;420;70;420;10;10;10</additional_attributes></element><element><id>Relation</id><coordinates><x>440</x><y>380</y><w>600</w><h>80</h></coordinates><panel_attributes>lt=&lt;&lt;-</panel_attributes><additional_attributes>580;30;430;30;430;10;40;10;10;60</additional_attributes></element><element><id>Relation</id><coordinates><x>440</x><y>400</y><w>600</w><h>120</h></coordinates><panel_attributes>lt=&lt;&lt;-</panel_attributes><additional_attributes>580;10;430;10;430;100;10;100</additional_attributes></element><element><id>Relation</id><coordinates><x>470</x><y>400</y><w>570</w><h>190</h></coordinates><panel_attributes>lt=&lt;&lt;-</panel_attributes><additional_attributes>550;10;400;10;400;170;10;170</additional_attributes></element></diagram>
