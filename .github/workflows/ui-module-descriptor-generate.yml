@@ -57,7 +57,7 @@ jobs:
           yarn version --new-version ${{ inputs.package-version }}
 
       - name: Generate module descriptor
-        run: yarn stripes mod descriptor --full --strict | jq '.[]' > module-descriptor.json
+        run: yarn --silent stripes mod descriptor --full --strict | jq '.[]' > module-descriptor.json
 
       - name: Print module descriptor
         run: cat module-descriptor.json
