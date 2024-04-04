@@ -35,18 +35,18 @@ jobs:
         run: yarn config set @folio:registry ${{ inputs.folio-npm-registry }}
 
       - id: get-version
-        name: Get current @formatjs/cli version
-        run: echo version=$(jq -r '.devDependencies["@formatjs/cli"]' package.json)
+        name: Get current @folio/stripes-cli version
+        run: echo version=$(jq -r '.devDependencies["@folio/stripes-cli"]' package.json)
 
       # we do it this way to avoid installing all modules
-      - name: Install @formatjs/cli
+      - name: Install @folio/stripes-cli
         run: |-
           rm package.json
-          yarn add @formatjs/cli@${{ steps.get-version.outputs.version }}
+          yarn add @folio/stripes-cli@${{ steps.get-version.outputs.version }}
           git checkout package.json
 
       - name: Compile translations
-        run: yarn formatjs-compile
+        run: stripes translate compile
 
       - name: Publish translations
         uses: actions/upload-artifact@v4
