@@ -12,11 +12,6 @@ on:
         description: Full URL to the registry to use for @folio modules
         required: true
         type: string
-      debug-yarn-packages:
-        description: Whether to print all packages installed by yarn. Defaults to false
-        required: false
-        type: boolean
-        default: false
       # linting
       allow-lint-errors:
         description: Whether to allow lint errors
@@ -51,12 +46,7 @@ jobs:
       - name: List installed FOLIO package versions
         run: yarn list --pattern @folio
 
-      - name: List all installed package versions (enable via debug-yarn-packages)
-        if: ${{ inputs.debug-yarn-packages }}
-        run: yarn list
-
       - name: Publish yarn.lock
-        if: ${{ inputs.debug-yarn-packages }}
         uses: actions/upload-artifact@v4
         with:
           name: yarn.lock

@@ -25,6 +25,8 @@ Here are all of the individual jobs and how they interact:
 
 ![UML Diagram](./ui-diagram.png)
 
+Solid arrows indicate jobs that must succeed for the next job to run. Dashed arrows indicate jobs that are optional (for example, we want Sonar to analyze even if tests fail).
+
 ## Versioning
 
 TODO: handle versioning of central workflow with tags? branches? semver? flower names? R#-20##?
@@ -75,7 +77,6 @@ with:
 | --------------------- | ------- | ----------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------- |
 | `node-version`        | string  | `18.x`                                                                                                                  | The Node version to install                                                                         |
 | `folio-npm-registry`  | string  | `https://repository.folio.org/repository/npm-folioci/` or `https://repository.folio.org/repository/npm-folio/` for tags | The repository to pull `@folio/` packages from                                                      |
-| `debug-yarn-packages` | boolean | `false`                                                                                                                 | If CI is failing, enable this to list all installed packages/versions and always publish yarn.lock. |
 
 ### Linting
 
