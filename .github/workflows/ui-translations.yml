@@ -46,7 +46,7 @@ jobs:
           git checkout package.json
 
       - name: Compile translations
-        run: stripes translate compile
+        run: yarn stripes translate compile
 
       - name: Publish translations
         uses: actions/upload-artifact@v4
