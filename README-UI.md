@@ -15,7 +15,7 @@
   - [Module publication](#module-publication)
 - [Secrets](#secrets)
 
-To improve the consistency and reliability of the CI/CD workflows for the FOLIO front-end repositories, we are migrating to a centralized workflow. This enables more frequent and centralized updates, encourages shared standards, and reduces the maintenance burden on individual repositories.
+This centralized workflow performs CI/CD tasks in FOLIO front-end repositories, including linting, test running, SonarCloud analysis, and deployment.
 
 ## Methodology
 
@@ -29,7 +29,8 @@ Solid arrows indicate jobs that must succeed for the next job to run. Dashed arr
 
 ## Versioning
 
-TODO: handle versioning of central workflow with tags? branches? semver? flower names? R#-20##?
+This project will use semver, similar to how other FOLIO modules currently operate.
+When specifying the version of these workflows that you want to use, it is recommended to use the latest major version only, so that new minor/patch releases are automatically picked up.
 
 ## Using in your repository
 
@@ -55,6 +56,8 @@ jobs:
 
 And that's it! Now your repository will use the centralized workflow.
 
+Once you have the new workflow added and everything appears to work, it is safe to delete the old workflows (`build-npm.yml` and similar).
+
 ## Configuration
 
 There are many configuration variables, to allow customization of the workflow to your repository. To use these, add inputs under `with:` in the workflow, for example:
@@ -67,16 +70,15 @@ with:
   jest-test-command: yarn test --ci --color --coverage
 ```
 
-
 > [!CAUTION]
 > In general, **it is preferred that you alter your repository to not need to customize the workflow**, particularly for file paths for coverage/etc. This will make it easier to update the workflow in the future, and will help to standardize the CI/CD process across the FOLIO front-end repositories.
 
 ### Node/Yarn configuration
 
-| Input                 | Type    | Default                                                                                                                 | Description                                                                                         |
-| --------------------- | ------- | ----------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------- |
-| `node-version`        | string  | `18.x`                                                                                                                  | The Node version to install                                                                         |
-| `folio-npm-registry`  | string  | `https://repository.folio.org/repository/npm-folioci/` or `https://repository.folio.org/repository/npm-folio/` for tags | The repository to pull `@folio/` packages from                                                      |
+| Input                | Type   | Default                                                                                                                 | Description                                    |
+| -------------------- | ------ | ----------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------- |
+| `node-version`       | string | `18.x`                                                                                                                  | The Node version to install                    |
+| `folio-npm-registry` | string | `https://repository.folio.org/repository/npm-folioci/` or `https://repository.folio.org/repository/npm-folio/` for tags | The repository to pull `@folio/` packages from |
 
 ### Linting
 
