@@ -32,7 +32,7 @@ jobs:
           always-auth: true
 
       - name: Set FOLIO NPM registry
-        run: yarn config set @folio:registry ${{ inputs.folio-npm-registry }}
+        run: yarn config set npmScopes.folio.npmRegistryServer ${{ inputs.folio-npm-registry }}
 
       - id: get-version
         name: Get current @folio/stripes-cli version

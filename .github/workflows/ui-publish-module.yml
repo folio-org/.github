@@ -55,10 +55,13 @@ jobs:
           always-auth: true
 
       - name: Set FOLIO NPM registry
-        run: npm config set @folio:registry ${{ inputs.folio-npm-registry }}
+        run: yarn config set npmScopes.folio.npmRegistryServer ${{ inputs.folio-npm-registry }}
 
       - name: Authenticate to FOLIO NPM registry
-        run: npm config set ${{ inputs.folio-npm-registry-auth }}:_auth ${{ secrets.npm-token }}
+        run: |-
+          yarn config set npmScopes.folio.npmAlwaysAuth true
+          yarn config set npmScopes.folio.npmAuthToken ${{ secrets.npm-token }}
+
 
       - name: Download module descriptor
         if: ${{ inputs.module-descriptor-available }}

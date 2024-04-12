@@ -36,7 +36,7 @@ jobs:
           always-auth: true
 
       - name: Set FOLIO NPM registry
-        run: yarn config set @folio:registry ${{ inputs.folio-npm-registry }}
+        run: yarn config set npmScopes.folio.npmRegistryServer ${{ inputs.folio-npm-registry }}
 
       - id: get-version
         name: Get current @folio/stripes-cli version
@@ -57,7 +57,7 @@ jobs:
           yarn version --new-version ${{ inputs.package-version }}
 
       - name: Generate module descriptor
-        run: yarn --silent stripes mod descriptor --full --strict | jq '.[]' > module-descriptor.json
+        run: yarn stripes mod descriptor --full --strict | jq '.[]' > module-descriptor.json
 
       - name: Print module descriptor
         run: cat module-descriptor.json

@@ -44,10 +44,10 @@ jobs:
           always-auth: true
 
       - name: Set FOLIO NPM registry
-        run: yarn config set @folio:registry ${{ inputs.folio-npm-registry }}
+        run: yarn config set npmScopes.folio.npmRegistryServer ${{ inputs.folio-npm-registry }}
 
       - name: Install dependencies
-        run: yarn install --ignore-scripts --non-interactive
+        run: yarn install
 
       - name: Run Jest tests
         run: ${{ inputs.jest-test-command }}
@@ -77,4 +77,4 @@ jobs:
         with:
           name: yarn.lock
           path: yarn.lock
-          retention-days: 1
+          retention-days: 7
