@@ -139,12 +139,14 @@ jobs:
     name: Set shared variables
     runs-on: ubuntu-latest
     outputs:
+      # unfortunately we can only output strings, so this is "True" or "False"
       is-release: ${{ steps.logic.outputs.is-release }}
       folio-npm-registry: ${{ inputs.folio-npm-registry }}
       folio-npm-registry-auth: ${{ inputs.folio-npm-registry-auth }}
     steps:
       - id: logic
         name: Determine default values
+        shell: python # quicker to use than node, since node would require a longer installation step
         run: |
           # if these strings contain " there's likely a much larger problem...
           ref = "${{ github.ref }}"
@@ -162,51 +164,69 @@ jobs:
 
           print("Current npm registry:", current_npm_registry)
           print("Current npm registry auth:", current_npm_registry_auth)
+          if current_npm_registry == "":
+            print("  No npm registry provided, using default")
+            if is_release:
+              current_npm_registry = "https://repository.folio.org/repository/npm-folio/"
+            else:
+              current_npm_registry = "https://repository.folio.org/repository/npm-folioci/"
+
+          if current_npm_registry_auth == "":
+            print("  No npm registry auth provided, using default")
+            if is_release:
+              current_npm_registry_auth = "//repository.folio.org/repository/npm-folio/"
+            else:
+              current_npm_registry_auth = "//repository.folio.org/repository/npm-folioci/"
 
           import os
           output = open(os.environ['GITHUB_OUTPUT'], 'a')
           output.write("is-release=" + str(is_release) + "\n")
+          output.write("folio-npm-registry=" + current_npm_registry + "\n")
+          output.write("folio-npm-registry-auth=" + current_npm_registry_auth + "\n")
           output.close()
-        shell: python
 
   # this job is responsible for printing install information and publishing yarn.lock if debug is enabled
   install-and-lint:
     name: Install and lint
+    needs: [set-shared-variables]
     uses: ./.github/workflows/ui-install-and-lint.yml
     with:
       node-version: ${{ inputs.node-version }}
-      folio-npm-registry: ${{ inputs.folio-npm-registry }}
+      folio-npm-registry: ${{ needs.set-shared-variables.outputs.folio-npm-registry }}
       allow-lint-errors: ${{ inputs.allow-lint-errors }}
 
   jest-tests:
     name: Run Jest tests
-    uses: ./.github/workflows/ui-tests-jest.yml
+    needs: [set-shared-variables]
     if: ${{ inputs.jest-enabled }}
+    uses: ./.github/workflows/ui-tests-jest.yml
     with:
       node-version: ${{ inputs.node-version }}
-      folio-npm-registry: ${{ inputs.folio-npm-registry }}
+      folio-npm-registry: ${{ needs.set-shared-variables.outputs.folio-npm-registry }}
       jest-test-command: ${{ inputs.jest-test-command }}
       jest-junit-output-dir: ${{ inputs.jest-junit-output-dir }}
       jest-coverage-report-dir: ${{ inputs.jest-coverage-report-dir }}
 
   bigtest-tests:
     name: Run Bigtest tests
+    needs: [set-shared-variables]
     if: ${{ inputs.bigtest-enabled }}
     uses: ./.github/workflows/ui-tests-bigtest.yml
     with:
       node-version: ${{ inputs.node-version }}
-      folio-npm-registry: ${{ inputs.folio-npm-registry }}
+      folio-npm-registry: ${{ needs.set-shared-variables.outputs.folio-npm-registry }}
       bigtest-test-command: ${{ inputs.bigtest-test-command }}
       bigtest-junit-output-dir: ${{ inputs.bigtest-junit-output-dir }}
       bigtest-coverage-report-dir: ${{ inputs.bigtest-coverage-report-dir }}
 
   translations:
     name: Compile translations
+    needs: [set-shared-variables]
     if: ${{ inputs.compile-translations }}
     uses: ./.github/workflows/ui-translations.yml
     with:
       node-version: ${{ inputs.node-version }}
-      folio-npm-registry: ${{ inputs.folio-npm-registry }}
+      folio-npm-registry: ${{ needs.set-shared-variables.outputs.folio-npm-registry }}
 
   sonarcloud:
     name: SonarCloud analysis
@@ -224,16 +244,19 @@ jobs:
 
   version-number:
     # used for module descriptor and publishing to NPM
+    needs: [set-shared-variables]
     uses: ./.github/workflows/ui-version-number.yml
+    with:
+      is-release: ${{ needs.set-shared-variables.outputs.is-release }}
 
   generate-module-descriptor:
     name: Generate module descriptor
-    needs: [version-number]
+    needs: [set-shared-variables, version-number]
     if: ${{ inputs.generate-module-descriptor }}
     uses: ./.github/workflows/ui-module-descriptor-generate.yml
     with:
       node-version: ${{ inputs.node-version }}
-      folio-npm-registry: ${{ inputs.folio-npm-registry }}
+      folio-npm-registry: ${{ needs.set-shared-variables.outputs.folio-npm-registry }}
       package-version: ${{ needs.version-number.outputs.version-number }}
 
   okapi-dependency-check:
@@ -266,6 +289,7 @@ jobs:
   publish-module:
     name: Publish module (main branch only)
     needs:
+      - set-shared-variables
       - install-and-lint
       - version-number
       - generate-module-descriptor
@@ -290,8 +314,8 @@ jobs:
     uses: ./.github/workflows/ui-publish-module.yml
     with:
       node-version: ${{ inputs.node-version }}
-      folio-npm-registry: ${{ inputs.folio-npm-registry }}
-      folio-npm-registry-auth: ${{ inputs.folio-npm-registry-auth }}
+      folio-npm-registry: ${{ needs.set-shared-variables.outputs.folio-npm-registry }}
+      folio-npm-registry-auth: ${{ needs.set-shared-variables.outputs.folio-npm-registry-auth }}
       package-version: ${{ needs.version-number.outputs.version-number }}
       publish-exclusions: ${{ inputs.publish-exclusions }}
       module-descriptor-available: ${{ inputs.generate-module-descriptor }}
