@@ -146,9 +146,15 @@ jobs:
       - id: logic
         name: Determine default values
         run: |
+          import os
+
+
           ref = "${{ github.ref }}"
           print(ref)
-          print("is-release=abcd")
+          output = open(os.environ['GITHUB_OUTPUT'], 'a')
+          output.write("is-release=abcd")
+          output.close()
+
         shell: python
 
   # this job is responsible for printing install information and publishing yarn.lock if debug is enabled
