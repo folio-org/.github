@@ -4,23 +4,18 @@ on:
   workflow_call:
     inputs:
       node-version:
-        description: Node version to use, in semver notation
         required: true
         type: string
       folio-npm-registry:
-        description: Full URL to the registry to use for @folio modules
         required: true
         type: string
       bigtest-test-command:
-        description: Command to run Bigtest tests
         required: true
         type: string
       bigtest-junit-output-dir:
-        description: Directory in which Bigtest reports are stored in
         required: true
         type: string
       bigtest-coverage-report-dir:
-        description: Directory in which Bigtest coverage reports are stored in
         required: true
         type: string
 
@@ -57,7 +52,7 @@ jobs:
         if: ${{ !cancelled() }}
         with:
           check_name: Bigtest Unit Test Results
-          files: "${{ inputs.bigtest-junit-output-dir }}/*.xml"
+          files: '${{ inputs.bigtest-junit-output-dir }}/*.xml'
 
       - name: Publish Bigtest coverage report
         uses: actions/upload-artifact@v4

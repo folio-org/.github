@@ -4,36 +4,28 @@ on:
   workflow_call:
     inputs:
       node-version:
-        description: Node version to use, in semver notation
         required: true
         type: string
       folio-npm-registry:
-        description: Full URL to the registry to use for @folio modules
         required: true
         type: string
       folio-npm-registry-auth:
-        description: NPM config key for authentication to the FOLIO NPM registry
         required: true
         type: string
       package-version:
-        description: The version of the package to use in the module descriptor. For snapshot builds, this contains the build number to guarantee a unique version per run.
         required: true
         type: string
       publish-exclusions:
-        description: A list of files to exclude from the published package
         required: true
         type: string
       module-descriptor-available:
-        description: Whether a module descriptor is available to include
         required: true
         type: boolean
       compiled-translations-available:
-        description: Whether compiled translations are available to include
         required: true
         type: boolean
     secrets:
       npm-token:
-        description: NPM auth token
         required: true
 
 jobs:
