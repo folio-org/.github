@@ -146,15 +146,21 @@ jobs:
       - id: logic
         name: Determine default values
         run: |
-          import os
-
-
           ref = "${{ github.ref }}"
-          print(ref)
-          output = open(os.environ['GITHUB_OUTPUT'], 'a')
-          output.write("is-release=abcd")
-          output.close()
 
+          import re
+          print("We are on ref:", ref)
+          if re.match(r'^refs/tags/v\d+\..+', ref):
+            print("  We are on a tag vX.Y")
+            is_release = True
+          else:
+            print("  We are not on a version tag")
+            is_release = False
+
+          import os
+          output = open(os.environ['GITHUB_OUTPUT'], 'a')
+          output.write("is-release=" + str(is_release) + "\n")
+          output.close()
         shell: python
 
   # this job is responsible for printing install information and publishing yarn.lock if debug is enabled
