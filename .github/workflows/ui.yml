@@ -5,119 +5,64 @@ on:
     inputs:
       # node/yarn configuration
       node-version:
-        description: Node version to use, in semver notation.
-          Examples include 12.x, 10.15.1, >=10.15.0, lts/Hydrogen, 16-nightly, latest, node
         required: false
         type: string
-        default: "18.x"
+        default: '18.x'
       # It should be straightforward to add a customizable Yarn version via a simple `yarn set version 3.x` or similar
       # https://yarnpkg.com/cli/set/version
       folio-npm-registry:
-        description: Full URL to the registry to use for @folio modules.
-          Defaults to "https://repository.folio.org/repository/npm-folioci/" or "https://repository.folio.org/repository/npm-folio/" for tags
         required: false
         type: string
         default: ${{ startsWith(github.ref, 'refs/tags/v') && 'https://repository.folio.org/repository/npm-folio/' || 'https://repository.folio.org/repository/npm-folioci/' }}
 
       # linting
       allow-lint-errors:
-        description: Whether to allow lint errors; if false, errors will fail the build. Defaults to true
         required: false
         type: boolean
         default: true
 
       # unit tests (Jest)
       jest-enabled:
-        description: Whether to run Jest tests. Defaults to true
         required: false
         type: boolean
         default: true
       jest-test-command:
-        description: Command to run Jest tests. Defaults to "yarn test"
         required: false
         type: string
         default: yarn test
       jest-junit-output-dir:
-        description:
-          Directory in which Jest reports are stored in, without trailing slash.
-          Defaults to "artifacts/jest-junit"
         required: false
         type: string
         default: artifacts/jest-junit
       jest-coverage-report-dir:
-        description:
-          Directory in which Jest coverage reports are stored in, with trailing slash. LCOV data should be in "lcov.info".
-          Defaults to "artifacts/coverage-jest/"
         required: false
         type: string
         default: artifacts/coverage-jest/
 
       # unit tests (Bigtest)
       bigtest-enabled:
-        description: Whether to run Bigtest tests. Defaults to false
         required: false
         type: boolean
         default: false
       bigtest-test-command:
-        description: Command to run Bigtest tests. Defaults to "yarn test"
         required: false
         type: string
         default: yarn test
       bigtest-junit-output-dir:
-        description:
-          Directory in which Bigtest reports are stored in, without trailing slash.
-          Defaults to "artifacts/runTest"
         required: false
         type: string
         default: artifacts/runTest
       bigtest-coverage-report-dir:
-        description:
-          Directory in which Jest coverage reports are stored in, with trailing slash. LCOV data should be in "lcov.info".
-          Defaults to "artifacts/coverage/"
         required: false
         type: string
         default: artifacts/coverage/
 
       # sonar
       sonar-sources:
-        description:
-          A comma-separated list of directories containing code to analyze (no wildcards or whitespace).
-          Defaults to "./src".  See https://docs.sonarsource.com/sonarcloud/advanced-setup/analysis-parameters/#analysis-scope for more.
         required: false
         type: string
         default: ./src
       sonar-exclusions:
-        description: |
-          A comma-separated list of wildcards to exclude from analysis. If overriding, you'll probably want to use YAML folded newlines (https://yaml-multiline.info/)
-          Defaults to all of (without the comments):
-            ```
-             # documentation
-            docs/**,
-            examples/**,
-            **/*.md,
-            **/.stories.*,
-            **/stories/*,
-            LICENSE,
-
-             # build/CI artifacts
-            artifacts/**,
-            ci/**,
-            node_modules/**,
-
-             # tests
-            **/tests/**,
-            **/test/**,
-            resources/bigtest/interactors/**,
-            resources/bigtest/network/**,
-            **/*-test.*,
-            **/*.test.*,
-            karma.conf.*,
-            jest.config.*,
-
-             # misc
-            *.css,
-            *.json,
-            ```
         required: false
         type: string
         default: >
@@ -143,36 +88,30 @@ on:
 
       # translations
       compile-translations:
-        description: Whether to compile translation files. Defaults to true; if disabled, none will be included in the published module, either.
         required: false
         type: boolean
         default: true
 
       # module descriptor
       generate-module-descriptor:
-        description: Whether to generate a module descriptor (will be included in NPM package). Defaults to true
         required: false
         type: boolean
         default: true
       publish-module-descriptor:
-        description: Whether to publish a module descriptor to the {module-descriptor-registry}. Defaults to true
         required: false
         type: boolean
         default: true
       module-descriptor-registry:
-        description: Okapi instance to publish the module descriptor to. Defaults to "https://folio-registry.dev.folio.org"
         required: false
         type: string
         default: https://folio-registry.dev.folio.org
 
       # module publishing
       folio-npm-registry-auth:
-        description: NPM config key for authentication to the FOLIO NPM registry. Defaults to "//repository.folio.org/repository/npm-folioci/" or "//repository.folio.org/repository/npm-folio/" for tags
         required: false
         type: string
         default: ${{ startsWith(github.ref, 'refs/tags/v') && '//repository.folio.org/repository/npm-folio/' || '//repository.folio.org/repository/npm-folioci/' }}
       publish-exclusions:
-        description: Files not to include in the published package, in addition to the .npmignore. Defaults to artifacts, .github, and .scannerwork.
         required: false
         type: string
         default: |
@@ -183,22 +122,16 @@ on:
       # these need to be non-required to allow anything here for forks
       # however, the sub-workflows will fail appropriately if these are not present, as applicable
       SONAR_TOKEN:
-        description: Token for performing SonarCloud analysis
         required: false
       DOCKER_USER:
-        description: Username for pulling Okapi docker image
         required: false
       DOCKER_PASSWORD:
-        description: Password for pulling Okapi docker image
         required: false
       NPM_TOKEN:
-        description: Token for publishing to NPM
         required: false
       FOLIO_REGISTRY_USERNAME:
-        description: Username for publishing module descriptor
         required: false
       FOLIO_REGISTRY_PASSWORD:
-        description: Password for publishing module descriptor
         required: false
 
 jobs:

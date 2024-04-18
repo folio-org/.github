@@ -4,25 +4,19 @@ on:
   workflow_call:
     inputs:
       sonar-sources:
-        description: A comma-separated list of directories containing code to analyze (no wildcards).
-          See https://docs.sonarsource.com/sonarcloud/advanced-setup/analysis-parameters/#analysis-scope for more.
         required: true
         type: string
       sonar-exclusions:
-        description: A comma-separated list of wildcards to exclude from analysis.
         required: true
         type: string
       bigtest-coverage-report-dir:
-        description: Directory in which Bigtest coverage reports are stored in, with trailing slash. LCOV data should be in "lcov.info".
         required: true
         type: string
       jest-coverage-report-dir:
-        description: Directory in which Jest coverage reports are stored in, with trailing slash. LCOV data should be in "lcov.info".
         required: true
         type: string
     secrets:
       SONAR_TOKEN:
-        description: Token for performing a SonarCloud analysis
         required: true # fails the check if the PR is from a fork
 
 jobs:

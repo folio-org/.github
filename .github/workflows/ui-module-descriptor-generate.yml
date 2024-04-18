@@ -4,15 +4,12 @@ on:
   workflow_call:
     inputs:
       node-version:
-        description: Node version to use, in semver notation
         required: true
         type: string
       folio-npm-registry:
-        description: Full URL to the registry to use for @folio modules
         required: true
         type: string
       package-version:
-        description: The version of the package to use in the module descriptor. For snapshot builds, this contains the build number to guarantee a unique version per run.
         required: true
         type: string
 
