@@ -149,6 +149,7 @@ jobs:
           ref = "${{ github.ref }}"
           print(ref)
           print("is-release=false")
+        shell: python
 
   # this job is responsible for printing install information and publishing yarn.lock if debug is enabled
   install-and-lint:
