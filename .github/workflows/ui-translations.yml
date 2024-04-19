@@ -35,17 +35,6 @@ jobs:
       - name: Set FOLIO NPM registry
         run: yarn config set npmScopes.folio.npmRegistryServer ${{ inputs.folio-npm-registry }}
 
-      - id: get-version
-        name: Get current @folio/stripes-cli version
-        run: echo version=$(jq -r '.devDependencies["@folio/stripes-cli"]' package.json)
-
-      # we do it this way to avoid installing all modules
-      - name: Install @folio/stripes-cli
-        run: |-
-          rm package.json
-          yarn add @folio/stripes-cli@${{ steps.get-version.outputs.version }}
-          git checkout package.json
-
       - name: Compile translations
         run: yarn stripes translate compile
 
