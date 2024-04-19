@@ -141,8 +141,8 @@ jobs:
     outputs:
       # unfortunately we can only output strings, so this is "True" or "False"
       is-release: ${{ steps.logic.outputs.is-release }}
-      folio-npm-registry: ${{ inputs.folio-npm-registry }}
-      folio-npm-registry-auth: ${{ inputs.folio-npm-registry-auth }}
+      folio-npm-registry: ${{ steps.logic.outputs.folio-npm-registry }}
+      folio-npm-registry-auth: ${{ steps.logic.outputs.folio-npm-registry-auth }}
     steps:
       - id: logic
         name: Determine default values
