@@ -43,7 +43,7 @@ jobs:
           yarn version ${{ inputs.package-version }}
 
       - name: Generate module descriptor
-        run: yarn stripes mod descriptor --full --strict | jq '.[]' > module-descriptor.json
+        run: yarn dlx @folio/stripes-cli mod descriptor --full --strict | jq '.[]' > module-descriptor.json
 
       - name: Print module descriptor
         run: cat module-descriptor.json
