@@ -46,6 +46,9 @@ jobs:
           check-latest: true
           always-auth: true
 
+      - name: Enable corepack
+        run: corepack enable
+
       - name: Set FOLIO NPM registry
         run: yarn config set npmScopes.folio.npmRegistryServer ${{ inputs.folio-npm-registry }}
 
@@ -53,7 +56,6 @@ jobs:
         run: |-
           yarn config set npmScopes.folio.npmAlwaysAuth true
           yarn config set npmScopes.folio.npmAuthToken ${{ secrets.npm-token }}
-
 
       - name: Download module descriptor
         if: ${{ inputs.module-descriptor-available }}

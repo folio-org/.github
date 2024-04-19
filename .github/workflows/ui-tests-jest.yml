@@ -38,6 +38,9 @@ jobs:
           check-latest: true
           always-auth: true
 
+      - name: Enable corepack
+        run: corepack enable
+
       - name: Set FOLIO NPM registry
         run: yarn config set npmScopes.folio.npmRegistryServer ${{ inputs.folio-npm-registry }}
 
