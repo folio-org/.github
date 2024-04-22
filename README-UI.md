@@ -48,7 +48,7 @@ on:
 jobs:
   ui:
     # Use the shared workflow from https://github.com/folio-org/.github
-    uses: folio-org/.github/.github/workflows/ui.yml@stripes-904
+    uses: folio-org/.github/.github/workflows/ui.yml@v1
     # Only handle push events from the main branch, to decrease noise
     if: github.ref_name == github.event.repository.default_branch || github.event_name != 'push'
     secrets: inherit
