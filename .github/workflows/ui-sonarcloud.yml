@@ -1,0 +1,68 @@
+name: FOLIO UI SonarCloud
+
+on:
+  workflow_call:
+    inputs:
+      sonar-sources:
+        required: true
+        type: string
+      sonar-exclusions:
+        required: true
+        type: string
+      bigtest-coverage-report-dir:
+        required: true
+        type: string
+      jest-coverage-report-dir:
+        required: true
+        type: string
+    secrets:
+      SONAR_TOKEN:
+        required: true # fails the check if the PR is from a fork
+
+jobs:
+  run:
+    name: SonarCloud analysis
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout ${{ github.repository }}
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          show-progress: false # spammy
+
+      - name: Fetch base branches
+        run: git fetch --no-tags ${{ github.server_url }}/${{ github.repository }} +refs/heads/${{ github.event.repository.default_branch }}:refs/remotes/origin/${{ github.event.repository.default_branch }}
+
+      - name: Fetch coverage reports (Bigtest)
+        uses: actions/download-artifact@v4
+        with:
+          name: bigtest-coverage-report
+          path: ${{ inputs.bigtest-coverage-report-dir }}
+        continue-on-error: true # bigtest may be disabled or have failed
+
+      - name: Fetch coverage reports (Jest)
+        uses: actions/download-artifact@v4
+        with:
+          name: jest-coverage-report
+          path: ${{ inputs.jest-coverage-report-dir }}
+        continue-on-error: true # jest may be disabled or have failed
+
+      # It's so long that it's awful to maintain without this
+      - id: format-exclusions
+        name: Format exclusions list
+        run: echo formatted=$(tr -d '[:blank:]' <<< "${{ inputs.sonar-exclusions }}") | tee -a $GITHUB_OUTPUT
+
+      - name: Run SonarCloud scan
+        uses: sonarsource/sonarcloud-github-action@v2.1.1
+        with:
+          args: >
+            -Dsonar.organization=folio-org
+            -Dsonar.projectKey=org.folio:${{ github.event.repository.name }}
+            -Dsonar.projectName=${{ github.event.repository.name }}
+            -Dsonar.sources=${{ inputs.sonar-sources }}
+            -Dsonar.javascript.lcov.reportPaths=${{ format('{0}lcov.info,{1}lcov.info', inputs.bigtest-coverage-report-dir, inputs.jest-coverage-report-dir) }}
+            -Dsonar.exclusions=${{ steps.format-exclusions.outputs.formatted }}
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}

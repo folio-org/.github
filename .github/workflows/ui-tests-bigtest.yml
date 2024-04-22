@@ -1,0 +1,71 @@
+name: FOLIO UI Unit Tests (Bigtest)
+
+on:
+  workflow_call:
+    inputs:
+      node-version:
+        required: true
+        type: string
+      folio-npm-registry:
+        required: true
+        type: string
+      bigtest-test-command:
+        required: true
+        type: string
+      bigtest-junit-output-dir:
+        required: true
+        type: string
+      bigtest-coverage-report-dir:
+        required: true
+        type: string
+
+jobs:
+  run:
+    name: Run Bigtest tests
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout ${{ github.repository }}
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 1
+          show-progress: false # spammy
+
+      - name: Install Node ${{ inputs.node-version }}
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ inputs.node-version }}
+          check-latest: true
+          always-auth: true
+
+      - name: Set FOLIO NPM registry
+        run: yarn config set @folio:registry ${{ inputs.folio-npm-registry }}
+
+      - name: Install dependencies
+        run: yarn install --ignore-scripts --non-interactive
+
+      - name: Run Bigtest tests
+        run: ${{ inputs.bigtest-test-command }}
+
+      - name: Publish Bigtest unit test results
+        uses: EnricoMi/publish-unit-test-result-action@v2
+        if: ${{ !cancelled() }}
+        with:
+          check_name: Bigtest Unit Test Results
+          files: '${{ inputs.bigtest-junit-output-dir }}/*.xml'
+
+      - name: Publish Bigtest coverage report
+        uses: actions/upload-artifact@v4
+        if: ${{ !cancelled() }}
+        with:
+          name: bigtest-coverage-report
+          path: ${{ inputs.bigtest-coverage-report-dir }}
+          retention-days: 5
+
+      - name: Publish yarn.lock
+        if: ${{ failure() }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: yarn.lock
+          path: yarn.lock
+          retention-days: 1

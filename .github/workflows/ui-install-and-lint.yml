@@ -1,0 +1,57 @@
+name: FOLIO UI Install Packages
+
+on:
+  workflow_call:
+    inputs:
+      # yarn configuration
+      node-version:
+        required: true
+        type: string
+      folio-npm-registry:
+        required: true
+        type: string
+      # linting
+      allow-lint-errors:
+        required: true
+        type: boolean
+
+jobs:
+  run:
+    name: Install and lint
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout ${{ github.repository }}
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 1
+          show-progress: false # spammy
+
+      - name: Install Node ${{ inputs.node-version }}
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ inputs.node-version }}
+          check-latest: true
+          always-auth: true
+
+      - name: Set FOLIO NPM registry
+        run: yarn config set @folio:registry ${{ inputs.folio-npm-registry }}
+
+      - name: Install dependencies
+        run: yarn install --ignore-scripts --non-interactive
+
+      - name: List installed FOLIO package versions
+        run: yarn list --pattern @folio
+
+      - name: Publish yarn.lock
+        uses: actions/upload-artifact@v4
+        with:
+          name: yarn.lock
+          path: yarn.lock
+          retention-days: 1
+
+      # TODO: something like https://github.com/marketplace/actions/lint-action would be cool
+      # Particularly as we consider something like Prettier
+      - name: Lint
+        run: yarn lint
+        continue-on-error: ${{ inputs.allow-lint-errors }}

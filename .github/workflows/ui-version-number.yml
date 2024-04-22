@@ -1,0 +1,65 @@
+name: FOLIO UI Calculate CI Version Number
+
+on:
+  workflow_call:
+    inputs:
+      is-release:
+        description: If we are on a tag vX.Y.Z, this will be "True", otherwise "False"
+        required: true
+        type: string
+    outputs:
+      version-number:
+        description: If a tag, we'll return that tag's version number; otherwise, it will be the derived version number unique to this run
+        value: ${{ jobs.get-version-number.outputs.version-number }}
+
+jobs:
+  get-version-number:
+    name: Get CI version number
+    runs-on: ubuntu-latest
+
+    outputs:
+      version-number: ${{ steps.final.outputs.version }}
+
+    steps:
+      - name: Checkout ${{ github.repository }}
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 1
+          show-progress: false # spammy
+
+      - id: package-version
+        name: Get declared version from package.json
+        run: echo version=`jq -r .version package.json` | tee -a $GITHUB_OUTPUT
+
+      - name: Checkout folio-org/folio-tools
+        if: ${{ inputs.is-release == 'False' }}
+        uses: actions/checkout@v4
+        with:
+          repository: folio-org/folio-tools
+          path: folio-tools
+          fetch-depth: 1
+          show-progress: false # spammy
+
+      - id: calculate
+        if: ${{ inputs.is-release == 'False' }}
+        name: Calculate version number, if not a tag
+        run: echo version=`./folio-tools/github-actions-scripts/folioci_npmver.sh` | tee -a $GITHUB_OUTPUT
+        env:
+          JOB_ID: ${{ github.run_number }}
+
+      - id: tag-version
+        if: ${{ inputs.is-release == 'True' }}
+        name: Get tag version number, if applicable
+        run: echo version=${GITHUB_REF#refs/tags/v} | tee -a $GITHUB_OUTPUT
+
+      - name: Verify tag version against package.json
+        if: ${{ inputs.is-release == 'True' && steps.tag-version.outputs.version != steps.package-version.outputs.version }}
+        run: |
+          echo "Tag version (${{ steps.tag-version.outputs.version }}) does not match package.json version (${{ steps.package-version.outputs.version }})"
+          exit 1
+
+      # used to aggregate tag and non-tag versions into a single output
+      # the irrelevalent one will be an empty string
+      - id: final
+        name: Get version from above steps
+        run: echo version=${{ steps.calculate.outputs.version }}${{ steps.tag-version.outputs.version }} | tee -a $GITHUB_OUTPUT
