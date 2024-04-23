@@ -38,9 +38,19 @@ jobs:
       - name: Set FOLIO NPM registry
         run: yarn config set npmScopes.folio.npmRegistryServer ${{ inputs.folio-npm-registry }}
 
+      # note that we use `npm pkg set version` instead of `yarn version` here.
+      # tldr: https://github.com/yarnpkg/berry/issues/4548
+      # long version: 'yarn version' does a lot of work installing dependencies
+      # (which we are explicitly trying to avoid), and interacting with git in
+      # a way I don't totally understand but which leads to an error:
+      #   Usage Error: No ancestor could be found between any of HEAD and
+      #   master, origin/master, upstream/master, main, origin/main,
+      #   upstream/main
+      # Anyway. We just want to tweak the version in `package.json` and we can
+      # do that with `npm pkg`, so we do.
       - name: Set package version number to ${{ inputs.package-version }}
         run: |-
-          yarn version ${{ inputs.package-version }}
+          npm pkg set version=${{ inputs.package-version }}
 
       - name: Generate module descriptor
         run: |-
