@@ -38,7 +38,7 @@ jobs:
       - name: Compile translations
         run: |-
           rm .stripesclirc.js
-          run: yarn dlx @folio/stripes-cli translate compile
+          yarn dlx @folio/stripes-cli translate compile
 
       - name: Publish translations
         uses: actions/upload-artifact@v4
