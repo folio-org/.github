@@ -29,22 +29,20 @@ jobs:
           check-latest: true
           always-auth: true
 
+      - name: Enable corepack
+        run: corepack enable
+
       - name: Set FOLIO NPM registry
-        run: yarn config set @folio:registry ${{ inputs.folio-npm-registry }}
-
-      - id: get-version
-        name: Get current @folio/stripes-cli version
-        run: echo version=$(jq -r '.devDependencies["@folio/stripes-cli"]' package.json)
-
-      # we do it this way to avoid installing all modules
-      - name: Install @folio/stripes-cli
-        run: |-
-          rm package.json
-          yarn add @folio/stripes-cli@${{ steps.get-version.outputs.version }}
-          git checkout package.json
+        run: yarn config set npmScopes.folio.npmRegistryServer ${{ inputs.folio-npm-registry }}
 
       - name: Compile translations
-        run: yarn stripes translate compile
+        run: |-
+          # some repositories use .stripesclirc to configure mirage for BTOG.
+          # that's all well and good, but we're not running tests here, and
+          # these customizations interfere @folio/stripes-cli's ability to
+          # locate its dependencies when we run it via `dlx`.
+          rm .stripesclirc.js
+          yarn dlx @folio/stripes-cli translate compile
 
       - name: Publish translations
         uses: actions/upload-artifact@v4
