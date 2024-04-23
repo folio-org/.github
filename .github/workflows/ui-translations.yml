@@ -36,7 +36,9 @@ jobs:
         run: yarn config set npmScopes.folio.npmRegistryServer ${{ inputs.folio-npm-registry }}
 
       - name: Compile translations
-        run: yarn dlx @folio/stripes-cli translate compile
+        run: |-
+          rm .stripesclirc.js
+          run: yarn dlx @folio/stripes-cli translate compile
 
       - name: Publish translations
         uses: actions/upload-artifact@v4
