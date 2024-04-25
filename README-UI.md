@@ -3,6 +3,8 @@
 - [Methodology](#methodology)
 - [Versioning](#versioning)
 - [Using in your repository](#using-in-your-repository)
+  - [Yarn v4](#yarn-v4)
+  - [Yarn v1 (deprecated)](#yarn-v1)
 - [Configuration](#configuration)
   - [Node/Yarn configuration](#nodeyarn-configuration)
   - [Linting](#linting)
@@ -35,10 +37,9 @@ This project uses semver, similar to how other FOLIO modules currently operate. 
 
 To use the centralized workflow, create a `.github/workflows` directory in the root of your repository. If it exists already, replace the `build-npm.yml` and `build-npm-release.yml` with a single file, e.g. `ui.yml`, with the following content:
 
-### yarn v1
+### yarn v4
 
 ```yaml
-# todo: better name?
 name: Centralized workflow
 on:
   - push
@@ -48,19 +49,27 @@ on:
 jobs:
   ui:
     # Use the shared workflow from https://github.com/folio-org/.github
-    uses: folio-org/.github/.github/workflows/ui.yml@v1
+    uses: folio-org/.github/.github/workflows/ui.yml@v2
     # Only handle push events from the main branch, to decrease noise
     if: github.ref_name == github.event.repository.default_branch || github.event_name != 'push'
     secrets: inherit
 ```
-### yarn v4
 
-Be sure your workflow specifies `v2` of this repository:
-```yaml
-uses: folio-org/.github/.github/workflows/ui.yml@v2
+If you are migrating from yarn v1, follow [yarn's v4 migration guide](https://yarnpkg.com/migration/guide), steps which are automated and customized for our build infrastructure in [this small shell script](https://gist.github.com/zburke/eb68b91506145185360b14aa6dcf9922). At minimum:
+```sh
+corepack enable
+yarn set version berry
+yarn config set npmScopes.folio.npmRegistryServer https://repository.folio.org/repository/npm-folioci/
+git rm .npmrc
+yarn add -D jest@^29 jest-environment-jsdom@^29
+git add package.json .yarnrc.yml yarn.lock .yarn/releases
 ```
-and follow [yarn's v4 migration guide](https://yarnpkg.com/migration/guide), steps which are automated and customized for our build infrastructure in [this small shell script](https://gist.github.com/zburke/eb68b91506145185360b14aa6dcf9922).
 
+### yarn v1 (deprecated)
+Be sure your workflow specifies `v1` of this repository:
+```yaml
+uses: folio-org/.github/.github/workflows/ui.yml@v1
+```
 
 ## Configuration
 
