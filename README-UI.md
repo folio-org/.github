@@ -29,18 +29,18 @@ Solid arrows indicate jobs that must succeed for the next job to run. Dashed arr
 
 ## Versioning
 
-This project will use semver, similar to how other FOLIO modules currently operate.
-When specifying the version of these workflows that you want to use, it is recommended to use the latest major version only, so that new minor/patch releases are automatically picked up.
+This project uses semver, similar to how other FOLIO modules currently operate. Use the major version only, so new minor/patch releases are automatically picked up. Use `v1` for yarn v1; use `v2` for yarn v4.
 
 ## Using in your repository
 
-To use the centralized workflow in your repository, you need to create a `.github/workflows` directory in the root of your repository, and add a file `ui.yml` with the following content:
+To use the centralized workflow, create a `.github/workflows` directory in the root of your repository. If it exists already, replace the `build-npm.yml` and `build-npm-release.yml` with a single file, e.g. `ui.yml`, with the following content:
+
+### yarn v1
 
 ```yaml
 # todo: better name?
-name: Centralized workflow test
+name: Centralized workflow
 on:
-  # todo: what would be best here?
   - push
   - pull_request
   - workflow_dispatch
@@ -53,10 +53,14 @@ jobs:
     if: github.ref_name == github.event.repository.default_branch || github.event_name != 'push'
     secrets: inherit
 ```
+### yarn v4
 
-And that's it! Now your repository will use the centralized workflow.
+Be sure your workflow specifies `v2` of this repository:
+```yaml
+uses: folio-org/.github/.github/workflows/ui.yml@v2
+```
+and follow [yarn's v4 migration guide](https://yarnpkg.com/migration/guide), steps which are automated and customized for our build infrastructure in [this small shell script](https://gist.github.com/zburke/eb68b91506145185360b14aa6dcf9922).
 
-Once you have the new workflow added and everything appears to work, it is safe to delete the old workflows (`build-npm.yml` and similar).
 
 ## Configuration
 
