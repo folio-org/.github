@@ -61,6 +61,7 @@ If you are migrating from yarn v1, follow [yarn's v4 migration guide](https://ya
 corepack enable
 yarn set version berry
 yarn config set npmScopes.folio.npmRegistryServer https://repository.folio.org/repository/npm-folioci/
+yarn config set nodeLinker node-modules
 git rm .npmrc
 yarn add -D jest@^29 jest-environment-jsdom@^29
 git add package.json .yarnrc.yml yarn.lock .yarn/releases
