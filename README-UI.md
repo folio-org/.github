@@ -4,6 +4,7 @@
 - [Versioning](#versioning)
 - [Using in your repository](#using-in-your-repository)
   - [Yarn v4](#yarn-v4)
+    - [Windows shenanigans](#windows-shenanigans)
   - [Yarn v1 (deprecated)](#yarn-v1)
 - [Configuration](#configuration)
   - [Node/Yarn configuration](#nodeyarn-configuration)
@@ -64,6 +65,17 @@ git rm .npmrc
 yarn add -D jest@^29 jest-environment-jsdom@^29
 git add package.json .yarnrc.yml yarn.lock .yarn/releases
 ```
+
+#### Windows shenanigans
+
+Windows users, note [this `corepack` bug](https://github.com/nodejs/corepack/issues/334) and [manual workaround](https://github.com/nodejs/corepack/issues/334#issuecomment-1906658423): the `yarn set version berry` step will fail with `Internal Error: ENOENT: no such file or directory, stat 'C:\Users\{username}\AppData\Local\node\corepack\yarn\{yarn version}'`. The work around is:
+* In an admin console powershell, run `corepack enable` then `corepack disable`. This will create `C:\Users\{username}\AppData\Local\node\corepack`.
+* In Windows Explorer go to `C:\Users\{username}\AppData\Local\node\corepack`. There will be one or more directories named `corepack-xxxx-xxxxxxxxxx`. Open one and copy the two files (`yarn.js`, `.corepack`).
+* In Windows Explorer go to `C:\Users\{username}\AppData\Local\node\corepack\yarn`. Create a new directory corresponding to your `yarn` version, e.g. `4.1.1` and paste the two files.
+* In an admin console powershell, run `corepack enable`
+* In a non-admin console powershell, in your project directory, run `corepack prepare yarn@stable --activate`
+* To confirm this was successful, run `yarn -v`; you should see something like `4.1.1`.
+
 
 ### yarn v1 (deprecated)
 Be sure your workflow specifies `v1` of this repository:
