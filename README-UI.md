@@ -79,7 +79,7 @@ Windows users, note [this `corepack` bug](https://github.com/nodejs/corepack/iss
 
 
 ### yarn v1 (deprecated)
-Be sure your workflow specifies `v1` of this repository:
+The `.github/workflows/ui.yml` file is identical to that specified above except that it references `v1` of this repository:
 ```yaml
 uses: folio-org/.github/.github/workflows/ui.yml@v1
 ```
