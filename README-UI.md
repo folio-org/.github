@@ -56,9 +56,10 @@ jobs:
     secrets: inherit
 ```
 
-If you are migrating from yarn v1, follow [yarn's v4 migration guide](https://yarnpkg.com/migration/guide), steps which are automated and customized for our build infrastructure in [this small shell script](https://gist.github.com/zburke/eb68b91506145185360b14aa6dcf9922). At minimum:
+If you are migrating from yarn v1, follow [yarn's v4 migration guide](https://yarnpkg.com/migration/guide), steps which are automated and customized for our build infrastructure in [this small bash script](https://gist.github.com/zburke/eb68b91506145185360b14aa6dcf9922). Mac/Linux users should be able to run it as is; Windows users will need to run it like `bash yarn-v4.sh`. To perform the minimal steps manually:
 ```sh
 corepack enable
+corepack prepare yarn@4.1.1
 yarn set version berry
 yarn config set npmScopes.folio.npmRegistryServer https://repository.folio.org/repository/npm-folioci/
 yarn config set nodeLinker node-modules
@@ -66,17 +67,19 @@ git rm .npmrc
 yarn add -D jest@^29 jest-environment-jsdom@^29
 git add package.json .yarnrc.yml yarn.lock .yarn/releases
 ```
+This will download v4 binaries and make them available but will leave 1.x as your default for projects that haven't specifically chosen to upgrade to v4.
 
 #### Windows shenanigans
 
-Windows users, note [this `corepack` bug](https://github.com/nodejs/corepack/issues/334) and [manual workaround](https://github.com/nodejs/corepack/issues/334#issuecomment-1906658423): the `yarn set version berry` step will fail with `Internal Error: ENOENT: no such file or directory, stat 'C:\Users\{username}\AppData\Local\node\corepack\yarn\{yarn version}'`. The work around is:
+Windows users, note [this `corepack` bug](https://github.com/nodejs/corepack/issues/334) and [manual workaround](https://github.com/nodejs/corepack/issues/334#issuecomment-1906658423): the `yarn set version berry` step will fail with `Internal Error: ENOENT: no such file or directory, stat 'C:\Users\{username}\AppData\Local\node\corepack\yarn\{yarn version}'`. Corepack on Windows is fussy but the following steps seem to allow v1 and v4 to peacefully coexist.
+
 * In an admin console powershell, run `corepack enable` then `corepack disable`. This will create `C:\Users\{username}\AppData\Local\node\corepack`.
 * In Windows Explorer go to `C:\Users\{username}\AppData\Local\node\corepack`. There will be one or more directories named `corepack-xxxx-xxxxxxxxxx`. Open one and copy the two files (`yarn.js`, `.corepack`).
 * In Windows Explorer go to `C:\Users\{username}\AppData\Local\node\corepack\yarn`. Create a new directory corresponding to your `yarn` version, e.g. `4.1.1` and paste the two files.
 * In an admin console powershell, run `corepack enable`
-* In a non-admin console powershell, in your project directory, run `corepack prepare yarn@stable --activate`
+* In a non-admin console powershell, in your project directory, run `yarn set verion berry`
 * To confirm this was successful, run `yarn -v`; you should see something like `4.1.1`.
-
+* To switch to v1 in another project, run `yarn set version 1.22`. Contrary to the documentation, `yarn set version latest` does not work.
 
 ### yarn v1 (deprecated)
 The `.github/workflows/ui.yml` file is identical to that specified above except that it references `v1` of this repository:
