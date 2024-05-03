@@ -260,7 +260,7 @@ jobs:
       package-version: ${{ needs.version-number.outputs.version-number }}
 
   okapi-dependency-check:
-    name: Okapi dependency check (main branch only)
+    name: Okapi dependency check (main branch/release only)
     needs: [set-shared-variables, generate-module-descriptor]
     if: ${{ inputs.generate-module-descriptor && needs.set-shared-variables.outputs.is-release == 'True' }}
     uses: ./.github/workflows/ui-module-descriptor-verify.yml
@@ -271,7 +271,7 @@ jobs:
       docker-password: ${{ secrets.DOCKER_PASSWORD }}
 
   publish-module-descriptor:
-    name: Publish module descriptor (main branch only)
+    name: Publish module descriptor (main branch/release only)
     needs: [set-shared-variables, generate-module-descriptor, okapi-dependency-check]
     # okapi-dependency-check is optional, but if it's enabled, we want to require it for tag releases
     if: |
@@ -287,7 +287,7 @@ jobs:
       registry-password: ${{ secrets.FOLIO_REGISTRY_PASSWORD }}
 
   publish-module:
-    name: Publish module (main branch only)
+    name: Publish module (main branch/release only)
     needs:
       - set-shared-variables
       - install-and-lint
