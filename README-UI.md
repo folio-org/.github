@@ -77,7 +77,7 @@ with:
 
 | Input                | Type   | Default                                                                                                                 | Description                                    |
 | -------------------- | ------ | ----------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------- |
-| `node-version`       | string | `18.x`                                                                                                                  | The Node version to install                    |
+| `node-version`       | string | `20.x`                                                                                                                  | The Node version to install                    |
 | `folio-npm-registry` | string | `https://repository.folio.org/repository/npm-folioci/` or `https://repository.folio.org/repository/npm-folio/` for tags | The repository to pull `@folio/` packages from |
 
 ### Linting

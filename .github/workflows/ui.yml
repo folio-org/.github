@@ -7,7 +7,7 @@ on:
       node-version:
         required: false
         type: string
-        default: '18.x'
+        default: '20.x'
       # It should be straightforward to add a customizable Yarn version via a simple `yarn set version 3.x` or similar
       # https://yarnpkg.com/cli/set/version
       folio-npm-registry:
