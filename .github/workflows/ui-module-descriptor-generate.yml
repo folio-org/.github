@@ -32,29 +32,34 @@ jobs:
           check-latest: true
           always-auth: true
 
+      - name: Enable corepack
+        run: corepack enable
+
       - name: Set FOLIO NPM registry
-        run: yarn config set @folio:registry ${{ inputs.folio-npm-registry }}
+        run: yarn config set npmScopes.folio.npmRegistryServer ${{ inputs.folio-npm-registry }}
 
-      - id: get-version
-        name: Get current @folio/stripes-cli version
-        # some packages may not specify @folio/stripes-cli as a dependency (e.g. stripes itself)
-        # in this case, we default to @latest
-        run: echo version=$(jq -r '.devDependencies["@folio/stripes-cli"]' package.json | sed s/null/latest/)
-
-      # we do it this way to avoid installing all modules
-      - name: Install @folio/stripes-cli
-        run: |-
-          rm package.json
-          yarn add @folio/stripes-cli@${{ steps.get-version.outputs.version }}
-          git checkout package.json
-
+      # note that we use `npm pkg set version` instead of `yarn version` here.
+      # tldr: https://github.com/yarnpkg/berry/issues/4548
+      # long version: 'yarn version' does a lot of work installing dependencies
+      # (which we are explicitly trying to avoid), and interacting with git in
+      # a way I don't totally understand but which leads to an error:
+      #   Usage Error: No ancestor could be found between any of HEAD and
+      #   master, origin/master, upstream/master, main, origin/main,
+      #   upstream/main
+      # Anyway. We just want to tweak the version in `package.json` and we can
+      # do that with `npm pkg`, so we do.
       - name: Set package version number to ${{ inputs.package-version }}
         run: |-
-          yarn config set version-git-tag false
-          yarn version --new-version ${{ inputs.package-version }}
+          npm pkg set version=${{ inputs.package-version }}
 
       - name: Generate module descriptor
-        run: yarn --silent stripes mod descriptor --full --strict | jq '.[]' > module-descriptor.json
+        run: |-
+          # some repositories use .stripesclirc to configure mirage for BTOG.
+          # that's all well and good, but we're not running tests here, and
+          # these customizations interfere @folio/stripes-cli's ability to
+          # locate its dependencies when we run it via `dlx`.
+          rm .stripesclirc.js
+          yarn dlx -q @folio/stripes-cli mod descriptor --full --strict | jq '.[]' > module-descriptor.json
 
       - name: Print module descriptor
         run: cat module-descriptor.json
