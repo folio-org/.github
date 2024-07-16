@@ -39,10 +39,10 @@ jobs:
           always-auth: true
 
       - name: Set FOLIO NPM registry
-        run: yarn config set @folio:registry ${{ inputs.folio-npm-registry }}
+        run: npm config set @folio:registry ${{ inputs.folio-npm-registry }}
 
       - name: Install dependencies
-        run: yarn install --ignore-scripts --non-interactive
+        run: npm install --ignore-scripts
 
       - name: Run Jest tests
         run: ${{ inputs.jest-test-command }}
@@ -66,10 +66,10 @@ jobs:
           path: ${{ inputs.jest-coverage-report-dir }}
           retention-days: 5
 
-      - name: Publish yarn.lock
+      - name: Publish package-lock.json
         if: ${{ failure() }}
         uses: actions/upload-artifact@v4
         with:
-          name: yarn.lock
-          path: yarn.lock
-          retention-days: 1
+          name: package-lock.json
+          path: package-lock.json
+          retention-days: 7

@@ -3,13 +3,11 @@ name: FOLIO UI Workflows
 on:
   workflow_call:
     inputs:
-      # node/yarn configuration
+      # node/npm configuration
       node-version:
         required: false
         type: string
         default: '20.x'
-      # It should be straightforward to add a customizable Yarn version via a simple `yarn set version 3.x` or similar
-      # https://yarnpkg.com/cli/set/version
       folio-npm-registry:
         required: false
         type: string
@@ -29,7 +27,7 @@ on:
       jest-test-command:
         required: false
         type: string
-        default: yarn test
+        default: npm run test
       jest-junit-output-dir:
         required: false
         type: string
@@ -47,7 +45,7 @@ on:
       bigtest-test-command:
         required: false
         type: string
-        default: yarn test
+        default: npm run test
       bigtest-junit-output-dir:
         required: false
         type: string
@@ -185,7 +183,7 @@ jobs:
           output.write("folio-npm-registry-auth=" + current_npm_registry_auth + "\n")
           output.close()
 
-  # this job is responsible for printing install information and publishing yarn.lock if debug is enabled
+  # this job is responsible for printing install information and publishing package-lock.json if debug is enabled
   install-and-lint:
     name: Install and lint
     needs: [set-shared-variables]
