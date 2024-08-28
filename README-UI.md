@@ -159,11 +159,11 @@ jest.config.*,
 
 ### Module descriptor generation
 
-| Input                        | Type    | Default                                | Description                                                               |
-| ---------------------------- | ------- | -------------------------------------- | ------------------------------------------------------------------------- |
-| `generate-module-descriptor` | boolean | `true`                                 | Whether to generate a module descriptor (will be included in NPM package) |
-| `publish-module-descriptor`  | boolean | `true`                                 | Whether to publish the module descriptor to `module-descriptor-registry`  |
-| `module-descriptor-registry` | string  | `https://folio-registry.dev.folio.org` | The Okapi instance to publish module descriptors to                       |
+| Input                        | Type    | Default                                | Description                                                                                                      |
+| ---------------------------- | ------- | -------------------------------------- | ---------------------------------------------------------------------------------------------------------------- |
+| `generate-module-descriptor` | boolean | `true`                                 | Whether to generate a module descriptor (will be included in NPM package)                                        |
+| `publish-module-descriptor`  | boolean | `true`                                 | Whether to publish the module descriptor to `module-descriptor-registry` (requires `generate-module-descriptor`) |
+| `module-descriptor-registry` | string  | `https://folio-registry.dev.folio.org` | The Okapi instance to publish module descriptors to                                                              |
 
 ### Module publication
 
