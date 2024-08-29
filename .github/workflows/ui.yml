@@ -111,6 +111,10 @@ on:
         required: false
         type: string
         default: null # set in set-shared-variables
+      install-before-publish:
+        required: false
+        type: boolean
+        default: false
       publish-exclusions:
         required: false
         type: string
@@ -320,5 +324,6 @@ jobs:
       publish-exclusions: ${{ inputs.publish-exclusions }}
       module-descriptor-available: ${{ inputs.generate-module-descriptor }}
       compiled-translations-available: ${{ inputs.compile-translations }}
+      install-before-publish: ${{ inputs.install-before-publish }}
     secrets:
       npm-token: ${{ secrets.NPM_TOKEN }}
