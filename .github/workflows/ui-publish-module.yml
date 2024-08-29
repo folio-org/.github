@@ -24,6 +24,9 @@ on:
       compiled-translations-available:
         required: true
         type: boolean
+      install-before-publish:
+        required: true
+        type: boolean
     secrets:
       npm-token:
         required: true
@@ -79,6 +82,10 @@ jobs:
         run: |-
           yarn config set version-git-tag false
           yarn version --new-version ${{ inputs.package-version }}
+
+      - name: Install dependencies
+        if: ${{ inputs.install-before-publish }}
+        run: yarn install --ignore-scripts --non-interactive
 
       - name: Publish package
         run: npm publish

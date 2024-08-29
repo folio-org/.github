@@ -167,10 +167,11 @@ jest.config.*,
 
 ### Module publication
 
-| Input                     | Type   | Default                                                                                            | Description                                                                                                                            |
-| ------------------------- | ------ | -------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------- |
-| `folio-npm-registry-auth` | string | `//repository.folio.org/repository/npm-folioci/` or `//repository.folio.org/repository/npm-folio/` | The key to store the authentication under for the FOLIO NPM registry                                                                   |
-| `publish-exclusions`      | string | `artifacts`, `.github`, and `.scannerwork`                                                         | A newline-separated list of files and directories to leave out of the published package, in addition to your repository's `.npmignore` |
+| Input                     | Type    | Default                                                                                            | Description                                                                                                                                                                |
+| ------------------------- | ------- | -------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `folio-npm-registry-auth` | string  | `//repository.folio.org/repository/npm-folioci/` or `//repository.folio.org/repository/npm-folio/` | The key to store the authentication under for the FOLIO NPM registry                                                                                                       |
+| `install-before-publish`  | boolean | `false`                                                                                            | If dependencies should be installed before running `npm publish`.  For most modules this is not required, however, you may need it if your NPM scripts require deps to run |
+| `publish-exclusions`      | string  | `artifacts`, `.github`, and `.scannerwork`                                                         | A newline-separated list of files and directories to leave out of the published package, in addition to your repository's `.npmignore`                                     |
 
 ## Secrets
 
