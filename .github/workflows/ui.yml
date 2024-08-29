@@ -280,7 +280,7 @@ jobs:
     # okapi-dependency-check is optional, but if it's enabled, we want to require it for tag releases
     if: |
       !cancelled() &&
-      inputs.publish-module-descriptor &&
+      inputs.generate-module-descriptor && inputs.publish-module-descriptor &&
       (needs.okapi-dependency-check.result == 'success' || needs.okapi-dependency-check.result == 'skipped') &&
       (github.ref_name == github.event.repository.default_branch || needs.set-shared-variables.outputs.is-release == 'True')
     uses: ./.github/workflows/ui-module-descriptor-publish.yml
