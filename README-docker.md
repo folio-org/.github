@@ -1,5 +1,11 @@
 # Centralised GitHub Workflows for Docker
 
+<!-- ../okapi/doc/md2toc -l 2 -h 3 README-docker.md -->
+* [Introduction](#introduction)
+* [Usage](#usage)
+* [Image metadata](#image-metadata)
+* [Configuration](#configuration)
+
 ## Introduction
 
 The Workflows in this repository named `docker*.yml` are for building and publishing Docker images to FOLIO Docker Hub.
