@@ -1,0 +1,57 @@
+name: Docker calculate CI version number
+
+on:
+  workflow_call:
+    inputs:
+      is-release:
+        description: If we are on a tag vX.Y.Z, this will be "True", otherwise "False"
+        required: true
+        type: string
+    outputs:
+      version-number:
+        description: If a tag, we'll return that tag's version number; otherwise, it will be the derived version number unique to this run
+        value: ${{ jobs.get-version-number.outputs.version-number }}
+
+jobs:
+  get-version-number:
+    name: Get CI version number
+    runs-on: ubuntu-latest
+
+    outputs:
+      version-number: ${{ steps.final.outputs.version }}
+
+    steps:
+      - name: Checkout ${{ github.repository }}
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 1
+
+      - name: Get git tags
+        run: git fetch --tags
+
+      - name: Checkout folio-org/folio-tools
+        if: ${{ inputs.is-release == 'False' }}
+        uses: actions/checkout@v4
+        with:
+          repository: folio-org/folio-tools
+          path: folio-tools
+          fetch-depth: 1
+
+      - id: calculate
+        if: ${{ inputs.is-release == 'False' }}
+        name: Calculate version number, if not a release tag
+        # FIXME: not yet sure how we will get a snapshot version
+        run: echo version=$(./folio-tools/github-actions-scripts/go-calculate-folioci-version.sh) | tee -a $GITHUB_OUTPUT
+        env:
+          JOB_ID: ${{ github.run_number }}
+
+      - id: tag-version
+        if: ${{ inputs.is-release == 'True' }}
+        name: Get release tag version number, if applicable
+        run: echo version=${GITHUB_REF#refs/tags/v} | tee -a $GITHUB_OUTPUT
+
+      # used to aggregate tag and non-tag versions into a single output
+      # the irrelevant one will be an empty string
+      - id: final
+        name: Get version from previous steps
+        run: echo version=${{ steps.calculate.outputs.version }}${{ steps.tag-version.outputs.version }} | tee -a $GITHUB_OUTPUT

@@ -1,0 +1,30 @@
+name: Docker report testing variables
+
+on:
+  workflow_call:
+    inputs:
+      artifact-id:
+        required: true
+        type: string
+      artifact-version:
+        required: true
+        type: string
+      is-release:
+        required: false
+        type: string
+      docker-push:
+        required: false
+        type: boolean
+
+jobs:
+  run:
+    name: Report testing variables
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Show some variables
+        run: |
+          echo "is-release=${{ inputs.is-release }}"
+          echo "artifact-id=${{ inputs.artifact-id }}"
+          echo "artifact-version=${{ inputs.artifact-version }}"
+          echo "docker-push=${{ inputs.docker-push }}"

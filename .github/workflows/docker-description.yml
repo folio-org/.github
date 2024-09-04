@@ -1,0 +1,68 @@
+name: Docker publish image description
+
+on:
+  workflow_call:
+    inputs:
+      artifact-id:
+        required: true
+        type: string
+      docker-registry:
+        required: true
+        type: string
+      repo-description:
+        required: true
+        type: string
+      has-module-descriptor:
+        required: true
+        type: boolean
+    secrets:
+      dockerhub-username:
+        required: true
+      dockerhub-token:
+        required: true
+
+jobs:
+  publish-image-description:
+    name: Publish image description
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout folio-org/folio-tools
+        uses: actions/checkout@v4
+        with:
+          repository: folio-org/folio-tools
+          path: folio-tools
+          fetch-depth: 1
+
+      - name: Download ModuleDescriptor
+        if: ${{ inputs.has-module-descriptor }}
+        uses: actions/download-artifact@v4
+        with:
+          name: ModuleDescriptor.json
+
+      - name: Do generate description
+        run: |
+          if ${{ inputs.has-module-descriptor }}; then
+            option_md=$(echo "--module-descriptor ModuleDescriptor.json")
+          else
+            option_md=""
+          fi
+          echo "option_md=${option_md}"
+          python3 folio-tools/github-actions-scripts/generate_dockerhub_description.py \
+            --loglevel debug \
+            --repo-url "${GITHUB_SERVER_URL}/${GITHUB_REPOSITORY}" \
+            --module-name ${{ inputs.artifact-id }} \
+            --description "${{ inputs.repo-description }}" \
+            --output-file dockerhub-description.md ${option_md}
+
+      - name: Show description output
+        run: cat dockerhub-description.md
+
+      - name: Publish description
+        uses: peter-evans/dockerhub-description@v4
+        with:
+          username: ${{ secrets.dockerhub-username }}
+          password: ${{ secrets.dockerhub-token }}
+          repository: ${{ inputs.docker-registry }}/${{ inputs.artifact-id }}
+          short-description: ${{ inputs.repo-description }}
+          readme-filepath: ./dockerhub-description.md

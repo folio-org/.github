@@ -1,0 +1,105 @@
+name: Docker workflows
+
+on:
+  workflow_call:
+    inputs:
+      docker-label-documentation:
+        required: false
+        type: string
+        default: ''
+      docker-push:
+        required: false
+        type: boolean
+        default: true
+      has-module-descriptor:
+        required: false
+        type: boolean
+        default: false
+    secrets:
+      # these need to be non-required to allow anything here for forks
+      # however, the sub-workflows will fail appropriately if these are not present, as applicable
+      DOCKERHUB_USERNAME:
+        required: false
+      DOCKERHUB_TOKEN:
+        required: false
+
+jobs:
+  set-shared-variables:
+    name: Set shared variables
+    runs-on: ubuntu-latest
+    outputs:
+      is-release: ${{ steps.logic.outputs.is-release }}
+      docker-registry: ${{ steps.logic.outputs.docker-registry }}
+      artifact-id: ${{ steps.vars.outputs.artifact-id }}
+      repo-description: ${{ steps.vars.outputs.repo-description }}
+    steps:
+      - id: logic
+        name: Determine default values
+        shell: python
+        run: |
+          import os
+          import re
+
+          ref = "${{ github.ref }}"
+          print("We are on ref:", ref)
+          if re.match(r'^refs/tags/v\d+\..+', ref):
+            print("  We are on a tag vX.Y")
+            is_release = True
+            docker_registry = "folioorg"
+          else:
+            print("  We are not on a version tag")
+            is_release = False
+            docker_registry = "folioci"
+
+          output = open(os.environ['GITHUB_OUTPUT'], 'a')
+          output.write("is-release=" + str(is_release) + "\n")
+          output.write(f"docker-registry={docker_registry}\n")
+          output.close()
+
+      - id: vars
+        name: Determine other variables
+        run: |
+          echo "artifact-id=${GITHUB_REPOSITORY##*/}" | tee -a $GITHUB_OUTPUT
+          echo "repo-description=${{ github.event.repository.description }}" | tee -a $GITHUB_OUTPUT
+
+  version-number:
+    needs: [set-shared-variables]
+    uses: ./.github/workflows/docker-version-number.yml
+    with:
+      is-release: ${{ needs.set-shared-variables.outputs.is-release }}
+
+  docker-publish:
+    needs: [set-shared-variables, version-number]
+    uses: ./.github/workflows/docker-publish.yml
+    with:
+      is-release: ${{ needs.set-shared-variables.outputs.is-release }}
+      artifact-id: ${{ needs.set-shared-variables.outputs.artifact-id }}
+      artifact-version: ${{ needs.version-number.outputs.version-number }}
+      docker-registry: ${{ needs.set-shared-variables.outputs.docker-registry }}
+      docker-push: ${{ inputs.docker-push }}
+      docker-label-documentation: ${{ inputs.docker-label-documentation }}
+    secrets:
+      dockerhub-username: ${{ secrets.DOCKERHUB_USERNAME }}
+      dockerhub-token: ${{ secrets.DOCKERHUB_TOKEN }}
+
+  docker-description:
+    name: Publish image description
+    needs: [set-shared-variables, docker-publish]
+    uses: ./.github/workflows/docker-description.yml
+    with:
+      artifact-id: ${{ needs.set-shared-variables.outputs.artifact-id }}
+      docker-registry: ${{ needs.set-shared-variables.outputs.docker-registry }}
+      repo-description: ${{ needs.set-shared-variables.outputs.repo-description }}
+      has-module-descriptor: ${{ inputs.has-module-descriptor }}
+    secrets:
+      dockerhub-username: ${{ secrets.DOCKERHUB_USERNAME }}
+      dockerhub-token: ${{ secrets.DOCKERHUB_TOKEN }}
+
+  report-testing-variables:
+    needs: [set-shared-variables, version-number]
+    uses: ./.github/workflows/docker-report-testing-variables.yml
+    with:
+      is-release: ${{ needs.set-shared-variables.outputs.is-release }}
+      artifact-id: ${{ needs.set-shared-variables.outputs.artifact-id }}
+      artifact-version: ${{ needs.version-number.outputs.version-number }}
+      docker-push: ${{ inputs.docker-push }}
