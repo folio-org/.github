@@ -43,7 +43,9 @@ jobs:
       - id: calculate
         if: ${{ inputs.is-release == 'False' }}
         name: Calculate version number, if not a tag
-        run: echo version=`./folio-tools/github-actions-scripts/folioci_npmver.sh` | tee -a $GITHUB_OUTPUT
+        run: |
+          export new_ci=true
+          echo version=`./folio-tools/github-actions-scripts/folioci_npmver.sh` | tee -a $GITHUB_OUTPUT
         env:
           JOB_ID: ${{ github.run_number }}
 
