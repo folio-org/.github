@@ -25,8 +25,9 @@ The filename is not important -- it can be anything.
 name: Docker central workflow
 
 on:
-  - push
-  - workflow_dispatch
+  push:
+    branches: [ main, master ]
+    workflow_dispatch:
 
 jobs:
   docker:
@@ -47,7 +48,8 @@ For example: https://hub.docker.com/r/folioci/folio-keycloak
 The docker image will have various labels automatically applied.
 
 Note: If the following label is empty, then that is because the module's GitHub repository is missing the "About" description in the top-right corner of its GitHub front page.
-See advice at [Create a new FOLIO module and do initial setup](https://dev.folio.org/guidelines/create-new-repo/).
+See advice at [Create a new FOLIO module and do initial setup](https://dev.folio.org/guidelines/create-new-repo/),
+and bear in mind that Docker Hub imposes a [content length limit](https://github.com/peter-evans/dockerhub-description#content-limits) of 100 bytes for that short-description, so it will be truncated at that.
 
 ```
 org.opencontainers.image.description=
