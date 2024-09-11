@@ -55,3 +55,8 @@ jobs:
       - id: final
         name: Get version from previous steps
         run: echo version=${{ steps.calculate.outputs.version }}${{ steps.tag-version.outputs.version }} | tee -a $GITHUB_OUTPUT
+
+      - name: Print module version to job summary
+        run: |
+          echo "Module version: ${{ steps.final.outputs.version }}" >> $GITHUB_STEP_SUMMARY
+

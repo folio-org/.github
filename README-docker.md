@@ -40,7 +40,7 @@ The Workflow will operate on merge to mainline.
 
 When git tags are pushed for a release, then the docker image is published to the "folioorg" repository of FOLIO Docker Hub.
 
-Otherwise the snapshot docker image is published to the "folioci" repository of FOLIO Docker Hub.
+Otherwise the snapshot docker image is published to the "folioci" repository of FOLIO Docker Hub.\
 For example: https://hub.docker.com/r/folioci/folio-keycloak
 
 ## Image metadata
