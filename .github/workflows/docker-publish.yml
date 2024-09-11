@@ -33,6 +33,14 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
+      - name: Notify whether doing docker push
+        run: |
+          if ${{ inputs.docker-push }}; then
+            echo "Will do docker build and push, i.e. publish=true" | tee -a $GITHUB_STEP_SUMMARY
+          else
+            echo "Will do docker build, but will not push, i.e. publish=false" | tee -a $GITHUB_STEP_SUMMARY
+          fi
+
       - name: Checkout ${{ github.repository }}
         uses: actions/checkout@v4
         with:
