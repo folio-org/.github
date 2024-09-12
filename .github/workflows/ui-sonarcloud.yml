@@ -9,9 +9,15 @@ on:
       sonar-exclusions:
         required: true
         type: string
+      bigtest-enabled:
+        required: true
+        type: boolean
       bigtest-coverage-report-dir:
         required: true
         type: string
+      jest-enabled:
+        required: true
+        type: boolean
       jest-coverage-report-dir:
         required: true
         type: string
@@ -36,6 +42,7 @@ jobs:
 
       - name: Fetch coverage reports (Bigtest)
         uses: actions/download-artifact@v4
+        if: ${{ inputs.bigtest-enabled }}
         with:
           name: bigtest-coverage-report
           path: ${{ inputs.bigtest-coverage-report-dir }}
@@ -43,6 +50,7 @@ jobs:
 
       - name: Fetch coverage reports (Jest)
         uses: actions/download-artifact@v4
+        if: ${{ inputs.jest-enabled }}
         with:
           name: jest-coverage-report
           path: ${{ inputs.jest-coverage-report-dir }}
