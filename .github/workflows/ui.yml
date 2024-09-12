@@ -241,7 +241,9 @@ jobs:
     with:
       sonar-sources: ${{ inputs.sonar-sources }}
       sonar-exclusions: ${{ inputs.sonar-exclusions }}
+      bigtest-enabled: ${{ inputs.bigtest-enabled }}
       bigtest-coverage-report-dir: ${{ inputs.bigtest-coverage-report-dir }}
+      jest-enabled: ${{ inputs.jest-enabled }}
       jest-coverage-report-dir: ${{ inputs.jest-coverage-report-dir }}
     secrets:
       SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
