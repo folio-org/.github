@@ -64,7 +64,7 @@ jobs:
             org.opencontainers.image.licenses=Apache-2.0
           tags: |
             type=raw,value=latest
-            type=raw,value=${{ inputs.artifact-version }},enable=${{ inputs.is-release == 'False' }}
+            type=raw,value=${{ inputs.artifact-version }}
 
       - name: Build and push Docker image
         uses: docker/build-push-action@v6
