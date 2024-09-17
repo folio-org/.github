@@ -3,7 +3,13 @@ name: Go generate ModuleDescriptor
 on:
   workflow_call:
     inputs:
+      artifact-id:
+        required: true
+        type: string
       artifact-version:
+        required: true
+        type: string
+      docker-registry:
         required: true
         type: string
 
@@ -22,6 +28,13 @@ jobs:
         run: |
           cd target
           VERSION=${{ inputs.artifact-version }} make
+
+      - name: Update LaunchDescriptor
+        run: |
+          cd target
+          mv ModuleDescriptor.json ModuleDescriptor.json.orig
+          jq  ". | .launchDescriptor.dockerImage |= \"${{ inputs.docker-registry }}/${{ inputs.artifact-id }}:${{ inputs.artifact-version }}\" | .launchDescriptor.dockerPull |= \"true\"" \
+            ModuleDescriptor.json.orig > ModuleDescriptor.json
 
       - name: Print ModuleDescriptor
         run: cat target/ModuleDescriptor.json
