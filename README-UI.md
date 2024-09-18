@@ -110,10 +110,11 @@ Jest, Bigtest, or both can be run as part of the workflow. The default is to run
 
 ### Sonarcloud
 
-| Input              | Type   | Default   | Description                                                                                                                                                                                                                                 |
-| ------------------ | ------ | --------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `sonar-sources`    | string | `./src`   | A comma-separated list of directories containing code to analyze (no wildcards or whitespace); see [Sonar's documentation](https://docs.sonarsource.com/sonarcloud/advanced-setup/analysis-parameters/#analysis-scope) for more information |
-| `sonar-exclusions` | string | See below | A comma-separated list of wildcards to exclude from analysis. You can use whitespace as needed for formatting.                                                                                                                              |
+| Input              | Type    | Default   | Description                                                                                                                                                                                                                                 |
+| ------------------ | ------- | --------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `sonar-enabled`    | boolean | `true`    | Whether to run SonarCloud analysis                                                                                                                                                                                                          |
+| `sonar-sources`    | string  | `./src`   | A comma-separated list of directories containing code to analyze (no wildcards or whitespace); see [Sonar's documentation](https://docs.sonarsource.com/sonarcloud/advanced-setup/analysis-parameters/#analysis-scope) for more information |
+| `sonar-exclusions` | string  | See below | A comma-separated list of wildcards to exclude from analysis. You can use whitespace as needed for formatting.                                                                                                                              |
 
 <details>
 <summary>Default value for `sonar-exclusions`</summary>
