@@ -6,6 +6,8 @@
 * [Image metadata](#image-metadata)
 * [Configuration](#configuration)
 * [Additional notes](#additional-notes)
+    * [Version of Go](#version-of-go)
+    * [Repository branch protection](#repository-branch-protection)
 
 ## Introduction
 
@@ -77,4 +79,17 @@ Add the following section at the end of the Workflow after the "secrets" item:
 
 ## Additional notes
 
+### Version of Go
+
 The top-level `go.mod` file is consulted for the Go version to be used.
+
+### Repository branch protection
+
+If the module's Workflow utilises "on:push:paths:" to trigger the Workflow run, then branch protection "required checks" for pull-requests are ineffective.
+Perhaps will be able to utilise
+"[Repository rules](https://github.blog/changelog/2023-08-02-github-actions-required-workflows-will-move-to-repository-rules/)"
+or "[policy-bot](https://github.com/palantir/policy-bot)"
+or "[paths-filter](https://github.com/dorny/paths-filter)".
+
+Use common-sense approach to not merge if there is a failed branch Workflow run.
+
