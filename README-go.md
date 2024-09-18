@@ -17,6 +17,8 @@ ModuleDescriptors are published to the FOLIO Registry.
 
 It is expected that Go-based modules use the [Make](https://en.wikipedia.org/wiki/Make_(software)) utility for build operations.
 
+Refer to example build system and workflow at https://github.com/folio-org/mod-reporting
+
 ## Usage
 
 Create a `.github/workflows` directory in the root of the module repository, and add a file named `do-go.yml` with the following content.
@@ -26,16 +28,19 @@ The filename is not important -- it can be anything.
 name: Go central workflow
 
 on:
-  workflow_dispatch:
   push:
+    branches: ['*']
     paths:
       - '**.go'
+      - 'go.*'
       - 'etc/config.json'
+      - '**/Makefile'
       - 'Dockerfile'
       - 'descriptors/ModuleDescriptor-template.json'
       - '.github/workflows/do-go.yml'
     tags:
       - '[vV][0-9]+.[0-9]+.[0-9]+*'
+  workflow_dispatch:
 
 jobs:
   go:
