@@ -58,6 +58,10 @@ on:
         default: artifacts/coverage/
 
       # sonar
+      sonar-enabled:
+        required: false
+        type: boolean
+        default: true
       sonar-sources:
         required: false
         type: string
@@ -236,7 +240,7 @@ jobs:
     name: SonarCloud analysis
     needs: [jest-tests, bigtest-tests]
     # run even if tests fail
-    if: ${{ !cancelled() }}
+    if: ${{ !cancelled() && inputs.sonar-enabled }}
     uses: ./.github/workflows/ui-sonarcloud.yml
     with:
       sonar-sources: ${{ inputs.sonar-sources }}
