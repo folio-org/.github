@@ -75,10 +75,11 @@ with:
 
 ### Node/Yarn configuration
 
-| Input                | Type   | Default                                                                                                                 | Description                                    |
-| -------------------- | ------ | ----------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------- |
-| `node-version`       | string | `20.x`                                                                                                                  | The Node version to install                    |
-| `folio-npm-registry` | string | `https://repository.folio.org/repository/npm-folioci/` or `https://repository.folio.org/repository/npm-folio/` for tags | The repository to pull `@folio/` packages from |
+| Input                      | Type   | Default                                                                                                                 | Description                                                                 |
+| -------------------------- | ------ | ----------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------- |
+| `node-version`             | string | `20.x`                                                                                                                  | The Node version to install                                                 |
+| `folio-npm-registry`       | string | `https://repository.folio.org/repository/npm-folioci/` or `https://repository.folio.org/repository/npm-folio/` for tags | The repository to pull `@folio/` packages from                              |
+| `yarn-lock-retention-days` | number | `1`                                                                                                                     | The number of days the yarn.lock file should remain uploaded as an artifact |
 
 ### Linting
 

@@ -10,6 +10,9 @@ on:
       folio-npm-registry:
         required: true
         type: string
+      yarn-lock-retention-days:
+        required: true
+        type: number
       # linting
       allow-lint-errors:
         required: true
@@ -48,7 +51,7 @@ jobs:
         with:
           name: yarn.lock
           path: yarn.lock
-          retention-days: 1
+          retention-days: ${{ inputs.yarn-lock-retention-days }}
 
       # TODO: something like https://github.com/marketplace/actions/lint-action would be cool
       # Particularly as we consider something like Prettier
