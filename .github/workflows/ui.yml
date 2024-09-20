@@ -206,6 +206,7 @@ jobs:
       node-version: ${{ inputs.node-version }}
       folio-npm-registry: ${{ needs.set-shared-variables.outputs.folio-npm-registry }}
       allow-lint-errors: ${{ inputs.allow-lint-errors }}
+      yarn-lock-retention-days: ${{ inputs.yarn-lock-retention-days }}
 
   jest-tests:
     name: Run Jest tests
