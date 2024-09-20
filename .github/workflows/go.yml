@@ -15,6 +15,10 @@ on:
         required: false
         type: string
         default: https://folio-registry.dev.folio.org
+      sonar-enabled:
+        required: false
+        type: boolean
+        default: true
     secrets:
       # these need to be non-required to allow anything here for forks
       # however, the sub-workflows will fail appropriately if these are not present, as applicable
@@ -111,6 +115,7 @@ jobs:
   sonarcloud:
     name: SonarCloud analysis
     needs: [build]
+    if: ${{ inputs.sonar-enabled }}
     uses: ./.github/workflows/go-sonarcloud.yml
     secrets:
       SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
