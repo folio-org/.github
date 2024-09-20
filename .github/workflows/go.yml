@@ -108,6 +108,13 @@ jobs:
     with:
       is-release: ${{ needs.set-shared-variables.outputs.is-release }}
 
+  sonarcloud:
+    name: SonarCloud analysis
+    needs: [build]
+    uses: ./.github/workflows/go-sonarcloud.yml
+    secrets:
+      SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+
   docker-publish:
     needs: [set-shared-variables, version-number, build]
     uses: ./.github/workflows/go-docker-publish.yml
