@@ -30,7 +30,7 @@ jobs:
           always-auth: true
 
       - name: Set FOLIO NPM registry
-        run: yarn config set @folio:registry ${{ inputs.folio-npm-registry }}
+        run: npm config set @folio:registry ${{ inputs.folio-npm-registry }}
 
       - id: get-version
         name: Get current @folio/stripes-cli version
@@ -40,11 +40,11 @@ jobs:
       - name: Install @folio/stripes-cli
         run: |-
           rm package.json
-          yarn add @folio/stripes-cli@${{ steps.get-version.outputs.version }}
+          npm add @folio/stripes-cli@${{ steps.get-version.outputs.version }}
           git checkout package.json
 
       - name: Compile translations
-        run: yarn stripes translate compile
+        run: npx stripes translate compile
 
       - name: Publish translations
         uses: actions/upload-artifact@v4

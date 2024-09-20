@@ -4,7 +4,7 @@
 - [Versioning](#versioning)
 - [Using in your repository](#using-in-your-repository)
 - [Configuration](#configuration)
-  - [Node/Yarn configuration](#nodeyarn-configuration)
+  - [Node/NPM configuration](#nodenpm-configuration)
   - [Linting](#linting)
   - [Unit tests](#unit-tests)
     - [Jest](#jest)
@@ -67,13 +67,13 @@ There are many configuration variables, to allow customization of the workflow t
 if: github.ref_name == github.event.repository.default_branch || github.event_name != 'push'
 secrets: inherit
 with:
-  jest-test-command: yarn test --ci --color --coverage
+  jest-test-command: npm test --ci --color --coverage
 ```
 
 > [!CAUTION]
 > In general, **it is preferred that you alter your repository to not need to customize the workflow**, particularly for file paths for coverage/etc. This will make it easier to update the workflow in the future, and will help to standardize the CI/CD process across the FOLIO front-end repositories.
 
-### Node/Yarn configuration
+### Node/NPM configuration
 
 | Input                | Type   | Default                                                                                                                 | Description                                    |
 | -------------------- | ------ | ----------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------- |
@@ -95,7 +95,7 @@ Jest, Bigtest, or both can be run as part of the workflow. The default is to run
 | Input                      | Type    | Default                    | Description                                                                                                     |
 | -------------------------- | ------- | -------------------------- | --------------------------------------------------------------------------------------------------------------- |
 | `jest-enabled`             | boolean | `true`                     | Whether to run Jest tests                                                                                       |
-| `jest-test-command`        | string  | `yarn test`                | The command to use to run Jest tests                                                                            |
+| `jest-test-command`        | string  | `npm test`                | The command to use to run Jest tests                                                                            |
 | `jest-junit-output-dir`    | string  | `artifacts/jest-junit`     | Directory where Jest reports are stored, without a trailing slash                                               |
 | `jest-coverage-report-dir` | string  | `artifacts/coverage-jest/` | Directory in which Jest coverage reports are stored in, with trailing slash; LCOV data should be in "lcov.info" |
 
@@ -104,7 +104,7 @@ Jest, Bigtest, or both can be run as part of the workflow. The default is to run
 | Input                         | Type    | Default               | Description                                                                                                     |
 | ----------------------------- | ------- | --------------------- | --------------------------------------------------------------------------------------------------------------- |
 | `bigtest-enabled`             | boolean | `false`               | Whether to run Bigtest tests                                                                                    |
-| `bigtest-test-command`        | string  | `yarn test`           | The command to use to run Bigtest tests                                                                         |
+| `bigtest-test-command`        | string  | `npm test`           | The command to use to run Bigtest tests                                                                         |
 | `bigtest-junit-output-dir`    | string  | `artifacts/runTest`   | Directory where Bigtest reports are stored, without a trailing slash                                            |
 | `bigtest-coverage-report-dir` | string  | `artifacts/coverage/` | Directory in which Jest coverage reports are stored in, with trailing slash; LCOV data should be in "lcov.info" |
 
