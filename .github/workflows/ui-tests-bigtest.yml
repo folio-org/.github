@@ -61,11 +61,3 @@ jobs:
           name: bigtest-coverage-report
           path: ${{ inputs.bigtest-coverage-report-dir }}
           retention-days: 5
-
-      - name: Publish yarn.lock
-        if: ${{ failure() }}
-        uses: actions/upload-artifact@v4
-        with:
-          name: yarn.lock
-          path: yarn.lock
-          retention-days: 1

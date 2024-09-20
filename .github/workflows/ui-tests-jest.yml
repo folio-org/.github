@@ -65,11 +65,3 @@ jobs:
           name: jest-coverage-report
           path: ${{ inputs.jest-coverage-report-dir }}
           retention-days: 5
-
-      - name: Publish yarn.lock
-        if: ${{ failure() }}
-        uses: actions/upload-artifact@v4
-        with:
-          name: yarn.lock
-          path: yarn.lock
-          retention-days: 1
