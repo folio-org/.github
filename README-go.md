@@ -7,6 +7,7 @@
 * [Configuration](#configuration)
 * [Additional notes](#additional-notes)
     * [Version of Go](#version-of-go)
+    * [SonarCloud code analysis](#sonarcloud-code-analysis)
     * [Repository branch protection](#repository-branch-protection)
 
 ## Introduction
@@ -87,6 +88,21 @@ Add the following section at the end of the Workflow after the "secrets" item:
 ### Version of Go
 
 The top-level `go.mod` file is consulted for the Go version to be used.
+
+### SonarCloud code analysis
+
+For a new project repository, if not yet ready for code analysis then add the following configuration variable to a "with:" section at the end of the Workflow after the "secrets" item:
+
+```yaml
+...
+    with:
+      ...
+      sonar-enabled: false
+```
+
+When ready for code analysis, then follow these steps:
+1. [Request](https://dev.folio.org/faqs/how-to-raise-devops-ticket/) FOLIO DevOps to create a new project at SonarCloud.
+2. Add the sonar-project.properties file at the top-level of the source-code repository. Follow the example at [mod-reporting](https://github.com/folio-org/mod-reporting/blob/main/sonar-project.properties)
 
 ### Repository branch protection
 
