@@ -42,7 +42,7 @@ jobs:
         run: yarn config set @folio:registry ${{ inputs.folio-npm-registry }}
 
       - name: Install dependencies
-        run: yarn install --ignore-scripts --non-interactive
+        run: yarn install --frozen-lockfile --ignore-scripts --non-interactive
 
       - name: Run Bigtest tests
         run: ${{ inputs.bigtest-test-command }}

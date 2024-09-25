@@ -85,7 +85,7 @@ jobs:
 
       - name: Install dependencies
         if: ${{ inputs.install-before-publish }}
-        run: yarn install --ignore-scripts --non-interactive
+        run: yarn install --frozen-lockfile --ignore-scripts --non-interactive
 
       - name: Publish package
         run: npm publish
