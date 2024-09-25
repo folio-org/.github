@@ -104,6 +104,10 @@ When ready for code analysis, then follow these steps:
 1. [Request](https://dev.folio.org/faqs/how-to-raise-devops-ticket/) FOLIO DevOps to create a new project at SonarCloud.
 2. Add the sonar-project.properties file at the top-level of the source-code repository. Follow the example at [mod-reporting](https://github.com/folio-org/mod-reporting/blob/main/sonar-project.properties)
 
+Go-based projects use the [FOLIO Go way](https://sonarcloud.io/organizations/folio-org/quality_profiles/show?name=FOLIO+Go+way&language=go) Sonar Quality Profile.
+
+SonarCloud recommendations can be suppressed for specific code by appending [//NOSONAR](https://docs.sonarsource.com/sonarcloud/appendices/frequently-asked-questions/#nosonar) at the end of that code line.
+
 ### Repository branch protection
 
 If the module's Workflow utilises "on:push:paths:" to trigger the Workflow run, then branch protection "required checks" for pull-requests are ineffective.
