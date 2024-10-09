@@ -37,10 +37,8 @@ When specifying the version of these workflows that you want to use, it is recom
 To use the centralized workflow in your repository, you need to create a `.github/workflows` directory in the root of your repository, and add a file `ui.yml` with the following content:
 
 ```yaml
-# todo: better name?
-name: Centralized workflow test
+name: Centralized workflow
 on:
-  # todo: what would be best here?
   - push
   - pull_request
   - workflow_dispatch
@@ -49,8 +47,8 @@ jobs:
   ui:
     # Use the shared workflow from https://github.com/folio-org/.github
     uses: folio-org/.github/.github/workflows/ui.yml@v1
-    # Only handle push events from the main branch, to decrease noise
-    if: github.ref_name == github.event.repository.default_branch || github.event_name != 'push'
+    # Only handle push events from the main branch or tags, to decrease PR noise
+    if: github.ref_name == github.event.repository.default_branch || github.event_name != 'push' || github.ref_type == 'tag'
     secrets: inherit
 ```
 
@@ -64,7 +62,6 @@ There are many configuration variables, to allow customization of the workflow t
 
 ```yaml
 # ...
-if: github.ref_name == github.event.repository.default_branch || github.event_name != 'push'
 secrets: inherit
 with:
   jest-test-command: yarn test --ci --color --coverage
