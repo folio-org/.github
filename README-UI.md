@@ -49,8 +49,8 @@ jobs:
   ui:
     # Use the shared workflow from https://github.com/folio-org/.github
     uses: folio-org/.github/.github/workflows/ui.yml@v1
-    # Only handle push events from the main branch, to decrease noise
-    if: github.ref_name == github.event.repository.default_branch || github.event_name != 'push'
+    # Only handle push events from the main branch or tags, to decrease PR noise
+    if: github.ref_name == github.event.repository.default_branch || github.event_name != 'push' || github.ref_type == 'tag'
     secrets: inherit
 ```
 
@@ -64,7 +64,6 @@ There are many configuration variables, to allow customization of the workflow t
 
 ```yaml
 # ...
-if: github.ref_name == github.event.repository.default_branch || github.event_name != 'push'
 secrets: inherit
 with:
   jest-test-command: yarn test --ci --color --coverage
