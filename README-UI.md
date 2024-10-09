@@ -37,10 +37,8 @@ When specifying the version of these workflows that you want to use, it is recom
 To use the centralized workflow in your repository, you need to create a `.github/workflows` directory in the root of your repository, and add a file `ui.yml` with the following content:
 
 ```yaml
-# todo: better name?
-name: Centralized workflow test
+name: Centralized workflow
 on:
-  # todo: what would be best here?
   - push
   - pull_request
   - workflow_dispatch
