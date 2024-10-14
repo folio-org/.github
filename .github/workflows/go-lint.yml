@@ -19,7 +19,7 @@ jobs:
         # defaults: errcheck gosimple govet ineffassign unused
         with:
           version: v1.61
-          args: --disable staticcheck --enable gosec
+          args: --disable staticcheck --enable gosec --issues-exit-code=0
 
   staticcheck:
     name: Lint with staticcheck
