@@ -112,6 +112,11 @@ jobs:
     with:
       is-release: ${{ needs.set-shared-variables.outputs.is-release }}
 
+  lint:
+    name: Linting
+    needs: [build]
+    uses: ./.github/workflows/go-lint.yml
+
   sonarcloud:
     name: SonarCloud analysis
     needs: [build]

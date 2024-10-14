@@ -1,0 +1,38 @@
+name: Go lint
+
+on:
+  workflow_call:
+
+jobs:
+  golangci:
+    name: Lint with golangci-lint
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout ${{ github.repository }}
+        uses: actions/checkout@v4
+      - name: Set up Go
+        uses: actions/setup-go@v5
+        with:
+          go-version-file: 'go.mod'
+      - name: Do golangci-lint
+        uses: golangci/golangci-lint-action@v6
+        # defaults: errcheck gosimple govet ineffassign unused
+        with:
+          version: v1.61
+          args: --disable staticcheck --enable gosec
+
+  staticcheck:
+    name: Lint with staticcheck
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout ${{ github.repository }}
+        uses: actions/checkout@v4
+      - name: Set up Go
+        uses: actions/setup-go@v5
+        with:
+          go-version-file: 'go.mod'
+      - name: Do staticcheck
+        uses: dominikh/staticcheck-action@v1
+        with:
+          version: "2024.1.1"
+          install-go: false
