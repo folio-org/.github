@@ -2,6 +2,10 @@ name: Go lint
 
 on:
   workflow_call:
+    inputs:
+      lint-errcheck-excludes-file:
+        required: false
+        type: string
 
 jobs:
   golangci:
@@ -14,15 +18,15 @@ jobs:
         uses: actions/setup-go@v5
         with:
           go-version-file: 'go.mod'
-      - name: Do golangci-lint
+      - name: Run golangci-lint
         uses: golangci/golangci-lint-action@v6
-        # defaults: errcheck gosimple govet ineffassign unused
+        # defaults: gosimple govet ineffassign unused
         with:
           version: v1.61
-          args: --disable staticcheck --enable gosec --issues-exit-code=0
+          args: --disable errcheck --disable staticcheck --enable gosec --issues-exit-code=0
 
-  staticcheck:
-    name: Lint with staticcheck
+  other-lint:
+    name: Lint with others
     runs-on: ubuntu-latest
     steps:
       - name: Checkout ${{ github.repository }}
@@ -31,7 +35,16 @@ jobs:
         uses: actions/setup-go@v5
         with:
           go-version-file: 'go.mod'
-      - name: Do staticcheck
+      - name: Install errcheck
+        run: go get github.com/kisielk/errcheck@latest
+      - name: Run errcheck
+        run: |
+          if ${{ inputs.lint-errcheck-excludes-file != '' }}; then
+            errcheck -exclude ${{ inputs.lint-errcheck-excludes-file }} ./...
+          else
+            errcheck ./...
+          fi
+      - name: Run staticcheck
         uses: dominikh/staticcheck-action@v1
         with:
           version: "2024.1.1"

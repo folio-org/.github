@@ -15,6 +15,10 @@ on:
         required: false
         type: string
         default: https://folio-registry.dev.folio.org
+      lint-errcheck-excludes-file:
+        required: false
+        type: string
+        default: ''
       sonar-enabled:
         required: false
         type: boolean
@@ -116,6 +120,8 @@ jobs:
     name: Linting
     needs: [build]
     uses: ./.github/workflows/go-lint.yml
+    with:
+      lint-errcheck-excludes-file: ${{ inputs.lint-errcheck-excludes-file }}
 
   sonarcloud:
     name: SonarCloud analysis
