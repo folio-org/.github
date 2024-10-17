@@ -31,11 +31,6 @@ jobs:
           path: folio-tools
           fetch-depth: 1
 
-      - name: Show some variables
-        run: |
-          echo "lint-errcheck-excludes-file=${{ inputs.lint-errcheck-excludes-file }}"
-          echo "lint-golangci-config-file=${{ inputs.lint-golangci-config-file }}"
-
       - name: Determine golangci-lint arguments
         run: echo golangci_args=$(./folio-tools/github-actions-scripts/go-golangci-lint-args.sh) | tee -a $GITHUB_ENV
         env:

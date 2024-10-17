@@ -126,6 +126,7 @@ jobs:
     uses: ./.github/workflows/go-lint.yml
     with:
       lint-errcheck-excludes-file: ${{ inputs.lint-errcheck-excludes-file }}
+      lint-golangci-config-file: ${{ inputs.lint-golangci-config-file }}
 
   sonarcloud:
     name: SonarCloud analysis
