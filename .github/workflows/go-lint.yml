@@ -41,7 +41,7 @@ jobs:
         # defaults: gosimple govet ineffassign unused
         with:
           version: v1.61
-          args: --disable errcheck --disable staticcheck --enable gosec --issues-exit-code=0
+          args: ${{ env.golangci_args }}
 
   other-lint:
     name: Lint with others
