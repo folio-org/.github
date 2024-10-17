@@ -19,6 +19,10 @@ on:
         required: false
         type: string
         default: ''
+      lint-golangci-config-file:
+        required: false
+        type: string
+        default: ''
       sonar-enabled:
         required: false
         type: boolean

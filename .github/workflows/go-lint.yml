@@ -6,6 +6,9 @@ on:
       lint-errcheck-excludes-file:
         required: false
         type: string
+      lint-golangci-config-file:
+        required: false
+        type: string
 
 jobs:
   golangci:
@@ -14,10 +17,25 @@ jobs:
     steps:
       - name: Checkout ${{ github.repository }}
         uses: actions/checkout@v4
+
       - name: Set up Go
         uses: actions/setup-go@v5
         with:
           go-version-file: 'go.mod'
+
+      - name: Checkout folio-org/folio-tools
+        uses: actions/checkout@v4
+        with:
+          repository: folio-org/folio-tools
+          ref: FOLIO-3994-go-lint-args
+          path: folio-tools
+          fetch-depth: 1
+
+      - name: Determine golangci-lint arguments
+        run: echo golangci_args=$(./folio-tools/github-actions-scripts/go-golangci-lint-args.sh) | tee -a $GITHUB_ENV
+        env:
+          CONFIG_FILE: ${{ inputs.lint-golangci-config-file }}
+
       - name: Run golangci-lint
         uses: golangci/golangci-lint-action@v6
         # defaults: gosimple govet ineffassign unused
@@ -31,12 +49,15 @@ jobs:
     steps:
       - name: Checkout ${{ github.repository }}
         uses: actions/checkout@v4
+
       - name: Set up Go
         uses: actions/setup-go@v5
         with:
           go-version-file: 'go.mod'
+
       - name: Install errcheck
         run: go install github.com/kisielk/errcheck@latest
+
       - name: Run errcheck
         run: |
           if ${{ inputs.lint-errcheck-excludes-file != '' }}; then
@@ -44,6 +65,7 @@ jobs:
           else
             errcheck ./...
           fi
+
       - name: Run staticcheck
         uses: dominikh/staticcheck-action@v1
         with:
