@@ -65,10 +65,11 @@ jobs:
       - name: Run errcheck
         run: |
           if ${{ inputs.lint-errcheck-excludes-file != '' }}; then
-            errcheck -exclude ${{ inputs.lint-errcheck-excludes-file }} ./...
+            option_errcheck_exclude="-exclude ${{ inputs.lint-errcheck-excludes-file }}"
           else
-            errcheck ./...
+            option_errcheck_exclude=""
           fi
+          errcheck $option_errcheck_exclude ./...
 
       - name: Run staticcheck
         uses: dominikh/staticcheck-action@v1
