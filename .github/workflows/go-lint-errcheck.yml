@@ -3,7 +3,7 @@ name: Go lint errcheck
 on:
   workflow_call:
     inputs:
-      lint-errcheck-excludes-file:
+      errcheck-excludes-file:
         required: false
         type: string
 
@@ -25,8 +25,8 @@ jobs:
 
       - name: Run errcheck
         run: |
-          if ${{ inputs.lint-errcheck-excludes-file != '' }}; then
-            option_errcheck_exclude="-exclude ${{ inputs.lint-errcheck-excludes-file }}"
+          if ${{ inputs.errcheck-excludes-file != '' }}; then
+            option_errcheck_exclude="-exclude ${{ inputs.errcheck-excludes-file }}"
           else
             option_errcheck_exclude=''
           fi

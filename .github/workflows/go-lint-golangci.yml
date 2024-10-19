@@ -3,7 +3,7 @@ name: Go lint golangci
 on:
   workflow_call:
     inputs:
-      lint-golangci-config-file:
+      golangci-config-file:
         required: false
         type: string
 
@@ -31,7 +31,7 @@ jobs:
       - name: Determine golangci-lint arguments
         run: echo golangci_args=$(./folio-tools/github-actions-scripts/go-golangci-lint-args.sh) | tee -a $GITHUB_ENV
         env:
-          CONFIG_FILE: ${{ inputs.lint-golangci-config-file }}
+          CONFIG_FILE: ${{ inputs.golangci-config-file }}
 
       - name: Run golangci-lint
         uses: golangci/golangci-lint-action@v6

@@ -3,11 +3,11 @@ name: Go linting
 on:
   workflow_call:
     inputs:
-      lint-golangci-config-file:
+      golangci-config-file:
         required: false
         type: string
         default: ''
-      lint-errcheck-excludes-file:
+      errcheck-excludes-file:
         required: false
         type: string
         default: ''
@@ -17,7 +17,7 @@ jobs:
     name: Lint with golangi
     uses: ./.github/workflows/go-lint-golangci.yml
     with:
-      lint-golangci-config-file: ${{ inputs.lint-golangci-config-file }}
+      golangci-config-file: ${{ inputs.golangci-config-file }}
 
   staticcheck:
     name: Lint with staticcheck
@@ -27,4 +27,4 @@ jobs:
     name: Lint with errcheck
     uses: ./.github/workflows/go-lint-errcheck.yml
     with:
-      lint-errcheck-excludes-file: ${{ inputs.lint-errcheck-excludes-file }}
+      errcheck-excludes-file: ${{ inputs.errcheck-excludes-file }}
