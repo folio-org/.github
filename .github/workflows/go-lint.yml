@@ -73,7 +73,9 @@ jobs:
           echo "output_errcheck=${output_errcheck}"
           if [[ -n "${output_errcheck}" ]]; then
             echo "${output_errcheck}" >&2
-            exit 1
+            if ! ${{ inputs.allow-lint-errors }}; then
+              exit 1
+            fi
           fi
 
       - name: Run staticcheck
