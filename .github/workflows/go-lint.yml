@@ -69,7 +69,12 @@ jobs:
           else
             option_errcheck_exclude=""
           fi
-          errcheck $option_errcheck_exclude ./...
+          output_errcheck=$(errcheck $option_errcheck_exclude ./...)
+          echo "output_errcheck=${output_errcheck}"
+          if [[ -n "${output_errcheck}" ]]; then
+            echo "${output_errcheck}" >&2
+            exit 1
+          fi
 
       - name: Run staticcheck
         uses: dominikh/staticcheck-action@v1
