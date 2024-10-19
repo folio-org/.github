@@ -69,7 +69,7 @@ jobs:
           else
             option_errcheck_exclude=""
           fi
-          errcheck $option_errcheck_exclude ./...
+          errcheck $option_errcheck_exclude ./... | tee -a $GITHUB_STEP_SUMMARY
 #          output_errcheck=$(errcheck $option_errcheck_exclude ./...)
 #          if [[ -n "${output_errcheck}" ]]; then
 #            echo "${output_errcheck}" | tee -a $GITHUB_STEP_SUMMARY
