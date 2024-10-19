@@ -9,6 +9,9 @@ on:
       lint-golangci-config-file:
         required: false
         type: string
+      allow-lint-errors:
+        required: true
+        type: boolean
 
 jobs:
   golangci:
@@ -35,6 +38,7 @@ jobs:
         run: echo golangci_args=$(./folio-tools/github-actions-scripts/go-golangci-lint-args.sh) | tee -a $GITHUB_ENV
         env:
           CONFIG_FILE: ${{ inputs.lint-golangci-config-file }}
+          ALLOW_LINT_ERRORS: ${{ inputs.allow-lint-errors }}
 
       - name: Run golangci-lint
         uses: golangci/golangci-lint-action@v6

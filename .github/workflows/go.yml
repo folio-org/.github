@@ -23,6 +23,10 @@ on:
         required: false
         type: string
         default: ''
+      allow-lint-errors:
+        required: false
+        type: boolean
+        default: true
       sonar-enabled:
         required: false
         type: boolean
@@ -125,6 +129,7 @@ jobs:
     needs: [build]
     uses: ./.github/workflows/go-lint.yml
     with:
+      allow-lint-errors: ${{ inputs.allow-lint-errors }}
       lint-errcheck-excludes-file: ${{ inputs.lint-errcheck-excludes-file }}
       lint-golangci-config-file: ${{ inputs.lint-golangci-config-file }}
 
