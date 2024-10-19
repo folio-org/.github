@@ -15,18 +15,6 @@ on:
         required: false
         type: string
         default: https://folio-registry.dev.folio.org
-      lint-errcheck-excludes-file:
-        required: false
-        type: string
-        default: ''
-      lint-golangci-config-file:
-        required: false
-        type: string
-        default: ''
-      allow-lint-errors:
-        required: false
-        type: boolean
-        default: true
       sonar-enabled:
         required: false
         type: boolean
@@ -123,15 +111,6 @@ jobs:
     uses: ./.github/workflows/go-version-number.yml
     with:
       is-release: ${{ needs.set-shared-variables.outputs.is-release }}
-
-  lint:
-    name: Linting
-    needs: [build]
-    uses: ./.github/workflows/go-lint.yml
-    with:
-      allow-lint-errors: ${{ inputs.allow-lint-errors }}
-      lint-errcheck-excludes-file: ${{ inputs.lint-errcheck-excludes-file }}
-      lint-golangci-config-file: ${{ inputs.lint-golangci-config-file }}
 
   sonarcloud:
     name: SonarCloud analysis

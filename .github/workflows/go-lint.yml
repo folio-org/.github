@@ -1,85 +1,30 @@
-name: Go lint
+name: Go linting
 
 on:
   workflow_call:
     inputs:
-      lint-errcheck-excludes-file:
-        required: false
-        type: string
       lint-golangci-config-file:
         required: false
         type: string
-      allow-lint-errors:
-        required: true
-        type: boolean
+        default: ''
+      lint-errcheck-excludes-file:
+        required: false
+        type: string
+        default: ''
 
 jobs:
-  golangci:
-    name: Lint with golangci-lint
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout ${{ github.repository }}
-        uses: actions/checkout@v4
+  golangi:
+    name: Lint with golangi
+    uses: ./.github/workflows/go-lint-golangci.yml
+    with:
+      lint-golangci-config-file: ${{ inputs.lint-golangci-config-file }}
 
-      - name: Set up Go
-        uses: actions/setup-go@v5
-        with:
-          go-version-file: 'go.mod'
+  staticcheck:
+    name: Lint with staticcheck
+    uses: ./.github/workflows/go-lint-staticcheck.yml
 
-      - name: Checkout folio-org/folio-tools
-        uses: actions/checkout@v4
-        with:
-          repository: folio-org/folio-tools
-          ref: FOLIO-3994-go-lint-args
-          path: folio-tools
-          fetch-depth: 1
-
-      - name: Determine golangci-lint arguments
-        run: echo golangci_args=$(./folio-tools/github-actions-scripts/go-golangci-lint-args.sh) | tee -a $GITHUB_ENV
-        env:
-          CONFIG_FILE: ${{ inputs.lint-golangci-config-file }}
-          ALLOW_LINT_ERRORS: ${{ inputs.allow-lint-errors }}
-
-      - name: Run golangci-lint
-        uses: golangci/golangci-lint-action@v6
-        # defaults: gosimple govet ineffassign unused
-        with:
-          version: v1.61
-          args: ${{ env.golangci_args }}
-
-  other-lint:
-    name: Lint with others
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout ${{ github.repository }}
-        uses: actions/checkout@v4
-
-      - name: Set up Go
-        uses: actions/setup-go@v5
-        with:
-          go-version-file: 'go.mod'
-
-      - name: Install errcheck
-        run: go install github.com/kisielk/errcheck@latest
-
-      - name: Run errcheck
-        run: |
-          if ${{ inputs.lint-errcheck-excludes-file != '' }}; then
-            option_errcheck_exclude="-exclude ${{ inputs.lint-errcheck-excludes-file }}"
-          else
-            option_errcheck_exclude=""
-          fi
-          errcheck $option_errcheck_exclude ./... | tee -a $GITHUB_STEP_SUMMARY
-#          output_errcheck=$(errcheck $option_errcheck_exclude ./...)
-#          if [[ -n "${output_errcheck}" ]]; then
-#            echo "${output_errcheck}" | tee -a $GITHUB_STEP_SUMMARY
-#           if ! ${{ inputs.allow-lint-errors }}; then
-#             exit 1
-#            fi
-#         fi
-
-      - name: Run staticcheck
-        uses: dominikh/staticcheck-action@v1
-        with:
-          version: "2024.1.1"
-          install-go: false
+  errcheck:
+    name: Lint with errcheck
+    uses: ./.github/workflows/go-lint-errcheck.yml
+    with:
+      lint-errcheck-excludes-file: ${{ inputs.lint-errcheck-excludes-file }}

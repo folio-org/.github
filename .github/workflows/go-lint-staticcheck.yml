@@ -1,0 +1,23 @@
+name: Go lint staticheck
+
+on:
+  workflow_call:
+
+jobs:
+  staticcheck:
+    name: Lint with staticheck
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout ${{ github.repository }}
+        uses: actions/checkout@v4
+
+      - name: Set up Go
+        uses: actions/setup-go@v5
+        with:
+          go-version-file: 'go.mod'
+
+      - name: Run staticcheck
+        uses: dominikh/staticcheck-action@v1
+        with:
+          version: "2024.1.1"
+          install-go: false
