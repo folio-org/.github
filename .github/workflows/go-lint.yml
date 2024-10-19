@@ -69,13 +69,14 @@ jobs:
           else
             option_errcheck_exclude=""
           fi
-          output_errcheck=$(errcheck $option_errcheck_exclude ./...)
-          if [[ -n "${output_errcheck}" ]]; then
-            echo "${output_errcheck}" | tee -a $GITHUB_STEP_SUMMARY
-            if ! ${{ inputs.allow-lint-errors }}; then
-              exit 1
-            fi
-          fi
+          errcheck $option_errcheck_exclude ./...
+#          output_errcheck=$(errcheck $option_errcheck_exclude ./...)
+#          if [[ -n "${output_errcheck}" ]]; then
+#            echo "${output_errcheck}" | tee -a $GITHUB_STEP_SUMMARY
+#           if ! ${{ inputs.allow-lint-errors }}; then
+#             exit 1
+#            fi
+#         fi
 
       - name: Run staticcheck
         uses: dominikh/staticcheck-action@v1
