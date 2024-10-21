@@ -24,7 +24,6 @@ jobs:
         uses: actions/checkout@v4
         with:
           repository: folio-org/folio-tools
-          ref: FOLIO-3994-go-lint-args
           path: folio-tools
           fetch-depth: 1
 
