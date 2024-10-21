@@ -1,0 +1,34 @@
+name: Go lint errcheck
+
+on:
+  workflow_call:
+    inputs:
+      errcheck-excludes-file:
+        required: false
+        type: string
+
+jobs:
+  errcheck:
+    name: Lint with errcheck
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout ${{ github.repository }}
+        uses: actions/checkout@v4
+
+      - name: Set up Go
+        uses: actions/setup-go@v5
+        with:
+          go-version-file: 'go.mod'
+
+      - name: Install errcheck
+        run: go install github.com/kisielk/errcheck@latest
+
+      - name: Run errcheck
+        run: |
+          if ${{ inputs.errcheck-excludes-file != '' }}; then
+            option_errcheck_exclude="-exclude ${{ inputs.errcheck-excludes-file }}"
+          else
+            option_errcheck_exclude=''
+          fi
+          errcheck $option_errcheck_exclude ./...
+

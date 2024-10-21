@@ -1,0 +1,41 @@
+name: Go lint golangci
+
+on:
+  workflow_call:
+    inputs:
+      golangci-config-file:
+        required: false
+        type: string
+
+jobs:
+  golangci:
+    name: Lint with golangci-lint
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout ${{ github.repository }}
+        uses: actions/checkout@v4
+
+      - name: Set up Go
+        uses: actions/setup-go@v5
+        with:
+          go-version-file: 'go.mod'
+
+      - name: Checkout folio-org/folio-tools
+        uses: actions/checkout@v4
+        with:
+          repository: folio-org/folio-tools
+          path: folio-tools
+          fetch-depth: 1
+
+      - name: Determine golangci-lint arguments
+        run: echo golangci_args=$(./folio-tools/github-actions-scripts/go-golangci-lint-args.sh) | tee -a $GITHUB_ENV
+        env:
+          CONFIG_FILE: ${{ inputs.golangci-config-file }}
+
+      - name: Run golangci-lint
+        uses: golangci/golangci-lint-action@v6
+        # defaults: gosimple govet ineffassign unused
+        with:
+          version: v1.61
+          args: ${{ env.golangci_args }}
+

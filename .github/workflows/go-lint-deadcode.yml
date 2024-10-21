@@ -1,0 +1,15 @@
+name: Go lint deadcode
+
+on:
+  workflow_call:
+
+jobs:
+  deadcode:
+    name: Lint with deadcode
+    runs-on: ubuntu-latest
+    steps:
+      - name: Run deadcode
+        uses: lost-coders/deadcode-action@v0.1.0
+        with:
+          go-version-file: 'go.mod'
+          flags: "-test"
