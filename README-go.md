@@ -18,7 +18,9 @@ ModuleDescriptors are published to the FOLIO Registry.
 
 It is expected that Go-based modules use the [Make](https://en.wikipedia.org/wiki/Make_(software)) utility for build operations.
 
-Refer to example build system and workflow at https://github.com/folio-org/mod-reporting
+Refer to example build system and workflows at https://github.com/folio-org/mod-reporting
+
+Refer to [README-go-lint](README-go-lint.md) for using linting and code analysis facilities.
 
 ## Usage
 
@@ -38,6 +40,7 @@ on:
       - '**/Makefile'
       - 'Dockerfile'
       - 'descriptors/ModuleDescriptor-template.json'
+      - 'sonar-project.properties'
       - '.github/workflows/do-go.yml'
     tags:
       - '[vV][0-9]+.[0-9]+.[0-9]+*'
@@ -106,7 +109,10 @@ When ready for code analysis, then follow these steps:
 
 Go-based projects use the [FOLIO Go way](https://sonarcloud.io/organizations/folio-org/quality_profiles/show?name=FOLIO+Go+way&language=go) Sonar Quality Profile.
 
-SonarCloud recommendations can be suppressed for specific code by appending [//NOSONAR](https://docs.sonarsource.com/sonarcloud/appendices/frequently-asked-questions/#nosonar) at the end of that code line.
+Note that Sonar Go code analysis is not yet mature.
+(Refer to [README-go-lint](README-go-lint.md) for using other linting and code analysis facilities.)
+
+Refer to some basic notes about [Sonar rule customization](https://dev.folio.org/guides/code-analysis/#rule-customization). Take care if using the crude `// NOSONAR` exclusion technique.
 
 ### Repository branch protection
 

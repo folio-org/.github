@@ -1,0 +1,38 @@
+name: Go linting
+
+on:
+  workflow_call:
+    inputs:
+      golangci-config-file:
+        required: false
+        type: string
+        default: ''
+      errcheck-excludes-file:
+        required: false
+        type: string
+        default: ''
+
+jobs:
+  golangci:
+    name: Lint with golangci
+    uses: ./.github/workflows/go-lint-golangci.yml
+    with:
+      golangci-config-file: ${{ inputs.golangci-config-file }}
+
+  errcheck:
+    name: Lint with errcheck
+    uses: ./.github/workflows/go-lint-errcheck.yml
+    with:
+      errcheck-excludes-file: ${{ inputs.errcheck-excludes-file }}
+
+  deadcode:
+    name: Lint with deadcode
+    uses: ./.github/workflows/go-lint-deadcode.yml
+
+  govulncheck:
+    name: Lint with govulncheck
+    uses: ./.github/workflows/go-lint-govulncheck.yml
+
+  staticcheck:
+    name: Lint with staticcheck
+    uses: ./.github/workflows/go-lint-staticcheck.yml
