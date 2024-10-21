@@ -13,8 +13,8 @@ on:
         default: ''
 
 jobs:
-  golangi:
-    name: Lint with golangi
+  golangci:
+    name: Lint with golangci
     uses: ./.github/workflows/go-lint-golangci.yml
     with:
       golangci-config-file: ${{ inputs.golangci-config-file }}
