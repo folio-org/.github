@@ -15,7 +15,10 @@
 
 ## Introduction
 
-The Workflows in this repository named `go-lint*.yml` are for linting and code analysis for Go-based back-end modules.
+The Workflows in this repository named `go-lint*.yml` are for linting and code analysis for Go-based back-end projects.
+
+A set of important linting facilities are configured by default.
+The project can also configure additional relevant facilities as explained in the following [Configuration](#configuration) sections.
 
 Refer to example workflows at https://github.com/folio-org/mod-reporting
 
@@ -57,17 +60,19 @@ There are two configuration variables, both optional.
 
 `errcheck-excludes-file` -- The path to a file containing a list of functions to be excluded with the "errcheck" facility. See notes in the following [errcheck](#errcheck) section.
 
-`golangci-config-file` -- The path to a configuration file for the "golangci-lint" facility. The default path is a top-level `.golangci.yml` file. This variable enables specification of an alternative path. See notes in the following [golangci-lint](#golangci-lint) section.
+`golangci-config-file` -- The path to a configuration file for the "golangci-lint" facility. The default path is a top-level `.golangci.yml` file (which is automatically discovered). This variable enables specification of an alternative path. See notes in the following [golangci-lint](#golangci-lint) section.
 
 ## Linting and code analysis jobs
 
-The centralised [go-lint.yml](.github/workflows/go-lint.yml) Workflow has separate jobs.
+The centralised [go-lint.yml](.github/workflows/go-lint.yml) Workflow has separate jobs, each described in the following sections.
 
-Each job will report a summary of detected issues to the "Annotations" section of the Workflow run output, and more information in the output of the respective "Run" step.
+Each job will report a summary of detected issues to the "Annotations" section of the Workflow run Summary output, and more information in the output of its respective "Run" step.
 
 ### errcheck
 
 Reports unchecked errors.
+
+The Workflow [go-lint-errcheck.yml](.github/workflows/go-lint-errcheck.yml)
 
 Documentation:
 
@@ -79,6 +84,8 @@ As noted in the previous [Configuration](#configuration) section, an optional "e
 
 Reports unreachable functions.
 
+The Workflow [go-lint-deadcode.yml](.github/workflows/go-lint-deadcode.yml)
+
 Documentation:
 
 * https://pkg.go.dev/golang.org/x/tools/cmd/deadcode
@@ -86,6 +93,8 @@ Documentation:
 ### govulncheck
 
 Vulnerability management.
+
+The Workflow [go-lint-govulncheck.yml](.github/workflows/go-lint-govulncheck.yml)
 
 Documentation:
 
@@ -96,6 +105,8 @@ This tool utilises the Go language version specified in the project's `./go.mod`
 It also reports vulnerabilities in functions of dependencies that are utilised by the project code.
 
 ### staticcheck
+
+The Workflow [go-lint-staticcheck.yml](.github/workflows/go-lint-staticcheck.yml)
 
 Documentation:
 
@@ -108,6 +119,8 @@ Refer to the staticcheck documentation for [Configuration files](https://staticc
 ### golangci-lint
 
 Runs various linters in parallel.
+
+The Workflow [go-lint-golangci.yml](.github/workflows/go-lint-golangci.yml)
 
 Documentation:
 
@@ -122,6 +135,8 @@ As noted in the previous [Configuration](#configuration) section, a default opti
 If needed then the configuration file can be used to provide various configuration parameters for the enabled linters.
 Refer to the golangci-lint [Configuration](https://golangci-lint.run/usage/configuration/) documentation.
 
+Refer to the list of all available [linters](https://golangci-lint.run/usage/linters/) and their configuration options.
+
 As a basic example, the additional linter "whitespace" can be enabled:
 
 ```
@@ -129,8 +144,6 @@ linters:
   enable:
     - whitespace
 ```
-
-Refer to the list of all available [linters](https://golangci-lint.run/usage/linters/) and their configuration options.
 
 ## Additional notes
 
