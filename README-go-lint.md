@@ -1,6 +1,6 @@
 # Centralised GitHub Workflows for Go linting
 
-<!-- ../okapi/doc/md2toc -l 2 -h 3 README-go-lint.md -->
+<!-- ../okapi/doc/md2toc -l 2 -h 4 README-go-lint.md -->
 * [Introduction](#introduction)
 * [Usage](#usage)
 * [Configuration](#configuration)
@@ -10,6 +10,8 @@
     * [govulncheck](#govulncheck)
     * [staticcheck](#staticcheck)
     * [golangci-lint](#golangci-lint)
+        * [Verbose output](#verbose-output)
+* [Go code formatting](#go-code-formatting)
 * [Additional notes](#additional-notes)
     * [Version of Go](#version-of-go)
 
@@ -18,9 +20,11 @@
 The Workflows in this repository named `go-lint*.yml` are for linting and code analysis for Go-based back-end projects.
 
 A set of important linting facilities are configured by default.
-The project can also configure additional relevant facilities as explained in the following [Configuration](#configuration) sections.
+The project can also configure additional relevant facilities as explained in the following [Configuration](#configuration) and other sections.
 
-Refer to example workflows at https://github.com/folio-org/mod-reporting
+The project can decide and enforce how strict to be with [Go code formatting](#go-code-formatting).
+
+Refer to example workflows and configuration at https://github.com/folio-org/mod-reporting
 
 (Refer to the main [README-go](README-go.md) for the build and deployment facilities.)
 
@@ -131,19 +135,39 @@ The linters [Enabled by default](https://golangci-lint.run/usage/linters/#enable
 (The other normal defaults `errcheck` and `staticcheck` are disabled here because our 'go-lint' runs them as separate jobs.)
 
 As noted in the previous [Configuration](#configuration) section, a default optional configuration file is automatically discovered at the top-level path to `.golangci.yml` file. An optional variable can be used to specify an alternative path to a "configuration" file.
+If the project wants to also use golangci as part of local linting, then there might be a need to utilise a different configuration file, e.g. a `.golangci-local.yml` file.
 
 If needed then the configuration file can be used to provide various configuration parameters for the enabled linters.
 Refer to the golangci-lint [Configuration](https://golangci-lint.run/usage/configuration/) documentation.
 
 Refer to the list of all available [linters](https://golangci-lint.run/usage/linters/) and their configuration options.
 
-As a basic example, the additional linter "whitespace" can be enabled:
+As a basic example, the additional linter "whitespace" can be enabled (and if needed then additional configuration [linters-settings](https://golangci-lint.run/usage/linters/#whitespace)):
 
 ```
 linters:
   enable:
     - whitespace
 ```
+
+#### Verbose output
+
+The output from golangci-lint is verbose by default. This additional detail can be silenced via the project configuration file:
+
+```
+output:
+  print-issued-lines: false
+```
+
+## Go code formatting
+
+The project can decide and enforce how strict to be with Go code formatting.
+
+Use a local Makefile rule to do: `go fmt ./...`
+
+Enable [gofmt](https://golangci-lint.run/usage/linters/#gofmt) via the configuration file for [golangci-lint](#golangci-lint).
+
+Or be more stict by enabling [gofumpt](https://golangci-lint.run/usage/linters/#gofumpt).
 
 ## Additional notes
 
