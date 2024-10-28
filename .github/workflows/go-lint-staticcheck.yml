@@ -1,11 +1,11 @@
-name: Go lint staticheck
+name: Go lint staticcheck
 
 on:
   workflow_call:
 
 jobs:
   staticcheck:
-    name: Lint with staticheck
+    name: Lint with staticcheck
     runs-on: ubuntu-latest
     steps:
       - name: Checkout ${{ github.repository }}

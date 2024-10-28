@@ -13,6 +13,14 @@ on:
         default: ''
 
 jobs:
+  documentation:
+    name: Show documentation
+    runs-on: ubuntu-latest
+    steps:
+      - name: Show documentation
+        run: |
+          echo "Documentation: https://github.com/folio-org/.github/blob/master/README-go-lint.md" | tee -a $GITHUB_STEP_SUMMARY
+
   golangci:
     name: Lint with golangci
     uses: ./.github/workflows/go-lint-golangci.yml

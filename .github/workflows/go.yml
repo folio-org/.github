@@ -34,6 +34,14 @@ on:
         required: false
 
 jobs:
+  documentation:
+    name: Show documentation
+    runs-on: ubuntu-latest
+    steps:
+      - name: Show documentation
+        run: |
+          echo "Documentation: https://github.com/folio-org/.github/blob/master/README-go.md" | tee -a $GITHUB_STEP_SUMMARY
+
   set-shared-variables:
     name: Set shared variables
     runs-on: ubuntu-latest
