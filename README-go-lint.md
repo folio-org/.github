@@ -50,7 +50,7 @@ on:
 
 jobs:
   go-lint:
-    uses: folio-org/.github/.github/workflows/go-lint.yml@master
+    uses: folio-org/.github/.github/workflows/go-lint.yml@v1
     with:
       errcheck-excludes-file: 'src/.errcheck-exclude'
       golangci-config-file: 'src/.golangci.yml'
@@ -131,7 +131,12 @@ Documentation:
 * https://github.com/golangci/golangci-lint
 * https://golangci-lint.run/
 
-The linters [Enabled by default](https://golangci-lint.run/usage/linters/#enabled-by-default) are `gosimple` and `govet` and `ineffassign` and `unused`.
+The linters [Enabled by default](https://golangci-lint.run/usage/linters/#enabled-by-default) are
+[gosimple](https://golangci-lint.run/usage/linters/#gosimple) and
+[govet](https://golangci-lint.run/usage/linters/#govet) and
+[ineffassign](https://golangci-lint.run/usage/linters/#ineffassign) and
+[unused](https://golangci-lint.run/usage/linters/#unused) and
+[gosec](https://golangci-lint.run/usage/linters/#gosec).
 (The other normal defaults `errcheck` and `staticcheck` are disabled here because our 'go-lint' runs them as separate jobs.)
 
 As noted in the previous [Configuration](#configuration) section, a default optional configuration file is automatically discovered at the top-level path to `.golangci.yml` file. An optional variable can be used to specify an alternative path to a "configuration" file.
