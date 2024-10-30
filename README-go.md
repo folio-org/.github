@@ -24,7 +24,7 @@ Refer to [README-go-lint](README-go-lint.md) for using linting and code analysis
 
 ## Usage
 
-Create a `.github/workflows` directory in the root of the module repository, and add a file named `do-go.yml` with the following content.
+Create a `.github/workflows` directory in the root of the module repository, and add a file named `go.yml` with the following content.
 The filename is not important -- it can be anything.
 
 ```yaml
@@ -41,14 +41,14 @@ on:
       - 'Dockerfile'
       - 'descriptors/ModuleDescriptor-template.json'
       - 'sonar-project.properties'
-      - '.github/workflows/do-go.yml'
+      - '.github/workflows/go.yml'
     tags:
       - '[vV][0-9]+.[0-9]+.[0-9]+*'
   workflow_dispatch:
 
 jobs:
   go:
-    uses: folio-org/.github/.github/workflows/go.yml@master
+    uses: folio-org/.github/.github/workflows/go.yml@v1
     secrets: inherit
 ```
 
