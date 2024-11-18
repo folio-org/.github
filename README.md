@@ -21,3 +21,8 @@ Refer to the various types of centralized workflows, including their setup and c
 * [README-UI.md](README-UI.md) -- for the front-end repositories.
 * [README-docker.md](README-docker.md) -- for repositories that only have a Dockerfile.
 * [README-go.md](README-go.md) and [README-go-lint.md](README-go-lint.md) -- for Go-based back-end repositories.
+
+## Further information
+
+* [Release procedure](docs/release-procedure.md)
+
