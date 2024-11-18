@@ -1,8 +1,0 @@
-{
-    "name": "FOLIO Maven Release Workflow",
-    "description": "FOLIO Maven CI workflow template for version releases.",
-    "iconName": "java-icon",
-    "categories": [
-        "Java"
-    ]
-}
