@@ -82,7 +82,7 @@ with:
 
 | Input               | Type    | Default | Description                                                  |
 | ------------------- | ------- | ------- | ------------------------------------------------------------ |
-| `allow-lint-errors` | boolean | false   | If set to `true`, PRs will not be blocked by linting errors. |
+| `allow-lint-errors` | boolean | true    | If set to `true`, PRs will not be blocked by linting errors. |
 
 ### Unit tests
 
