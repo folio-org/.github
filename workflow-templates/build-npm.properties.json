@@ -1,8 +1,0 @@
-{
-    "name": "FOLIO NPM Workflow",
-    "description": "FOLIO NPM CI workflow template.",
-    "iconName": "npm-icon",
-    "categories": [
-        "JavaScript"
-    ]
-}
