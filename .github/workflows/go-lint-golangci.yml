@@ -36,6 +36,6 @@ jobs:
         uses: golangci/golangci-lint-action@v6
         # defaults: gosimple govet ineffassign unused
         with:
-          version: v1.61
+          version: v1.62
           args: ${{ env.golangci_args }}
 
