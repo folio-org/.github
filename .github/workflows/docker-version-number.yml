@@ -23,9 +23,9 @@ jobs:
     steps:
       - name: Checkout ${{ github.repository }}
         uses: actions/checkout@v4
-        with:
-          fetch-depth: 1
-          fetch-tags: true
+
+      - name: Fetch git tags
+        run: git fetch --prune --prune-tags --force --depth=1
 
       - name: Checkout folio-org/folio-tools
         if: ${{ inputs.is-release == 'False' }}
