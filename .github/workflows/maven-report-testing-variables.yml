@@ -1,0 +1,31 @@
+name: Maven report testing variables
+
+on:
+  workflow_call:
+    inputs:
+      artifact-id:
+        required: true
+        type: string
+      is-release:
+        required: true
+        type: string
+      is-main-branch:
+        required: true
+        type: string
+      do-docker-push:
+        required: true
+        type: string
+
+jobs:
+  run:
+    name: Report testing variables
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Show some variables
+        run: |
+          echo "is-release=${{ inputs.is-release }}"
+          echo "artifact-id=${{ inputs.artifact-id }}"
+          echo "do-docker-push=${{ inputs.do-docker-push }}"
+          echo "github.ref=${{ github.ref }}"
+          echo "is-main-branch=${{ inputs.is-main-branch }}"

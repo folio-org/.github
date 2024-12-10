@@ -1,0 +1,101 @@
+name: Maven workflows
+
+on:
+  workflow_call:
+    secrets:
+      # these need to be non-required to allow anything here for forks
+      # however, the sub-workflows will fail appropriately if these are not present, as applicable
+      SONAR_TOKEN:
+        required: false
+      DOCKERHUB_USERNAME:
+        required: false
+      DOCKERHUB_TOKEN:
+        required: false
+      FOLIO_REGISTRY_USERNAME:
+        required: false
+      FOLIO_REGISTRY_PASSWORD:
+        required: false
+
+jobs:
+  documentation:
+    name: Show documentation
+    runs-on: ubuntu-latest
+    steps:
+      - name: Show documentation
+        run: |
+          echo "Documentation: https://github.com/folio-org/.github/blob/master/README-maven.md" | tee -a $GITHUB_STEP_SUMMARY
+
+  set-shared-variables:
+    name: Set shared variables
+    runs-on: ubuntu-latest
+    outputs:
+      is-release: ${{ steps.logic.outputs.is-release }}
+      is-main-branch: ${{ steps.vars1.outputs.is-main-branch }}
+      do-docker-push: ${{ steps.vars2.outputs.do-docker-push }}
+      docker-registry: ${{ steps.logic.outputs.docker-registry }}
+      artifact-id: ${{ steps.vars1.outputs.artifact-id }}
+      repo-description: ${{ steps.vars1.outputs.repo-description }}
+    steps:
+      - id: logic
+        name: Determine default values
+        shell: python
+        run: |
+          import os
+          import re
+
+          ref = "${{ github.ref }}"
+          print("We are on ref:", ref)
+          if re.match(r'^refs/tags/v\d+\..+', ref):
+            print("  We are on a tag vX.Y")
+            is_release = True
+            docker_registry = "folioorg"
+          else:
+            print("  We are not on a version tag")
+            is_release = False
+            docker_registry = "folioci"
+
+          output = open(os.environ['GITHUB_OUTPUT'], 'a')
+          output.write("is-release=" + str(is_release) + "\n")
+          output.write(f"docker-registry={docker_registry}\n")
+          output.close()
+
+          output = open(os.environ['GITHUB_ENV'], 'a')
+          output.write("IS_RELEASE=" + str(is_release) + "\n")
+          output.close()
+
+      - id: vars1
+        name: Determine first set of other variables
+        run: |
+          echo "artifact-id=${GITHUB_REPOSITORY##*/}" | tee -a $GITHUB_OUTPUT
+          echo "repo-description=${{ github.event.repository.description }}" | tee -a $GITHUB_OUTPUT
+          # On a fork, the default branch might be other:
+          if ${{ github.ref == 'refs/heads/main' || github.ref  == 'refs/heads/master' }}; then
+            echo "is-main-branch=True" | tee -a $GITHUB_OUTPUT
+            echo "IS_MAIN_BRANCH=True" >> $GITHUB_ENV
+          else
+            echo "is-main-branch=False" | tee -a $GITHUB_OUTPUT
+            echo "IS_MAIN_BRANCH=False" >> $GITHUB_ENV
+          fi
+
+      - id: vars2
+        name: Determine second set of other variables
+        run: |
+          if ${{ env.IS_RELEASE == 'True' }}; then
+            echo "do-docker-push=True" | tee -a $GITHUB_OUTPUT
+          else
+            if ${{ env.IS_MAIN_BRANCH == 'True' }}; then
+              echo "do-docker-push=True" | tee -a $GITHUB_OUTPUT
+            else
+              echo "do-docker-push=False" | tee -a $GITHUB_OUTPUT
+            fi
+          fi
+
+  report-testing-variables:
+    needs: [set-shared-variables]
+    uses: ./.github/workflows/maven-report-testing-variables.yml
+    with:
+      is-release: ${{ needs.set-shared-variables.outputs.is-release }}
+      is-main-branch: ${{ needs.set-shared-variables.outputs.is-main-branch}}
+      artifact-id: ${{ needs.set-shared-variables.outputs.artifact-id }}
+      do-docker-push: ${{ needs.set-shared-variables.outputs.do-docker-push }}
+
