@@ -29,7 +29,7 @@ on:
   workflow_dispatch:
 
 jobs:
-  go:
+  maven:
     uses: folio-org/.github/.github/workflows/maven.yml@FOLIO-4126-maven-workflows-1
     secrets: inherit
 ```
