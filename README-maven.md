@@ -6,8 +6,8 @@
 
 ## Introduction
 
-[!IMPORTANT]
-NOTE: In-development [FOLIO-4126](https://folio-org.atlassian.net/browse/FOLIO-4126)
+> [!IMPORTANT]
+> NOTE: In-development [FOLIO-4126](https://folio-org.atlassian.net/browse/FOLIO-4126)
 
 The Workflows in this repository named `maven*.yml` are for building Maven-based back-end modules.
 Docker images are published to FOLIO Docker Hub.
