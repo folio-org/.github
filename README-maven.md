@@ -19,6 +19,8 @@ Refer to example build system and workflows at https://github.com/folio-org/mod-
 
 Create a `.github/workflows` directory in the root of the module repository, and add a file named `maven.yml` with the following content.
 
+Note: After this Workflow is committed, then do not re-name it. Its sequential GitHub run number is utilised by the CI for naming the built snapshot artifacts.
+
 ```yaml
 name: Maven central workflow
 
