@@ -99,5 +99,6 @@ jobs:
       is-release: ${{ needs.set-shared-variables.outputs.is-release }}
       is-main-branch: ${{ needs.set-shared-variables.outputs.is-main-branch}}
       repo-name: ${{ needs.set-shared-variables.outputs.repo-name }}
+      docker-registry: ${{ needs.set-shared-variables.outputs.docker-registry }}
       do-docker-push: ${{ needs.set-shared-variables.outputs.do-docker-push }}
 
