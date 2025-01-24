@@ -24,6 +24,8 @@ jobs:
       - name: Show documentation
         run: |
           echo "Documentation: https://github.com/folio-org/.github/blob/master/README-maven.md" | tee -a $GITHUB_STEP_SUMMARY
+          echo "> [!CAUTION]" >> $GITHUB_STEP_SUMMARY
+          echo "> NOTE: In-development [FOLIO-4126](https://folio-org.atlassian.net/browse/FOLIO-4126)" >> $GITHUB_STEP_SUMMARY
 
   set-shared-variables:
     name: Set shared variables
