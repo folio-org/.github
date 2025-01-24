@@ -3,7 +3,7 @@ name: Maven report testing variables
 on:
   workflow_call:
     inputs:
-      artifact-id:
+      repo-name:
         required: true
         type: string
       is-release:
@@ -24,8 +24,10 @@ jobs:
     steps:
       - name: Show some variables
         run: |
-          echo "is-release=${{ inputs.is-release }}"
-          echo "artifact-id=${{ inputs.artifact-id }}"
-          echo "do-docker-push=${{ inputs.do-docker-push }}"
-          echo "github.ref=${{ github.ref }}"
+          echo "repo-name=${{ inputs.repo-name }}"
           echo "is-main-branch=${{ inputs.is-main-branch }}"
+          echo "github.ref=${{ github.ref }}"
+          echo "is-release=${{ inputs.is-release }}"
+          echo "do-docker-push=${{ inputs.do-docker-push }}"
+
+

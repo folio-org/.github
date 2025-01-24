@@ -35,7 +35,7 @@ jobs:
       is-main-branch: ${{ steps.vars1.outputs.is-main-branch }}
       do-docker-push: ${{ steps.vars2.outputs.do-docker-push }}
       docker-registry: ${{ steps.logic.outputs.docker-registry }}
-      artifact-id: ${{ steps.vars1.outputs.artifact-id }}
+      repo-name: ${{ steps.vars1.outputs.repo-name }}
       repo-description: ${{ steps.vars1.outputs.repo-description }}
     steps:
       - id: logic
@@ -68,7 +68,7 @@ jobs:
       - id: vars1
         name: Determine first set of other variables
         run: |
-          echo "artifact-id=${GITHUB_REPOSITORY##*/}" | tee -a $GITHUB_OUTPUT
+          echo "repo-name=${GITHUB_REPOSITORY##*/}" | tee -a $GITHUB_OUTPUT
           echo "repo-description=${{ github.event.repository.description }}" | tee -a $GITHUB_OUTPUT
           # On a fork, the default branch might be other:
           if ${{ github.ref == 'refs/heads/main' || github.ref  == 'refs/heads/master' }}; then
@@ -98,6 +98,6 @@ jobs:
     with:
       is-release: ${{ needs.set-shared-variables.outputs.is-release }}
       is-main-branch: ${{ needs.set-shared-variables.outputs.is-main-branch}}
-      artifact-id: ${{ needs.set-shared-variables.outputs.artifact-id }}
+      repo-name: ${{ needs.set-shared-variables.outputs.repo-name }}
       do-docker-push: ${{ needs.set-shared-variables.outputs.do-docker-push }}
 
