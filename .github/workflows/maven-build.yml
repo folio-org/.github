@@ -21,8 +21,8 @@ jobs:
     runs-on: ubuntu-latest
 
     outputs:
-      artifact-id: ${{ steps.vars1.outputs.artifact-id }}
-      artifact-version: ${{ steps.actual-version.outputs.artifact-version }}
+      artifact-id: ${{ steps.show-version.outputs.artifact-id }}
+      artifact-version: ${{ steps.show-version.outputs.artifact-version }}
 
     steps:
       - name: Checkout ${{ github.repository }}
@@ -55,31 +55,31 @@ jobs:
         id: vars1
         run: |
           echo "artifact-id=$(mvn help:evaluate -Dexpression=project.artifactId -q -DforceStdout)" | tee -a $GITHUB_ENV
-          echo "artifact-id=${{ env.artifact-id }}" >> $GITHUB_OUTPUT
           echo "SHA_SHORT=$(git rev-parse --short HEAD)" | tee -a $GITHUB_ENV
 
-      - id: calculate-version
+      - name: Calculate version number, if not a release tag
+        id: calculate-version
         if: ${{ inputs.is-release == 'False' }}
-        name: Calculate version number, if not a release tag
         run: |
           echo "version=$(mvn help:evaluate -Dexpression=project.version -q -DforceStdout)-${{ env.SHA_SHORT }}" | tee -a $GITHUB_OUTPUT
 
-      - id: tag-version
+      - name: Get release tag version number, if applicable
+        id: tag-version
         if: ${{ inputs.is-release == 'True' }}
-        name: Get release tag version number, if applicable
         run: |
           echo "version=${GITHUB_REF#refs/tags/v}" | tee -a $GITHUB_OUTPUT
 
       # aggregate tag and non-tag versions into a single output
       # the irrelevant one will be an empty string
-      - id: actual-version
-        name: Get version from previous steps
+      - name: Get version from previous steps
+        id: actual-version
         run: |
           echo "artifact-version=${{ steps.calculate-version.outputs.version }}${{ steps.tag-version.outputs.version }}" | tee -a $GITHUB_ENV
-          echo "artifact-version=${{ env.artifact-version }}" >> $GITHUB_OUTPUT
 
       - name: Print module version to job summary
+        id: show-version
         run: |
-          echo "artifact-id: ${{ steps.vars1.outputs.artifact-id }}" >> $GITHUB_STEP_SUMMARY
-          echo "artifact-version: ${{ steps.actual-version.outputs.artifact-version }}" >> $GITHUB_STEP_SUMMARY
-
+          echo "artifact-id=${{ env.artifact-id }}" >> $GITHUB_OUTPUT
+          echo "artifact-id: ${{ env.artifact-id }}" >> $GITHUB_STEP_SUMMARY
+          echo "artifact-version=${{ env.artifact-version }}" >> $GITHUB_OUTPUT
+          echo "artifact-version: ${{ env.artifact-version }}" >> $GITHUB_STEP_SUMMARY
