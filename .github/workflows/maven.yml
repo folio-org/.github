@@ -92,6 +92,11 @@ jobs:
             fi
           fi
 
+  build:
+    name: Checkout and build
+    needs: [set-shared-variables]
+    uses: ./.github/workflows/maven-build.yml
+
   report-testing-variables:
     needs: [set-shared-variables]
     uses: ./.github/workflows/maven-report-testing-variables.yml
