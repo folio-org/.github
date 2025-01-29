@@ -12,6 +12,12 @@ on:
       is-main-branch:
         required: true
         type: string
+      artifact-id:
+        required: true
+        type: string
+      artifact-version:
+        required: true
+        type: string
       docker-registry:
         required: true
         type: string
@@ -31,6 +37,8 @@ jobs:
           echo "is-main-branch=${{ inputs.is-main-branch }}"
           echo "github.ref=${{ github.ref }}"
           echo "is-release=${{ inputs.is-release }}"
+          echo "artifact-id=${{ inputs.artifact-id }}"
+          echo "artifact-version=${{ inputs.artifact-version }}"
           echo "docker-registry=${{ inputs.docker-registry }}"
           echo "do-docker-push=${{ inputs.do-docker-push }}"
 
