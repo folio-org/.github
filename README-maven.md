@@ -36,13 +36,22 @@ jobs:
   maven:
     uses: folio-org/.github/.github/workflows/maven.yml@FOLIO-4126-maven-workflows-1
     secrets: inherit
-    with:
-      # Add configuration variables here if needed.
 ```
 
 ## Configuration
 
 If there is a need to over-ride defaults, then add configuration variables to the "with:" section of the module maven.yml Workflow.
+
+Add the section at the end of the Workflow immediately after the "secrets" item.
+For example:
+
+```yaml
+    # ...
+    secrets: inherit
+    with:
+      docker-label-documentation: 'https://.../documentation.md'
+      # Add configuration variables here if needed.
+```
 
 ### Configuration: allow-snapshots-release
 
