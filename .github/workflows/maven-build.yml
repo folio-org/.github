@@ -7,6 +7,9 @@ on:
         description: If we are on a tag vX.Y.Z, this will be "True", otherwise "False"
         required: true
         type: string
+      allow-snapshots-release:
+        required: true
+        type: boolean
     outputs:
       artifact-id:
         description: The module identifier
@@ -83,3 +86,8 @@ jobs:
           echo "artifact-id: ${{ env.artifact-id }}" >> $GITHUB_STEP_SUMMARY
           echo "artifact-version=${{ env.artifact-version }}" >> $GITHUB_OUTPUT
           echo "artifact-version: ${{ env.artifact-version }}" >> $GITHUB_STEP_SUMMARY
+
+      - name: Report release dependencies that are snapshots
+        if: ${{ inputs.is-release == 'False' }}
+        run: mvn dependency:list | { grep -i snapshot || true; }
+

@@ -2,6 +2,11 @@ name: Maven workflows
 
 on:
   workflow_call:
+    inputs:
+      allow-snapshots-release:
+        required: false
+        type: boolean
+        default: false
     secrets:
       # these need to be non-required to allow anything here for forks
       # however, the sub-workflows will fail appropriately if these are not present, as applicable
@@ -98,6 +103,7 @@ jobs:
     uses: ./.github/workflows/maven-build.yml
     with:
       is-release: ${{ needs.set-shared-variables.outputs.is-release }}
+      allow-snapshots-release: ${{ inputs.allow-snapshots-release }}
 
   report-testing-variables:
     needs: [set-shared-variables, build]
