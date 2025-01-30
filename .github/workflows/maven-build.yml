@@ -10,22 +10,11 @@ on:
       allow-snapshots-release:
         required: true
         type: boolean
-    outputs:
-      artifact-id:
-        description: The module identifier
-        value: ${{ jobs.build.outputs.artifact-id }}
-      artifact-version:
-        description: If a tag, we'll return that tag's version number; otherwise, it will be the derived version number unique to this run
-        value: ${{ jobs.build.outputs.artifact-version }}
 
 jobs:
   build:
     name: Checkout and build
     runs-on: ubuntu-latest
-
-    outputs:
-      artifact-id: ${{ steps.show-version.outputs.artifact-id }}
-      artifact-version: ${{ steps.show-version.outputs.artifact-version }}
 
     steps:
       - name: Checkout ${{ github.repository }}
@@ -82,9 +71,7 @@ jobs:
       - name: Print module version to job summary
         id: show-version
         run: |
-          echo "artifact-id=${{ env.artifact-id }}" >> $GITHUB_OUTPUT
           echo "artifact-id: ${{ env.artifact-id }}" >> $GITHUB_STEP_SUMMARY
-          echo "artifact-version=${{ env.artifact-version }}" >> $GITHUB_OUTPUT
           echo "artifact-version: ${{ env.artifact-version }}" >> $GITHUB_STEP_SUMMARY
 
       - name: Discover release dependencies that are snapshots
@@ -94,7 +81,3 @@ jobs:
       - name: Report release dependencies that are snapshots
         if:  ${{ inputs.is-release == 'True' }}
         run: if ! ${{ inputs.allow-snapshots-release }} && [ -s snapshots.txt ]; then exit 1; fi
-
-
-
-
