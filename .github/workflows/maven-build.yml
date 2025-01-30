@@ -93,7 +93,7 @@ jobs:
 
       - name: Report release dependencies that are snapshots
         if:  ${{ inputs.is-release == 'False' }}
-        run: if [ -s snapshots.txt ] && [ ${inputs.allow-snapshots-release} ]; then exit 1; fi
+        run: if [ -s snapshots.txt ] && ${{ inputs.allow-snapshots-release }}; then exit 1; fi
 
 
 
