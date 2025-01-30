@@ -92,7 +92,7 @@ jobs:
         run: mvn dependency:list | { grep -i snapshot | tee snapshots.txt || true; }
 
       - name: Report release dependencies that are snapshots
-        if: ${{ inputs.is-release == 'False' }}
+        if: ${{ inputs.allow-snapshots-release && inputs.is-release == 'False' }}
         run: if [ -s snapshots.txt ]; then exit 1; fi
 
 
