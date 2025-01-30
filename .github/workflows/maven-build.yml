@@ -88,11 +88,11 @@ jobs:
           echo "artifact-version: ${{ env.artifact-version }}" >> $GITHUB_STEP_SUMMARY
 
       - name: Discover release dependencies that are snapshots
-        if: ${{ inputs.is-release == 'False' }}
+        if: ${{ inputs.is-release == 'True' }}
         run: mvn dependency:list | { grep -i snapshot | tee snapshots.txt || true; }
 
       - name: Report release dependencies that are snapshots
-        if:  ${{ inputs.is-release == 'False' }}
+        if:  ${{ inputs.is-release == 'True' }}
         run: if ! ${{ inputs.allow-snapshots-release }} && [ -s snapshots.txt ]; then exit 1; fi
 
 
