@@ -36,6 +36,23 @@ jobs:
   maven:
     uses: folio-org/.github/.github/workflows/maven.yml@FOLIO-4126-maven-workflows-1
     secrets: inherit
+    with:
+      # Add configuration variables here if needed.
 ```
 
+## Configuration
 
+If there is a need to over-ride defaults, then add configuration variables to the "with:" section of the module maven.yml Workflow.
+
+### Configuration: allow-snapshots-release
+
+Normally a release must not use dependencies that are "snapshot" versions.
+
+On rare occasions this might be needed.
+
+Default = false
+
+```yaml
+    with:
+      allow-snapshots-release: true
+```
