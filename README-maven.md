@@ -49,8 +49,17 @@ For example:
     # ...
     secrets: inherit
     with:
-      docker-label-documentation: 'https://.../documentation.md'
+      java-version: '17'
       # Add configuration variables here if needed.
+```
+
+### Configuration: java-version
+
+Optional. Default = '17'
+
+```yaml
+    with:
+      java-version: '21'
 ```
 
 ### Configuration: allow-snapshots-release
@@ -59,7 +68,7 @@ Normally a release must not use dependencies that are "snapshot" versions.
 
 On rare occasions this might be needed.
 
-Default = false
+Optional. Default = false
 
 ```yaml
     with:

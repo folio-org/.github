@@ -3,6 +3,10 @@ name: Maven workflows
 on:
   workflow_call:
     inputs:
+      java-version:
+        required: false
+        type: string
+        default: '17'
       allow-snapshots-release:
         required: false
         type: boolean
@@ -103,6 +107,7 @@ jobs:
     uses: ./.github/workflows/maven-build.yml
     with:
       is-release: ${{ needs.set-shared-variables.outputs.is-release }}
+      java-version: ${{ inputs.java-version }}
       allow-snapshots-release: ${{ inputs.allow-snapshots-release }}
 
   report-testing-variables:
@@ -112,6 +117,7 @@ jobs:
       is-release: ${{ needs.set-shared-variables.outputs.is-release }}
       is-main-branch: ${{ needs.set-shared-variables.outputs.is-main-branch}}
       repo-name: ${{ needs.set-shared-variables.outputs.repo-name }}
+      java-version: ${{ inputs.java-version }}
       docker-registry: ${{ needs.set-shared-variables.outputs.docker-registry }}
       do-docker-push: ${{ needs.set-shared-variables.outputs.do-docker-push }}
 
