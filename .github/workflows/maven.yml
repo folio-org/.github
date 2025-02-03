@@ -101,6 +101,13 @@ jobs:
             fi
           fi
 
+      - name: Ensure Java version
+        run: |
+          if [ "${{ inputs.java-version }}" != "17" ] && [ "${{ inputs.java-version }}" != "21" ]; then
+            echo "java-version=${{ inputs.java-version }}: Must '17' or '21'."
+            exit 1
+          fi
+
   build:
     name: Checkout and build
     needs: [set-shared-variables]
