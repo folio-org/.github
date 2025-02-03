@@ -110,7 +110,7 @@ jobs:
 
   build:
     name: Checkout and build
-    needs: [set-shared-variables]
+    needs: [set-shared-variables, report-testing-variables]
     uses: ./.github/workflows/maven-build.yml
     with:
       is-release: ${{ needs.set-shared-variables.outputs.is-release }}
