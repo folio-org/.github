@@ -129,3 +129,13 @@ jobs:
       docker-registry: ${{ needs.set-shared-variables.outputs.docker-registry }}
       do-docker-push: ${{ needs.set-shared-variables.outputs.do-docker-push }}
 
+  okapi-dependency-check:
+    name: Okapi dependency check
+    needs: [set-shared-variables, build]
+    uses: ./.github/workflows/maven-module-descriptor-verify.yml
+    with:
+      okapi-pull-urls: '{"urls": ["https://folio-registry.dev.folio.org"]}'
+    secrets:
+      dockerhub-username: ${{ secrets.DOCKERHUB_USERNAME }}
+      dockerhub-token: ${{ secrets.DOCKERHUB_TOKEN }}
+
