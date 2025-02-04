@@ -37,10 +37,10 @@ jobs:
       - name: Timeout for Okapi to start
         run: sleep 10
 
-      - name: Pull all module descriptors into Okapi
+      - name: Pull module descriptors into Okapi
         uses: fjogeleit/http-request-action@v1
         with:
-          url: http://${{ steps.okapi-ip.outputs.ip }}:9130/_/proxy/pull/modules
+          url: http://${{ steps.okapi-ip.outputs.ip }}:9130/_/proxy/pull/modules?preRelease=false&npmSnapshot=false
           method: 'POST'
           contentType: 'application/json; charset=utf-8'
           customHeaders: '{ "Accept": "application/json; charset=utf-8" }'
@@ -52,7 +52,7 @@ jobs:
         with:
           name: ModuleDescriptor.json
 
-      - name: Post ModuleDescriptor to Okapi
+      - name: Send ModuleDescriptor to Okapi
         uses: fjogeleit/http-request-action@v1
         with:
           url: http://${{ steps.okapi-ip.outputs.ip }}:9130/_/proxy/modules
