@@ -23,7 +23,7 @@ jobs:
       - name: Checkout ${{ github.repository }}
         uses: actions/checkout@v4
         with:
-          fetch-depth: 0  # Shallow clones disabled for better relevance of Sonar analysis
+          fetch-depth: 1
           submodules: recursive
 
       - name: Set up JDK
@@ -84,3 +84,6 @@ jobs:
       - name: Report release dependencies that are snapshots
         if:  ${{ inputs.is-release == 'True' }}
         run: if ! ${{ inputs.allow-snapshots-release }} && [ -s snapshots.txt ]; then exit 1; fi
+
+      - name: Maven build
+        run: mvn clean org.jacoco:jacoco-maven-plugin:prepare-agent install org.jacoco:jacoco-maven-plugin:report
