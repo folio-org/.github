@@ -13,6 +13,9 @@ on:
       allow-snapshots-release:
         required: true
         type: boolean
+      docker-registry:
+        required: true
+        type: string
 
 jobs:
   build:
@@ -87,3 +90,24 @@ jobs:
 
       - name: Maven build
         run: mvn clean org.jacoco:jacoco-maven-plugin:prepare-agent install org.jacoco:jacoco-maven-plugin:report
+
+      - name: Update ModuleDescriptor identifiers
+        run: |
+          if test -f "$MOD_DESCRIPTOR"; then
+            echo "Found $MOD_DESCRIPTOR"
+            cd target
+            mv ModuleDescriptor.json ModuleDescriptor.json.orig
+            cat <<< $( \
+              jq '. | .id |= "${{ env.artifact-id }}-${{ env.artifact-version }}" | if has("launchDescriptor") then
+                .launchDescriptor.dockerImage |= "${{ inputs.docker-registry }}/${{ env.artifact-id }}:${{ env.artifact-version }}" |
+                .launchDescriptor.dockerPull |= "true" else . end' ModuleDescriptor.json.orig \
+            ) > ModuleDescriptor.json
+          else
+            echo "Could not find $MOD_DESCRIPTOR"
+            exit 1
+          fi
+        env:
+          MOD_DESCRIPTOR: './target/ModuleDescriptor.json'
+
+      - name: Print ModuleDescriptor
+        run: cat target/ModuleDescriptor.json

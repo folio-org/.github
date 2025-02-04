@@ -116,6 +116,7 @@ jobs:
       is-release: ${{ needs.set-shared-variables.outputs.is-release }}
       java-version: ${{ inputs.java-version }}
       allow-snapshots-release: ${{ inputs.allow-snapshots-release }}
+      docker-registry: ${{ needs.set-shared-variables.outputs.docker-registry }}
 
   report-testing-variables:
     needs: [set-shared-variables]
