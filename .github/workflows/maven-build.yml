@@ -111,3 +111,12 @@ jobs:
 
       - name: Print ModuleDescriptor
         run: cat target/ModuleDescriptor.json
+
+      # we publish it to the registry as a separate job
+      - name: Upload ModuleDescriptor as build artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: ModuleDescriptor.json
+          path: target/ModuleDescriptor.json
+          retention-days: 1
+
