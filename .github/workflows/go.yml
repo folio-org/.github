@@ -7,7 +7,7 @@ on:
         required: false
         type: string
         default: ''
-      has-module-descriptor:
+      publish-module-descriptor:
         required: false
         type: boolean
         default: true
@@ -171,7 +171,7 @@ jobs:
       artifact-id: ${{ needs.set-shared-variables.outputs.artifact-id }}
       docker-registry: ${{ needs.set-shared-variables.outputs.docker-registry }}
       repo-description: ${{ needs.set-shared-variables.outputs.repo-description }}
-      has-module-descriptor: ${{ inputs.has-module-descriptor }}
+      publish-module-descriptor: ${{ inputs.publish-module-descriptor }}
     secrets:
       dockerhub-username: ${{ secrets.DOCKERHUB_USERNAME }}
       dockerhub-token: ${{ secrets.DOCKERHUB_TOKEN }}

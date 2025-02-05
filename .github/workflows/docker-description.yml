@@ -12,7 +12,7 @@ on:
       repo-description:
         required: true
         type: string
-      has-module-descriptor:
+      publish-module-descriptor:
         required: true
         type: boolean
     secrets:
@@ -35,14 +35,14 @@ jobs:
           fetch-depth: 1
 
       - name: Download ModuleDescriptor
-        if: ${{ inputs.has-module-descriptor }}
+        if: ${{ inputs.publish-module-descriptor }}
         uses: actions/download-artifact@v4
         with:
           name: ModuleDescriptor.json
 
       - name: Do generate description
         run: |
-          if ${{ inputs.has-module-descriptor }}; then
+          if ${{ inputs.publish-module-descriptor }}; then
             option_md=$(echo "--module-descriptor ModuleDescriptor.json")
           else
             option_md=""
