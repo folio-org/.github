@@ -68,7 +68,7 @@ Optional. Default = '17'
 
 ### Configuration: publish-module-descriptor
 
-Some Maven-based projects do not have a ModuleDesriptor.
+Some Maven-based projects do not have a ModuleDescriptor.
 
 Optional. Default = true
 
