@@ -3,6 +3,10 @@
 <!-- ../okapi/doc/md2toc -l 2 -h 3 README-maven.md -->
 * [Introduction](#introduction)
 * [Usage](#usage)
+* [Configuration](#configuration)
+    * [Configuration: java-version](#configuration-java-version)
+    * [Configuration: publish-module-descriptor](#configuration-publish-module-descriptor)
+    * [Configuration: allow-snapshots-release](#configuration-allow-snapshots-release)
 
 ## Introduction
 
@@ -62,6 +66,17 @@ Optional. Default = '17'
       java-version: '21'
 ```
 
+### Configuration: publish-module-descriptor
+
+Some Maven-based projects do not have a ModuleDesriptor.
+
+Optional. Default = true
+
+```yaml
+    with:
+      publish-module-descriptor: false
+```
+
 ### Configuration: allow-snapshots-release
 
 Normally a release must not use dependencies that are "snapshot" versions.
@@ -74,3 +89,4 @@ Optional. Default = false
     with:
       allow-snapshots-release: true
 ```
+
