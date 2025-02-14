@@ -19,5 +19,5 @@ jobs:
       - name: Run staticcheck
         uses: dominikh/staticcheck-action@v1
         with:
-          version: "2024.1.1"
+          version: "2025.1"
           install-go: false
