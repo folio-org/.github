@@ -62,7 +62,7 @@ jobs:
         run: echo formatted=$(tr -d '[:blank:]' <<< "${{ inputs.sonar-exclusions }}") | tee -a $GITHUB_OUTPUT
 
       - name: Run SonarCloud scan
-        uses: sonarsource/sonarcloud-github-action@v2.1.1
+        uses: SonarSource/sonarqube-scan-action@v5.0.0
         with:
           args: >
             -Dsonar.organization=folio-org
