@@ -2,6 +2,8 @@
 
 Assume that the current release is "v1.6.0" and that the intent is to make the next minor release, i.e. "v1.7.0".
 
+Accumulate entries in [CHANGELOG](../CHANGELOG.md).
+
 ## Overview
 
 The release is tagged three times:
