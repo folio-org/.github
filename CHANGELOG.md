@@ -3,6 +3,7 @@
 ## IN PROGRESS
 
 * Add CHANGELOG, reference Being John Malkovich.
+* FOLIO-4240 Disable okapi dependency check if `publish-module-descriptor` is `false` (UI workflow)
 
 ## [1.9.0](https://github.com/folio-org/.github/tree/v1.9.0) (2025-02-18)
 [Full Changelog](https://github.com/folio-org/.github/compare/v1.8.0...v1.9.0)
