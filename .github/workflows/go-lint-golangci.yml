@@ -18,7 +18,8 @@ jobs:
       - name: Set up Go
         uses: actions/setup-go@v5
         with:
-          go-version-file: 'go.mod'
+          # the go version for golangci-lint, not the go version for our module
+          go-version: 'stable'
 
       - name: Checkout folio-org/folio-tools
         uses: actions/checkout@v4
@@ -33,9 +34,5 @@ jobs:
           CONFIG_FILE: ${{ inputs.golangci-config-file }}
 
       - name: Run golangci-lint
-        uses: golangci/golangci-lint-action@v6
-        # defaults: gosimple govet ineffassign unused
-        with:
-          version: v1.63.4
-          args: ${{ env.golangci_args }}
+        uses: golangci/golangci-lint-action@v7
 
