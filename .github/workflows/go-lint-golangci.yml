@@ -36,5 +36,7 @@ jobs:
       - name: Run golangci-lint
         uses: golangci/golangci-lint-action@v8
         with:
+          # The golangci-lint version
           version: v2.1
+          args: ${{ env.golangci_args }}
 
