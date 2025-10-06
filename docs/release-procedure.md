@@ -12,6 +12,8 @@ The release is tagged three times:
 * Create a new lightweight tag "v1.7" which corresponds with the release.
 * Move the existing lightweight tag "v1" to correspond with the release.
 
+See additional step for [patch release](#similarly-for-a-patch-release).
+
 ## Create new annotated tag for release via GitHub
 
 Assemble the release notes as a snippet of Markdown format with a similar structure to the previous version. Note the pull-requests that added the main changes.
