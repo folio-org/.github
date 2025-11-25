@@ -28,7 +28,7 @@ jobs:
 
     steps:
       - name: Checkout folio-org/folio-tools
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
         with:
           repository: folio-org/folio-tools
           path: folio-tools
