@@ -13,7 +13,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout ${{ github.repository }}
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
 
       - name: Set up Go
         uses: actions/setup-go@v5
@@ -22,7 +22,7 @@ jobs:
           go-version: 'stable'
 
       - name: Checkout folio-org/folio-tools
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
         with:
           repository: folio-org/folio-tools
           path: folio-tools
