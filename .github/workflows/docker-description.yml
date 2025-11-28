@@ -59,7 +59,7 @@ jobs:
         run: cat dockerhub-description.md
 
       - name: Publish description
-        uses: peter-evans/dockerhub-description@v4
+        uses: peter-evans/dockerhub-description@v5
         with:
           username: ${{ secrets.dockerhub-username }}
           password: ${{ secrets.dockerhub-token }}
