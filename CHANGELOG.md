@@ -2,6 +2,24 @@
 
 ## IN PROGRESS
 
+* DEVOPS-4109 Highlight additional step patch release - in #84
+* FOLIO-3944 Upgrade Actions for workflow-templates API Workflows - in #85
+
+## [1.10.1](https://github.com/folio-org/.github/tree/v1.10.1) (2025-10-04)
+[Full Changelog](https://github.com/folio-org/.github/compare/v1.10.0...v1.10.1)
+
+* FOLIO-4377 Update ui-sonarcloud.yml - in #82
+* FOLIO-4377 use sonarsource/sonarqube-scan-action v6 for go-sonarcloud - in #83
+
+## [1.10.0](https://github.com/folio-org/.github/tree/v1.10.0) (2025-10-02)
+[Full Changelog](https://github.com/folio-org/.github/compare/v1.9.1...v1.10.0)
+
+* FOLIO-4287 Bump golangci-lint-action to 8, golangci-lint to v2 - in #81
+* FOLIO-4287 Restore golangci_args config
+
+## [1.9.1](https://github.com/folio-org/.github/tree/v1.9.1) (2025-02-25)
+[Full Changelog](https://github.com/folio-org/.github/compare/v1.9.0...v1.9.1)
+
 * Add CHANGELOG, reference Being John Malkovich.
 * FOLIO-4240 Disable okapi dependency check if `publish-module-descriptor` is `false` (UI workflow)
 

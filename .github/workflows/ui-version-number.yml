@@ -22,7 +22,7 @@ jobs:
 
     steps:
       - name: Checkout ${{ github.repository }}
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
         with:
           fetch-depth: 1
           show-progress: false # spammy
@@ -33,7 +33,7 @@ jobs:
 
       - name: Checkout folio-org/folio-tools
         if: ${{ inputs.is-release == 'False' }}
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
         with:
           repository: folio-org/folio-tools
           path: folio-tools
