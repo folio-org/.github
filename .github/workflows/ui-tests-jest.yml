@@ -59,7 +59,7 @@ jobs:
           files: '${{ inputs.jest-junit-output-dir }}/*.xml'
 
       - name: Publish Jest coverage report
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v5
         if: ${{ !cancelled() }}
         with:
           name: jest-coverage-report
