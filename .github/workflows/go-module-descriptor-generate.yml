@@ -41,7 +41,7 @@ jobs:
 
       # we publish it to the registry as a separate job
       - name: Upload ModuleDescriptor as build artifact
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v5
         with:
           name: ModuleDescriptor.json
           path: target/ModuleDescriptor.json
