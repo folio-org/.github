@@ -136,7 +136,7 @@ jobs:
   okapi-dependency-check:
     name: Okapi dependency check
     needs: [set-shared-variables, build]
-#    if: needs.set-shared-variables.outputs.is-release == 'True'
+    if: needs.set-shared-variables.outputs.is-release == 'True'
     uses: ./.github/workflows/maven-module-descriptor-verify.yml
     with:
       okapi-pull-urls: '{"urls": ["https://folio-registry.dev.folio.org"]}'
