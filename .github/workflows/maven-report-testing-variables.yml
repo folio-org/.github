@@ -15,6 +15,9 @@ on:
       java-version:
         required: true
         type: string
+      artifact-version:
+        required: true
+        type: string
       docker-registry:
         required: true
         type: string
