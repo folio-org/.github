@@ -112,21 +112,21 @@ jobs:
             exit 1
           fi
 
-  version-number:
-    needs: [set-shared-variables]
-    uses: ./.github/workflows/maven-version-number.yml
-    with:
-      is-release: ${{ needs.set-shared-variables.outputs.is-release }}
-
   build:
     name: Checkout and build
-    needs: [set-shared-variables, report-testing-variables]
+    needs: [set-shared-variables]
     uses: ./.github/workflows/maven-build.yml
     with:
       is-release: ${{ needs.set-shared-variables.outputs.is-release }}
       java-version: ${{ inputs.java-version }}
       allow-snapshots-release: ${{ inputs.allow-snapshots-release }}
       docker-registry: ${{ needs.set-shared-variables.outputs.docker-registry }}
+
+  version-number:
+    needs: [set-shared-variables, build]
+    uses: ./.github/workflows/maven-version-number.yml
+    with:
+      is-release: ${{ needs.set-shared-variables.outputs.is-release }}
 
   report-testing-variables:
     needs: [set-shared-variables, version-number]
