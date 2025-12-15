@@ -64,5 +64,4 @@ jobs:
 
       - name: Show Okapi response
         run: |
-          echo ${{ steps.send-md.outputs.response }}
-          echo ${{ steps.send-md.outputs.status }}
+          echo "Okapi response status: ${{ steps.send-md.outputs.status }}" | tee -a $GITHUB_STEP_SUMMARY
