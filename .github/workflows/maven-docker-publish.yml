@@ -75,14 +75,6 @@ jobs:
           name: fat-jar
           path: target
 
-      - name: Do ls
-        run: |
-          ls .
-
-      - name: Do ls target
-        run: |
-          ls target
-
       - name: Build and push Docker image
         uses: docker/build-push-action@v6
         with:
