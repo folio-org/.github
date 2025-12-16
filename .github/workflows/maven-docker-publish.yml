@@ -69,6 +69,14 @@ jobs:
             type=raw,value=latest
             type=raw,value=${{ inputs.artifact-version }}
 
+      - name: Do ls
+        run: |
+          ls .
+
+      - name: Do ls target
+        run: |
+          ls target
+
       - name: Build and push Docker image
         uses: docker/build-push-action@v6
         with:
