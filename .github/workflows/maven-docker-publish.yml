@@ -1,0 +1,80 @@
+name: Maven Docker build and publish
+
+on:
+  workflow_call:
+    inputs:
+      is-release:
+        required: true
+        type: string
+      is-main-branch:
+        required: true
+        type: string
+      artifact-id:
+        required: true
+        type: string
+      artifact-version:
+        required: true
+        type: string
+      docker-registry:
+        required: true
+        type: string
+      do-docker-push:
+        required: true
+        type: string
+      docker-label-documentation:
+        required: false
+        type: string
+    secrets:
+      dockerhub-username:
+        required: true
+      dockerhub-token:
+        required: true
+
+jobs:
+  run:
+    name: Docker build and publish
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Notify whether doing docker push
+        run: |
+          if ${{ inputs.do-docker-push == 'True' }}; then
+            echo "Will do docker build and push, i.e. publish=true" | tee -a $GITHUB_STEP_SUMMARY
+          else
+            echo "Will do docker build, but will not push, i.e. publish=false" | tee -a $GITHUB_STEP_SUMMARY
+          fi
+
+      - name: Checkout ${{ github.repository }}
+        uses: actions/checkout@v6
+        with:
+          fetch-depth: 1
+
+      - name: Login to Docker Hub
+        uses: docker/login-action@v3
+        with:
+          username: ${{ secrets.dockerhub-username }}
+          password: ${{ secrets.dockerhub-token }}
+
+      - name: Extract metadata (tags, labels) for Docker
+        id: meta
+        uses: docker/metadata-action@v5
+        with:
+          images: ${{ inputs.docker-registry }}/${{ inputs.artifact-id }}
+          labels: |
+            org.opencontainers.image.title=FOLIO ${{ inputs.artifact-id }}
+            org.opencontainers.image.documentation=${{ inputs.docker-label-documentation }}
+            org.opencontainers.image.vendor=The Open Library Foundation
+            org.opencontainers.image.licenses=Apache-2.0
+          tags: |
+            type=raw,value=latest
+            type=raw,value=${{ inputs.artifact-version }}
+
+      - name: Build and push Docker image
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+#          push: ${{ inputs.do-docker-push == 'True' }}
+          push: false  # FIXME: Deliberate while developing Workflows.
+          tags: ${{ steps.meta.outputs.tags }}
+          labels: ${{ steps.meta.outputs.labels }}
+

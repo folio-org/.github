@@ -40,7 +40,7 @@ jobs:
         name: Calculate version number, if not a release tag
         # FIXME: Not yet ready. FOLIO-4415. Do similar to go-version-number.yml and ui-version-number.yml Workflows.
         # run: echo version=$(./folio-tools/github-actions-scripts/go-calculate-folioci-version.sh) | tee -a $GITHUB_OUTPUT
-        run: echo version=x.y.z-SNAPSHOT.NNNN-not-yet-calculated | tee -a $GITHUB_OUTPUT
+        run: echo version=1.3.0-SNAPSHOT.NNNN-not-yet-calculated | tee -a $GITHUB_OUTPUT
         env:
           JOB_ID: ${{ github.run_number }}
 

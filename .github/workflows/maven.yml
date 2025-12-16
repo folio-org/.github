@@ -7,6 +7,10 @@ on:
         required: false
         type: string
         default: '21'
+      docker-label-documentation:
+        required: false
+        type: string
+        default: ''
       publish-module-descriptor:
         required: false
         type: boolean
@@ -128,12 +132,27 @@ jobs:
     with:
       is-release: ${{ needs.set-shared-variables.outputs.is-release }}
 
+  docker-publish:
+    needs: [set-shared-variables, version-number, build]
+    uses: ./.github/workflows/maven-docker-publish.yml
+    with:
+      is-release: ${{ needs.set-shared-variables.outputs.is-release }}
+      is-main-branch: ${{ needs.set-shared-variables.outputs.is-main-branch }}
+      artifact-id: ${{ needs.build.outputs.artifact-id }}
+      artifact-version: ${{ needs.version-number.outputs.version-number }}
+      docker-registry: ${{ needs.set-shared-variables.outputs.docker-registry }}
+      do-docker-push: ${{ needs.set-shared-variables.outputs.do-docker-push }}
+      docker-label-documentation: ${{ inputs.docker-label-documentation }}
+    secrets:
+      dockerhub-username: ${{ secrets.DOCKERHUB_USERNAME }}
+      dockerhub-token: ${{ secrets.DOCKERHUB_TOKEN }}
+
   report-testing-variables:
     needs: [set-shared-variables, version-number]
     uses: ./.github/workflows/maven-report-testing-variables.yml
     with:
       is-release: ${{ needs.set-shared-variables.outputs.is-release }}
-      is-main-branch: ${{ needs.set-shared-variables.outputs.is-main-branch}}
+      is-main-branch: ${{ needs.set-shared-variables.outputs.is-main-branch }}
       repo-name: ${{ needs.set-shared-variables.outputs.repo-name }}
       java-version: ${{ inputs.java-version }}
       artifact-version: ${{ needs.version-number.outputs.version-number }}

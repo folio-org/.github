@@ -16,11 +16,17 @@ on:
       docker-registry:
         required: true
         type: string
+    outputs:
+      artifact-id:
+        value: ${{ jobs.build.outputs.artifact-id }}
 
 jobs:
   build:
     name: Checkout and build
     runs-on: ubuntu-latest
+
+    outputs:
+      artifact-id: ${{ steps.vars1.outputs.version }}
 
     steps:
       - name: Checkout ${{ github.repository }}
@@ -53,6 +59,7 @@ jobs:
         id: vars1
         run: |
           echo "artifact-id=$(mvn help:evaluate -Dexpression=project.artifactId -q -DforceStdout)" | tee -a $GITHUB_ENV
+          echo "artifact-id=${{ env.artifact-id }}" | tee -a $GITHUB_OUTPUT
           echo "SHA_SHORT=$(git rev-parse --short HEAD)" | tee -a $GITHUB_ENV
 
       - name: Calculate version number, if not a release tag
