@@ -126,3 +126,9 @@ jobs:
           path: target/ModuleDescriptor.json
           retention-days: 1
 
+      - name: Upload fat jar as build artifact
+        uses: actions/upload-artifact@v6
+        with:
+          name: fat-jar
+          path: target/*-fat.jar
+
