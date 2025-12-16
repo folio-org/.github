@@ -58,8 +58,7 @@ jobs:
       - name: Gather some variables
         id: vars1
         run: |
-          echo "artifact-id=$(mvn help:evaluate -Dexpression=project.artifactId -q -DforceStdout)" | tee -a $GITHUB_ENV
-          echo "artifact-id=${{ env.artifact-id }}" | tee -a $GITHUB_OUTPUT
+          echo "artifact-id=$(mvn help:evaluate -Dexpression=project.artifactId -q -DforceStdout)" | tee -a $GITHUB_OUTPUT | tee -a $GITHUB_ENV
           echo "SHA_SHORT=$(git rev-parse --short HEAD)" | tee -a $GITHUB_ENV
 
       - name: Calculate version number, if not a release tag
