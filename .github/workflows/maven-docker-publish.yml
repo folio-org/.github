@@ -44,10 +44,10 @@ jobs:
             echo "Will do docker build, but will not push, i.e. publish=false" | tee -a $GITHUB_STEP_SUMMARY
           fi
 
-      - name: Checkout ${{ github.repository }}
-        uses: actions/checkout@v6
-        with:
-          fetch-depth: 1
+#      - name: Checkout ${{ github.repository }}
+#        uses: actions/checkout@v6
+#        with:
+#          fetch-depth: 1
 
       - name: Login to Docker Hub
         uses: docker/login-action@v3
