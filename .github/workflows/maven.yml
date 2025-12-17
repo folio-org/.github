@@ -171,3 +171,16 @@ jobs:
       dockerhub-username: ${{ secrets.DOCKERHUB_USERNAME }}
       dockerhub-token: ${{ secrets.DOCKERHUB_TOKEN }}
 
+  docker-description:
+    name: Publish image description
+    needs: [set-shared-variables, build, docker-publish]
+#    if: needs.set-shared-variables.outputs.is-release == 'True' || needs.set-shared-variables.outputs.is-main-branch == 'True'
+    uses: ./.github/workflows/docker-description.yml
+    with:
+      artifact-id: ${{ needs.build.outputs.artifact-id }}
+      docker-registry: ${{ needs.set-shared-variables.outputs.docker-registry }}
+      repo-description: ${{ needs.set-shared-variables.outputs.repo-description }}
+      publish-module-descriptor: ${{ inputs.publish-module-descriptor }}
+    secrets:
+      dockerhub-username: ${{ secrets.DOCKERHUB_USERNAME }}
+      dockerhub-token: ${{ secrets.DOCKERHUB_TOKEN }}
