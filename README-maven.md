@@ -34,11 +34,14 @@ on:
     branches: ['*']
     tags:
       - '[vV][0-9]+.[0-9]+.[0-9]+*'
+  pull_request:
   workflow_dispatch:
 
 jobs:
   maven:
     uses: folio-org/.github/.github/workflows/maven.yml@FOLIO-4126-maven-workflows-1
+    # Only handle push events from the main branch or tags, to decrease PR noise
+    if: github.ref_name == github.event.repository.default_branch || github.event_name != 'push' || github.ref_type == 'tag'
     secrets: inherit
 ```
 
