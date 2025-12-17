@@ -80,11 +80,13 @@ jobs:
         run: |
           echo "artifact-version=${{ steps.calculate-version.outputs.version }}${{ steps.tag-version.outputs.version }}" | tee -a $GITHUB_ENV
 
-      - name: Print module version to job summary
-        id: show-version
+      - name: Print module information to job summary
         run: |
-          echo "artifact-id: ${{ env.artifact-id }}" >> $GITHUB_STEP_SUMMARY
-          echo "artifact-version: ${{ env.artifact-version }}" >> $GITHUB_STEP_SUMMARY
+          {
+            echo "Head commit SHA: ${{ env.SHA_SHORT }}"
+            echo "artifact-id: ${{ env.artifact-id }}"
+            echo "artifact-version: ${{ env.artifact-version }}"
+          } | tee -a $GITHUB_STEP_SUMMARY
 
       - name: Discover release dependencies that are snapshots
         if: ${{ inputs.is-release == 'True' }}
