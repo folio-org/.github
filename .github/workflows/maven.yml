@@ -174,7 +174,7 @@ jobs:
   docker-description:
     name: Publish image description
     needs: [set-shared-variables, build, docker-publish]
-#    if: needs.set-shared-variables.outputs.is-release == 'True' || needs.set-shared-variables.outputs.is-main-branch == 'True'
+    if: needs.set-shared-variables.outputs.is-release == 'True' || needs.set-shared-variables.outputs.is-main-branch == 'True'
     uses: ./.github/workflows/docker-description.yml
     with:
       artifact-id: ${{ needs.build.outputs.artifact-id }}
