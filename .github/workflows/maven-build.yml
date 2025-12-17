@@ -10,6 +10,9 @@ on:
       java-version:
         required: true
         type: string
+      artifact-version:
+        required: true
+        type: string
       allow-snapshots-release:
         required: true
         type: boolean
@@ -61,31 +64,12 @@ jobs:
           echo "artifact-id=$(mvn help:evaluate -Dexpression=project.artifactId -q -DforceStdout)" | tee -a $GITHUB_OUTPUT | tee -a $GITHUB_ENV
           echo "SHA_SHORT=$(git rev-parse --short HEAD)" | tee -a $GITHUB_ENV
 
-      - name: Calculate version number, if not a release tag
-        id: calculate-version
-        if: ${{ inputs.is-release == 'False' }}
-        run: |
-          echo "version=$(mvn help:evaluate -Dexpression=project.version -q -DforceStdout)-${{ env.SHA_SHORT }}" | tee -a $GITHUB_OUTPUT
-
-      - name: Get release tag version number, if applicable
-        id: tag-version
-        if: ${{ inputs.is-release == 'True' }}
-        run: |
-          echo "version=${GITHUB_REF#refs/tags/v}" | tee -a $GITHUB_OUTPUT
-
-      # aggregate tag and non-tag versions into a single output
-      # the irrelevant one will be an empty string
-      - name: Get version from previous steps
-        id: actual-version
-        run: |
-          echo "artifact-version=${{ steps.calculate-version.outputs.version }}${{ steps.tag-version.outputs.version }}" | tee -a $GITHUB_ENV
-
       - name: Print module information to job summary
         run: |
           {
             echo "Head commit SHA: ${{ env.SHA_SHORT }}"
             echo "artifact-id: ${{ env.artifact-id }}"
-            echo "artifact-version: ${{ env.artifact-version }}"
+            echo "artifact-version: ${{ inputs.artifact-version }}"
           } | tee -a $GITHUB_STEP_SUMMARY
 
       - name: Discover release dependencies that are snapshots
@@ -106,8 +90,8 @@ jobs:
             cd target
             mv ModuleDescriptor.json ModuleDescriptor.json.orig
             cat <<< $( \
-              jq '. | .id |= "${{ env.artifact-id }}-${{ env.artifact-version }}" | if has("launchDescriptor") then
-                .launchDescriptor.dockerImage |= "${{ inputs.docker-registry }}/${{ env.artifact-id }}:${{ env.artifact-version }}" |
+              jq '. | .id |= "${{ env.artifact-id }}-${{ inputs.artifact-version }}" | if has("launchDescriptor") then
+                .launchDescriptor.dockerImage |= "${{ inputs.docker-registry }}/${{ env.artifact-id }}:${{ inputs.artifact-version }}" |
                 .launchDescriptor.dockerPull |= "true" else . end' ModuleDescriptor.json.orig \
             ) > ModuleDescriptor.json
           else
