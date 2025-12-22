@@ -38,7 +38,7 @@ jobs:
       - name: Get project version
         id: get-version
         run: |
-          echo "project-version=$(mvn help:evaluate -Dexpression=project.version -q -DforceStdout)" | tee -a $GITHUB_OUTPUT | tee -a $GITHUB_ENV
+          echo project-version="$(mvn help:evaluate -Dexpression=project.version -q -DforceStdout)" | tee -a $GITHUB_OUTPUT | tee -a $GITHUB_ENV
           echo "SHA_SHORT=$(git rev-parse --short HEAD)" | tee -a $GITHUB_ENV
       
       - name: Enforce SNAPSHOT for non-release runs
