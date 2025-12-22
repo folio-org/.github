@@ -83,9 +83,6 @@ jobs:
       - name: Maven build
         run: mvn clean org.jacoco:jacoco-maven-plugin:prepare-agent install org.jacoco:jacoco-maven-plugin:report
 
-      - name: List the build target directory
-        run: ls -R target
-
       - name: Update ModuleDescriptor identifiers
         run: |
           if test -f "$MOD_DESCRIPTOR"; then
