@@ -40,6 +40,17 @@ jobs:
         run: |
           echo "project-version=$(mvn help:evaluate -Dexpression=project.version -q -DforceStdout)" | tee -a $GITHUB_OUTPUT | tee -a $GITHUB_ENV
           echo "SHA_SHORT=$(git rev-parse --short HEAD)" | tee -a $GITHUB_ENV
+      
+      - name: Enforce SNAPSHOT for non-release runs
+        if: github.event_name != 'release'
+        run: |
+          if [[ "${project-version}" != *SNAPSHOT* && "${project-version}" != *snapshot* ]]; then
+            echo "::error::Non-release builds must use a SNAPSHOT version."
+            echo "::error::Found version: ${project-version}"
+            exit 1
+          fi
+
+          echo "SNAPSHOT version check passed for non-release run."
 
       - id: calculate
         if: ${{ inputs.is-release == 'False' }}
