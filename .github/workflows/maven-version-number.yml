@@ -34,6 +34,12 @@ jobs:
           repository: folio-org/folio-tools
           path: folio-tools
           fetch-depth: 1
+      
+      - name: Get project version
+        id: get-version
+        run: |
+          echo "project-version=$(mvn help:evaluate -Dexpression=project.version -q -DforceStdout)" | tee -a $GITHUB_OUTPUT | tee -a $GITHUB_ENV
+          echo "SHA_SHORT=$(git rev-parse --short HEAD)" | tee -a $GITHUB_ENV
 
       - id: calculate
         if: ${{ inputs.is-release == 'False' }}
