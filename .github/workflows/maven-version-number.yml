@@ -44,9 +44,9 @@ jobs:
       - name: Enforce SNAPSHOT for non-release runs
         if: github.event_name != 'release'
         run: |
-          if [[ "${{ steps.get_version.outputs.project-version }}" != *SNAPSHOT* && "${{ steps.get_version.outputs.project-version }}" != *snapshot* ]]; then
+          if [[ "${{ steps.get-version.outputs.project-version }}" != *SNAPSHOT* ]]; then
             echo "::error::Non-release builds must use a SNAPSHOT version."
-            echo "::error::Found version: ${{ steps.get_version.outputs.project-version }}"
+            echo "::error::Found version: ${{ steps.get-version.outputs.project-version }}"
             exit 1
           fi
 
@@ -60,7 +60,7 @@ jobs:
         run: |
           base_number=2000
           build_number="${base_number}${GITHUB_RUN_NUMBER}"
-          echo version="${{ steps.get_version.outputs.project-version }}-${build_number}" | tee -a $GITHUB_OUTPUT
+          echo version="${{ steps.get-version.outputs.project-version }}-${build_number}" | tee -a $GITHUB_OUTPUT
         env:
           JOB_ID: ${{ github.run_number }}
 
