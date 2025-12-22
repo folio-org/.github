@@ -43,7 +43,7 @@ jobs:
       - name: Enforce SNAPSHOT for non-release runs
         if: github.event_name != 'release'
         run: |
-          if [[ "${{ steps.get-version.outputs.project-version }}" != *SNAPSHOT* ]]; then
+          if [[ "${{ steps.get-version.outputs.project-version }}" != *-SNAPSHOT ]]; then
             echo "::error::Non-release builds must use a SNAPSHOT version."
             echo "::error::Found version: ${{ steps.get-version.outputs.project-version }}"
             exit 1
@@ -54,8 +54,6 @@ jobs:
       - id: calculate
         if: ${{ inputs.is-release == 'False' }}
         name: Calculate version number, if not a release tag
-        # FIXME: Not yet ready. FOLIO-4415. Do similar to go-version-number.yml and ui-version-number.yml Workflows.
-        # run: echo version=$(./folio-tools/github-actions-scripts/go-calculate-folioci-version.sh) | tee -a $GITHUB_OUTPUT
         run: |
           base_number=2000
           build_number=$(( base_number + GITHUB_RUN_NUMBER ))
