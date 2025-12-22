@@ -83,8 +83,11 @@ jobs:
       - name: Maven build
         run: mvn clean org.jacoco:jacoco-maven-plugin:prepare-agent install org.jacoco:jacoco-maven-plugin:report
 
-      - name: List the build target directory
-        run: ls -R target
+      - name: Upload jacoco report as build artifact
+        uses: actions/upload-artifact@v6
+        with:
+          name: jacoco.xml
+          path: target/site/jacoco/jacoco.xml
 
       - name: Update ModuleDescriptor identifiers
         run: |
