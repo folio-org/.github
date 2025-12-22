@@ -39,7 +39,6 @@ jobs:
         id: get-version
         run: |
           echo project-version="$(mvn help:evaluate -Dexpression=project.version -q -DforceStdout)" | tee -a $GITHUB_OUTPUT | tee -a $GITHUB_ENV
-          echo "SHA_SHORT=$(git rev-parse --short HEAD)" | tee -a $GITHUB_ENV
       
       - name: Enforce SNAPSHOT for non-release runs
         if: github.event_name != 'release'
@@ -59,7 +58,7 @@ jobs:
         # run: echo version=$(./folio-tools/github-actions-scripts/go-calculate-folioci-version.sh) | tee -a $GITHUB_OUTPUT
         run: |
           base_number=2000
-          build_number="${base_number}${GITHUB_RUN_NUMBER}"
+          build_number=$(( base_number + GITHUB_RUN_NUMBER ))
           echo version="${{ steps.get-version.outputs.project-version }}-${build_number}" | tee -a $GITHUB_OUTPUT
         env:
           JOB_ID: ${{ github.run_number }}
