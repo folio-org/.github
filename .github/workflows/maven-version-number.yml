@@ -26,14 +26,6 @@ jobs:
 
       - name: Fetch git tags
         run: git fetch --prune --prune-tags --force --depth=1
-
-      - name: Checkout folio-org/folio-tools
-        if: ${{ inputs.is-release == 'False' }}
-        uses: actions/checkout@v6
-        with:
-          repository: folio-org/folio-tools
-          path: folio-tools
-          fetch-depth: 1
       
       - name: Get project version
         id: get-version
@@ -43,7 +35,7 @@ jobs:
       - name: Enforce SNAPSHOT for non-release runs
         if: github.event_name != 'release'
         run: |
-          if [[ "${{ steps.get-version.outputs.project-version }}" != *-SNAPSHOT ]]; then
+          if [[ ! "${{ steps.get-version.outputs.project-version }}" =~ -SNAPSHOT$ ]]; then
             echo "::error::Non-release builds must use a SNAPSHOT version."
             echo "::error::Found version: ${{ steps.get-version.outputs.project-version }}"
             exit 1
