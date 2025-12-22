@@ -30,14 +30,14 @@ jobs:
       - name: Get project version
         id: get-version
         run: |
-          echo project-version="$(mvn help:evaluate -Dexpression=project.version -q -DforceStdout)" | tee -a $GITHUB_OUTPUT | tee -a $GITHUB_ENV
-      
+          echo project-version="$(mvn help:evaluate -Dexpression=project.version -q -DforceStdout)" | tee -a $GITHUB_OUTPUT
+
       - name: Enforce SNAPSHOT for non-release runs
         if: github.event_name != 'release'
         run: |
           if [[ ! "${{ steps.get-version.outputs.project-version }}" =~ -SNAPSHOT$ ]]; then
             echo "::error::Non-release builds must use a SNAPSHOT version."
-            echo "::error::Found version: ${{ steps.get-version.outputs.project-version }}"
+            echo "::error::Found project.version from POM: ${{ steps.get-version.outputs.project-version }}"
             exit 1
           fi
 
@@ -63,8 +63,3 @@ jobs:
       - id: final
         name: Get version from previous steps
         run: echo version=${{ steps.calculate.outputs.version }}${{ steps.tag-version.outputs.version }} | tee -a $GITHUB_OUTPUT
-
-      - name: Print module version to job summary
-        run: |
-          echo "Module version: ${{ steps.final.outputs.version }}" >> $GITHUB_STEP_SUMMARY
-
