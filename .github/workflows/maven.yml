@@ -132,6 +132,8 @@ jobs:
       artifact-version: ${{ needs.version-number.outputs.version-number }}
       allow-snapshots-release: ${{ inputs.allow-snapshots-release }}
       docker-registry: ${{ needs.set-shared-variables.outputs.docker-registry }}
+    secrets:
+      SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
 
   docker-publish:
     needs: [set-shared-variables, version-number, build]
