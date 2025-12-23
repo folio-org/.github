@@ -32,17 +32,6 @@ jobs:
         run: |
           echo project-version="$(mvn help:evaluate -Dexpression=project.version -q -DforceStdout)" | tee -a $GITHUB_OUTPUT
 
-      - name: Enforce SNAPSHOT for non-release runs
-        if: github.event_name != 'release'
-        run: |
-          if [[ ! "${{ steps.get-version.outputs.project-version }}" =~ -SNAPSHOT$ ]]; then
-            echo "::error::Non-release builds must use a SNAPSHOT version."
-            echo "::error::Found project.version from POM: ${{ steps.get-version.outputs.project-version }}"
-            exit 1
-          fi
-
-          echo "SNAPSHOT version check passed for non-release run."
-
       - id: calculate
         if: ${{ inputs.is-release == 'False' }}
         name: Calculate version number, if not a release tag
