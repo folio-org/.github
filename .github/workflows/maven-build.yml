@@ -96,7 +96,6 @@ jobs:
           -Dsonar.organization=folio-org
           -Dsonar.projectKey=org.folio:${{ github.event.repository.name }}
           -Dsonar.projectName=${{ github.event.repository.name }}
-          -Dsonar.coverage.jacoco.xmlReportPaths=target/site/jacoco/jacoco.xml
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
