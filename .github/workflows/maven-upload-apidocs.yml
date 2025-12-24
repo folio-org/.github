@@ -4,7 +4,7 @@ name: Maven upload build-time apidocs
 
 on:
   workflow_call:
-    secrets:
+#    secrets:
 # Add the S3 secrets
 
 jobs:
