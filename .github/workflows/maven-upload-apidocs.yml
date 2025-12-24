@@ -35,7 +35,6 @@ jobs:
           find ./apidocs/*.* | sed 's|^.*/||' > ${uploadDir}/files-upload.txt
           cp apidocs/*.* ${uploadDir}
           cat ${uploadDir}/files-upload.txt
-          echo "UPLOAD_DIR=${uploadDir}" | tee -a $GITHUB_ENV
 
       - name: Publish to AWS S3
         uses: sai-sharan/aws-s3-sync-action@v0.1.0
@@ -43,7 +42,7 @@ jobs:
           access_key: ${{ secrets.AWS_S3_ACCESS_KEY_ID }}
           secret_access_key: ${{ secrets.AWS_S3_ACCESS_KEY }}
           region: ${{ env.AWS_S3_REGION }}
-          source: ${{ env.UPLOAD_DIR }}
+          source: upload
           destination_bucket: ${{ env.AWS_S3_BUCKET }}
           destination_prefix: ${{ env.AWS_S3_FOLDER }}
           delete: false
