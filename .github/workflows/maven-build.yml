@@ -22,6 +22,8 @@ on:
     outputs:
       artifact-id:
         value: ${{ jobs.build.outputs.artifact-id }}
+      has-maven-apidocs:
+        value: ${{ jobs.build.outputs.has-maven-apidocs }}
     secrets:
       SONAR_TOKEN:
         required: true # fails the check if the PR is from a fork
@@ -33,6 +35,7 @@ jobs:
 
     outputs:
       artifact-id: ${{ steps.vars1.outputs.artifact-id }}
+      has-maven-apidocs: ${{ steps.discover-apidocs.outputs.has-maven-apidocs }}
 
     steps:
       - name: Checkout ${{ github.repository }}
@@ -144,10 +147,16 @@ jobs:
           echo "test1" > target/apidocs/test1.txt
           echo "test2" > target/apidocs/test2.txt
 
-# TODO: Set output var if has apidocs
+      - name: Discover maven built apidocs
+        id: discover-apidocs
+        run: |
+          if test -d "target/apidocs"; then
+            echo "has-maven-apidocs=True" | tee -a $GITHUB_OUTPUT
+          fi
 
       - name: Upload apidocs as build artifact
         uses: actions/upload-artifact@v6
+        if: ${{ steps.discover-apidocs.outputs.has-maven-apidocs == 'True' }}
         with:
           name: apidocs
           path: target/apidocs
