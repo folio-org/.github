@@ -136,3 +136,18 @@ jobs:
           name: fat-jar
           path: target/*-fat.jar
 
+# Do a test of build-time apidocs for upload FOLIO-4428
+
+      - name: Prepare some fake apidocs
+        run: |
+          mkdir target/apidocs
+          echo "test1" > target/apidocs/test1.txt
+          echo "test2" > target/apidocs/test2.txt
+
+# TODO: Set output var if has apidocs
+
+      - name: Upload apidocs as build artifact
+        uses: actions/upload-artifact@v6
+        with:
+          name: apidocs
+          path: target/apidocs

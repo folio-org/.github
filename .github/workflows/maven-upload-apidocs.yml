@@ -1,0 +1,22 @@
+name: Maven upload build-time apidocs
+
+# If maven generated apidocs during its build then do special upload to S3.
+
+on:
+  workflow_call:
+    secrets:
+# Add the S3 secrets
+
+jobs:
+  run:
+    name: Upload build-time apidocs
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Download artifact apidocs
+        uses: actions/download-artifact@v7
+        with:
+          name: apidocs
+
+      - name: Do ls
+        run: ls -R apidocs
