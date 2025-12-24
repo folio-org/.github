@@ -2,6 +2,9 @@ name: Maven upload build-time apidocs
 
 # If maven generated apidocs during its build then do special upload to S3.
 
+env:
+  AWS_S3_BUCKET: 'foliodocs'
+
 on:
   workflow_call:
 #    secrets:
@@ -11,6 +14,8 @@ jobs:
   run:
     name: Upload build-time apidocs
     runs-on: ubuntu-latest
+    env:
+      AWS_S3_FOLDER: 'api'
 
     steps:
       - name: Download artifact apidocs
@@ -28,5 +33,7 @@ jobs:
           cp apidocs/*.* ${uploadDir}
           cat ${uploadDir}/files-upload.txt
 
-      - name: Do ls
-        run: ls -R ${uploadDir}
+      - name: Report the env
+        run: |
+          echo "AWS_S3_BUCKET=${{ env.AWS_S3_BUCKET }}"
+          echo "AWS_S3_FOLDER=${{ env.AWS_S3_FOLDER }}"
