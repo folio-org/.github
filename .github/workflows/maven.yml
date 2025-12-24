@@ -36,6 +36,10 @@ on:
         required: false
       FOLIO_REGISTRY_PASSWORD:
         required: false
+      S3_ACCESS_KEY_ID:
+        required: false
+      S3_SECRET_ACCESS_KEY:
+        required: false
 
 jobs:
   documentation:
@@ -208,3 +212,7 @@ jobs:
     if: needs.build.outputs.has-maven-apidocs == 'True'
 #    if: needs.set-shared-variables.outputs.is-release == 'True' || needs.set-shared-variables.outputs.is-main-branch == 'True'
     uses: ./.github/workflows/maven-upload-apidocs.yml
+    secrets:
+      AWS_S3_ACCESS_KEY_ID: ${{ secrets.S3_ACCESS_KEY_ID }}
+      AWS_S3_ACCESS_KEY: ${{ secrets.S3_SECRET_ACCESS_KEY }}
+

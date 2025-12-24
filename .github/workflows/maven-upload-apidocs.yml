@@ -4,18 +4,21 @@ name: Maven upload build-time apidocs
 
 env:
   AWS_S3_BUCKET: 'foliodocs'
+  AWS_S3_FOLDER: 'api'
+  AWS_S3_REGION: 'us-east-1'
 
 on:
   workflow_call:
-#    secrets:
-# Add the S3 secrets
+    secrets:
+      AWS_S3_ACCESS_KEY_ID:
+        required: true
+      AWS_S3_ACCESS_KEY:
+        required: true
 
 jobs:
   run:
     name: Upload build-time apidocs
     runs-on: ubuntu-latest
-    env:
-      AWS_S3_FOLDER: 'api'
 
     steps:
       - name: Download artifact apidocs
@@ -33,7 +36,3 @@ jobs:
           cp apidocs/*.* ${uploadDir}
           cat ${uploadDir}/files-upload.txt
 
-      - name: Report the env
-        run: |
-          echo "AWS_S3_BUCKET=${{ env.AWS_S3_BUCKET }}"
-          echo "AWS_S3_FOLDER=${{ env.AWS_S3_FOLDER }}"
