@@ -17,6 +17,7 @@ jobs:
         uses: actions/download-artifact@v7
         with:
           name: apidocs
+          path: apidocs
 
       - name: Do ls
         run: ls -R apidocs
