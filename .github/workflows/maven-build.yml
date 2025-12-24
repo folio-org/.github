@@ -150,7 +150,7 @@ jobs:
       - name: Discover maven built apidocs
         id: discover-apidocs
         run: |
-          if test -d "target/apidocs2"; then
+          if test -d "target/apidocs"; then
             echo "has-maven-apidocs=True" | tee -a $GITHUB_OUTPUT
           fi
 

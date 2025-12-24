@@ -19,5 +19,14 @@ jobs:
           name: apidocs
           path: apidocs
 
+      - name: Prepare upload apidocs directory
+        run: |
+          uploadBaseDir="upload/${GITHUB_REPOSITORY##*/}"
+          uploadDir="${uploadBaseDir}/u"
+          mkdir -p ${uploadDir}
+          find ./apidocs/*.* | sed 's|^.*/||' > ${uploadDir}/files-upload.txt
+          cp apidocs/*.* ${uploadDir}
+          cat ${uploadDir}/files-upload.txt
+
       - name: Do ls
-        run: ls -R apidocs
+        run: ls -R ${uploadDir}
