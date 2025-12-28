@@ -208,14 +208,14 @@ jobs:
 
   upload-apidocs:
     name: Upload build-time apidocs
-    needs: [set-shared-variables, build]
+    needs: [set-shared-variables, version-number, build]
     if: needs.build.outputs.has-maven-apidocs == 'True'
 #    if: needs.set-shared-variables.outputs.is-release == 'True' || needs.set-shared-variables.outputs.is-main-branch == 'True'
     uses: ./.github/workflows/maven-upload-apidocs.yml
     with:
       is-release: ${{ needs.set-shared-variables.outputs.is-release }}
       artifact-id: ${{ needs.build.outputs.artifact-id }}
-      artifact-version: ${{ needs.build.outputs.artifact-id }}
+      artifact-version: ${{ needs.version-number.outputs.version-number }}
     secrets:
       AWS_S3_ACCESS_KEY_ID: ${{ secrets.S3_ACCESS_KEY_ID }}
       AWS_S3_ACCESS_KEY: ${{ secrets.S3_SECRET_ACCESS_KEY }}
