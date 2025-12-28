@@ -41,7 +41,16 @@ jobs:
       - name: Prepare upload apidocs directory
         run: |
           uploadBaseDir="upload/${{ inputs.artifact-id }}"
-          uploadDir="${uploadBaseDir}/u"
+          if [ "${{ inputs.is-release }}" == 'False' ]; then
+            testArtifactVersion="1.4.1"
+            versionMajMin=$(echo $testArtifactVersion | awk -F '.' '{ print $1 "." $2 }')
+            echo "versionMajMin=$versionMajMin"
+            uploadDir="${uploadBaseDir}/${versionMajMin}/u"
+            versionMajMin2=$(echo ${{ inputs.artifact-version }} | awk -F '.' '{ print $1 "." $2 }')
+            echo "versionMajMin2=$versionMajMin2"
+          else
+            uploadDir="${uploadBaseDir}/u"
+          fi
           mkdir -p ${uploadDir}
           find ./apidocs/*.* | sed 's|^.*/||' > ${uploadDir}/files-upload.txt
           cp apidocs/*.* ${uploadDir}
