@@ -41,13 +41,9 @@ jobs:
       - name: Prepare upload apidocs directory
         run: |
           uploadBaseDir="upload/${{ inputs.artifact-id }}"
-          if [ "${{ inputs.is-release }}" == 'False' ]; then
-            testArtifactVersion="1.4.1"
-            versionMajMin=$(echo $testArtifactVersion | awk -F '.' '{ print $1 "." $2 }')
-            echo "versionMajMin=$versionMajMin"
+          if [ "${{ inputs.is-release }}" == 'True' ]; then
+            versionMajMin=$(echo ${{ inputs.artifact-version }} | awk -F '.' '{ print $1 "." $2 }')
             uploadDir="${uploadBaseDir}/${versionMajMin}/u"
-            versionMajMin2=$(echo ${{ inputs.artifact-version }} | awk -F '.' '{ print $1 "." $2 }')
-            echo "versionMajMin2=$versionMajMin2"
           else
             uploadDir="${uploadBaseDir}/u"
           fi
