@@ -110,7 +110,7 @@ jobs:
       - name: Discover ModuleDescriptor
         id: discover-md
         run: |
-          if test -d "target/ModuleDescriptor.json"; then
+          if test -f "target/ModuleDescriptor.json"; then
             echo "has-module-descriptor=True" | tee -a $GITHUB_OUTPUT | tee -a $GITHUB_STEP_SUMMARY
           else
             echo "has-module-descriptor=False" | tee -a $GITHUB_OUTPUT | tee -a $GITHUB_STEP_SUMMARY
