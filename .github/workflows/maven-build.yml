@@ -139,14 +139,6 @@ jobs:
           name: fat-jar
           path: target/*-fat.jar
 
-# Do a test of build-time apidocs for upload FOLIO-4428
-
-      - name: Prepare some fake apidocs
-        run: |
-          mkdir target/apidocs
-          echo "test1" > target/apidocs/test1.txt
-          echo "test2" > target/apidocs/test2.txt
-
       - name: Discover maven built apidocs
         id: discover-apidocs
         run: |
