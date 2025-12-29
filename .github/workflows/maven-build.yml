@@ -10,6 +10,9 @@ on:
       is-main-branch:
         required: true
         type: string
+      branch-name:
+        required: true
+        type: string
       java-version:
         required: true
         type: string

@@ -58,6 +58,7 @@ jobs:
     outputs:
       is-release: ${{ steps.logic.outputs.is-release }}
       is-main-branch: ${{ steps.vars1.outputs.is-main-branch }}
+      branch-name: ${{ steps.vars1.outputs.branch-name }}
       do-docker-push: ${{ steps.vars2.outputs.do-docker-push }}
       docker-registry: ${{ steps.logic.outputs.docker-registry }}
       repo-name: ${{ steps.vars1.outputs.repo-name }}
@@ -142,6 +143,7 @@ jobs:
     with:
       is-release: ${{ needs.set-shared-variables.outputs.is-release }}
       is-main-branch: ${{ needs.set-shared-variables.outputs.is-main-branch }}
+      branch-name: ${{ needs.set-shared-variables.outputs.branch-name }}
       java-version: ${{ inputs.java-version }}
       artifact-version: ${{ needs.version-number.outputs.version-number }}
       allow-snapshots-release: ${{ inputs.allow-snapshots-release }}
