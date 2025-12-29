@@ -95,6 +95,7 @@ jobs:
         run: |
           echo "repo-name=${GITHUB_REPOSITORY##*/}" | tee -a $GITHUB_OUTPUT
           echo "repo-description=${{ github.event.repository.description }}" | tee -a $GITHUB_OUTPUT
+          echo "branch-name=${github.ref##*/}" | tee -a $GITHUB_OUTPUT
           # On a fork, the default branch might be other:
           if ${{ github.ref == 'refs/heads/main' || github.ref  == 'refs/heads/master' }}; then
             echo "is-main-branch=True" | tee -a $GITHUB_OUTPUT
