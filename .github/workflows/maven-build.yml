@@ -22,6 +22,8 @@ on:
     outputs:
       artifact-id:
         value: ${{ jobs.build.outputs.artifact-id }}
+      has-module-descriptor:
+        value: ${{ jobs.build.outputs.has-module-descriptor }}
       has-maven-apidocs:
         value: ${{ jobs.build.outputs.has-maven-apidocs }}
     secrets:
@@ -35,6 +37,7 @@ jobs:
 
     outputs:
       artifact-id: ${{ steps.vars1.outputs.artifact-id }}
+      has-module-descriptor: ${{ steps.discover-md.outputs.has-module-descriptor }}
       has-maven-apidocs: ${{ steps.discover-apidocs.outputs.has-maven-apidocs }}
 
     steps:
@@ -104,29 +107,33 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
 
-      - name: Update ModuleDescriptor identifiers
+      - name: Discover ModuleDescriptor
+        id: discover-md
         run: |
-          if test -f "$MOD_DESCRIPTOR"; then
-            echo "Found $MOD_DESCRIPTOR"
-            cd target
-            mv ModuleDescriptor.json ModuleDescriptor.json.orig
-            cat <<< $( \
-              jq '. | .id |= "${{ env.artifact-id }}-${{ inputs.artifact-version }}" | if has("launchDescriptor") then
-                .launchDescriptor.dockerImage |= "${{ inputs.docker-registry }}/${{ env.artifact-id }}:${{ inputs.artifact-version }}" |
-                .launchDescriptor.dockerPull |= "true" else . end' ModuleDescriptor.json.orig \
-            ) > ModuleDescriptor.json
+          if test -d "target/ModuleDescriptor.json"; then
+            echo "has-module-descriptor=True" | tee -a $GITHUB_OUTPUT | tee -a $GITHUB_STEP_SUMMARY
           else
-            echo "Could not find $MOD_DESCRIPTOR"
-            exit 1
+            echo "has-module-descriptor=False" | tee -a $GITHUB_OUTPUT | tee -a $GITHUB_STEP_SUMMARY
           fi
-        env:
-          MOD_DESCRIPTOR: './target/ModuleDescriptor.json'
+
+      - name: Update ModuleDescriptor identifiers
+        if: ${{ steps.discover-md.outputs.has-module-descriptor == 'True' }}
+        run: |
+          cd target
+          mv ModuleDescriptor.json ModuleDescriptor.json.orig
+          cat <<< $( \
+            jq '. | .id |= "${{ env.artifact-id }}-${{ inputs.artifact-version }}" | if has("launchDescriptor") then
+              .launchDescriptor.dockerImage |= "${{ inputs.docker-registry }}/${{ env.artifact-id }}:${{ inputs.artifact-version }}" |
+              .launchDescriptor.dockerPull |= "true" else . end' ModuleDescriptor.json.orig \
+          ) > ModuleDescriptor.json
 
       - name: Print ModuleDescriptor
+        if: ${{ steps.discover-md.outputs.has-module-descriptor == 'True' }}
         run: cat target/ModuleDescriptor.json
 
       # we publish it to the registry as a separate job
       - name: Upload ModuleDescriptor as build artifact
+        if: ${{ steps.discover-md.outputs.has-module-descriptor == 'True' }}
         uses: actions/upload-artifact@v6
         with:
           name: ModuleDescriptor.json
