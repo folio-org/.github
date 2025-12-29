@@ -102,7 +102,7 @@ jobs:
         run: |
           if ${{ github.event_name == 'pull_request' }}; then
             echo "FIXME: Do sonar for PR"
-          elif ${{ inputs.is-main-branch == 'True' }}; then
+          elif ${{ inputs.is-main-branch == 'False' }}; then
             echo "FIXME: Do sonar for main branch"
           else
             echo "FIXME: Do sonar for other branch"
