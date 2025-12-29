@@ -209,8 +209,7 @@ jobs:
   upload-apidocs:
     name: Upload build-time apidocs
     needs: [set-shared-variables, version-number, build]
-    if: needs.build.outputs.has-maven-apidocs == 'True'
-#    if: needs.set-shared-variables.outputs.is-release == 'True' || needs.set-shared-variables.outputs.is-main-branch == 'True'
+    if: needs.build.outputs.has-maven-apidocs == 'True' && (needs.set-shared-variables.outputs.is-release == 'True' || needs.set-shared-variables.outputs.is-main-branch == 'False')
     uses: ./.github/workflows/maven-upload-apidocs.yml
     with:
       is-release: ${{ needs.set-shared-variables.outputs.is-release }}
