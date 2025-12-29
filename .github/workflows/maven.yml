@@ -136,6 +136,7 @@ jobs:
     uses: ./.github/workflows/maven-build.yml
     with:
       is-release: ${{ needs.set-shared-variables.outputs.is-release }}
+      is-main-branch: ${{ needs.set-shared-variables.outputs.is-main-branch }}
       java-version: ${{ inputs.java-version }}
       artifact-version: ${{ needs.version-number.outputs.version-number }}
       allow-snapshots-release: ${{ inputs.allow-snapshots-release }}
