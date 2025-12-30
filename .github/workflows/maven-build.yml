@@ -107,6 +107,12 @@ jobs:
             echo "Do sonar for pull_request ..."
           elif ${{ inputs.is-main-branch == 'True' }}; then
             echo "Do sonar for main branch ..."
+            mvn -B org.sonarsource.scanner.maven:sonar-maven-plugin:${{ env.SONAR_VERSION }}:sonar \
+              -Dsonar.verbose=true \
+              -Dsonar.host.url=https://sonarcloud.io \
+              -Dsonar.organization=folio-org \
+              -Dsonar.projectKey=org.folio:${{ github.event.repository.name }} \
+              -Dsonar.projectName=${{ github.event.repository.name }}
           else
             echo "Do sonar for other branch ..."
             git fetch --no-tags --no-recurse-submodules ${{ github.server_url }}/${{ github.repository }} \
