@@ -28,6 +28,9 @@ on:
       docker-registry:
         required: true
         type: string
+      sonar-exclusions:
+        required: true
+        type: string
     outputs:
       artifact-id:
         value: ${{ jobs.build.outputs.artifact-id }}
@@ -101,6 +104,10 @@ jobs:
       - name: Maven build
         run: mvn clean org.jacoco:jacoco-maven-plugin:prepare-agent install org.jacoco:jacoco-maven-plugin:report
 
+      - name: Format Sonar exclusions list
+        id: format-exclusions
+        run: echo formatted=$(tr -d '[:blank:]' <<< "${{ inputs.sonar-exclusions }}") | tee -a $GITHUB_OUTPUT
+
       - name: Run SonarCloud scan
         run: |
           if ${{ github.event_name == 'pull_request' }}; then
@@ -111,6 +118,7 @@ jobs:
               -Dsonar.organization=folio-org \
               -Dsonar.projectKey=org.folio:${{ github.event.repository.name }} \
               -Dsonar.projectName=${{ github.event.repository.name }} \
+              -Dsonar.exclusions=${{ steps.format-exclusions.outputs.formatted }} \
               -Dsonar.pullrequest.base=${{ github.base_ref }} \
               -Dsonar.pullrequest.branch=${{ inputs.branch-name }} \
               -Dsonar.pullrequest.key=${{ github.event.pull_request.number }} \
@@ -123,7 +131,8 @@ jobs:
               -Dsonar.host.url=https://sonarcloud.io \
               -Dsonar.organization=folio-org \
               -Dsonar.projectKey=org.folio:${{ github.event.repository.name }} \
-              -Dsonar.projectName=${{ github.event.repository.name }}
+              -Dsonar.projectName=${{ github.event.repository.name }} \
+              -Dsonar.exclusions=${{ steps.format-exclusions.outputs.formatted }}
           else
             echo "Do sonar for other branch ..."
             git fetch --no-tags --no-recurse-submodules ${{ github.server_url }}/${{ github.repository }} \
@@ -134,6 +143,7 @@ jobs:
               -Dsonar.organization=folio-org \
               -Dsonar.projectKey=org.folio:${{ github.event.repository.name }} \
               -Dsonar.projectName=${{ github.event.repository.name }} \
+              -Dsonar.exclusions=${{ steps.format-exclusions.outputs.formatted }} \
               -Dsonar.branch.name=${{ inputs.branch-name }}
           fi
         env:

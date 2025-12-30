@@ -23,6 +23,13 @@ on:
         required: false
         type: boolean
         default: false
+      sonar-exclusions:
+        required: false
+        type: string
+        default: >
+          **/*.md,
+          .github/**,
+          **/*.json
     secrets:
       # these need to be non-required to allow anything here for forks
       # however, the sub-workflows will fail appropriately if these are not present, as applicable
@@ -148,6 +155,7 @@ jobs:
       artifact-version: ${{ needs.version-number.outputs.version-number }}
       allow-snapshots-release: ${{ inputs.allow-snapshots-release }}
       docker-registry: ${{ needs.set-shared-variables.outputs.docker-registry }}
+      sonar-exclusions: ${{ inputs.sonar-exclusions }}
     secrets:
       SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
 
