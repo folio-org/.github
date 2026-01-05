@@ -222,6 +222,14 @@ jobs:
       registry-username: ${{ secrets.FOLIO_REGISTRY_USERNAME }}
       registry-password: ${{ secrets.FOLIO_REGISTRY_PASSWORD }}
 
+  deploy-maven-artifacts:
+    name: Deploy maven artifacts
+    needs: [set-shared-variables, publish-module-descriptor]
+    if: needs.set-shared-variables.outputs.is-release == 'True' || needs.set-shared-variables.outputs.is-main-branch == 'True'
+    uses: ./.github/workflows/maven-artifacts-deploy.yml
+    with:
+      java-version: ${{ inputs.java-version }}
+
   upload-apidocs:
     name: Upload build-time apidocs
     needs: [set-shared-variables, version-number, build]
