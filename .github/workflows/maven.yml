@@ -160,7 +160,7 @@ jobs:
       SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
 
   docker-publish:
-    needs: [set-shared-variables, version-number, build]
+    needs: [set-shared-variables, version-number, build, okapi-dependency-check]
     uses: ./.github/workflows/maven-docker-publish.yml
     with:
       is-release: ${{ needs.set-shared-variables.outputs.is-release }}
