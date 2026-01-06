@@ -91,6 +91,18 @@ jobs:
       - name: Show contents of target directory
         run: ls -R target
 
+      - name: Prepare the test tag
+        run: echo "docker-test-tag=folioci/${{ inputs.artifact-id }}:test" | tee -a $GITHUB_ENV
+
+      - name: Build and export to Docker
+        uses: docker/build-push-action@v6
+        with:
+          load: true
+          tags: ${{ env.docker-test-tag }}
+
+      - name: Ensure docker run
+        run: docker run --rm ${{ env.docker-test-tag }}
+
       - name: Build and push Docker image
         uses: docker/build-push-action@v6
         with:
