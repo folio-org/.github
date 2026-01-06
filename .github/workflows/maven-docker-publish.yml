@@ -82,11 +82,14 @@ jobs:
             type=raw,value=latest
             type=raw,value=${{ inputs.artifact-version }}
 
-      - name: Download fat jar
+      - name: Download target jars artifact
         uses: actions/download-artifact@v7
         with:
-          name: fat-jar
+          name: built-jars
           path: target
+
+      - name: Show contents of target directory
+        run: ls -R target
 
       - name: Build and push Docker image
         uses: docker/build-push-action@v6
