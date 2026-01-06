@@ -86,7 +86,6 @@ jobs:
         uses: actions/download-artifact@v7
         with:
           name: built-jars
-          path: target
 
       - name: Show contents of target directory
         run: ls -R target
