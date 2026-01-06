@@ -162,7 +162,7 @@ jobs:
   docker-publish:
     needs: [set-shared-variables, version-number, build, okapi-dependency-check]
     if: |
-      !cancelled() &&
+      !cancelled() && needs.build.outputs.has-docker == 'True' &&
       (needs.okapi-dependency-check.result == 'success' || needs.okapi-dependency-check.result == 'skipped')
     uses: ./.github/workflows/maven-docker-publish.yml
     with:

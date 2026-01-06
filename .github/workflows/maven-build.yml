@@ -36,6 +36,8 @@ on:
         value: ${{ jobs.build.outputs.artifact-id }}
       has-module-descriptor:
         value: ${{ jobs.build.outputs.has-module-descriptor }}
+      has-docker:
+        value: ${{ jobs.build.outputs.has-docker }}
       has-maven-apidocs:
         value: ${{ jobs.build.outputs.has-maven-apidocs }}
     secrets:
@@ -50,6 +52,7 @@ jobs:
     outputs:
       artifact-id: ${{ steps.vars1.outputs.artifact-id }}
       has-module-descriptor: ${{ steps.discover-md.outputs.has-module-descriptor }}
+      has-docker: ${{ steps.discover-docker.outputs.has-docker }}
       has-maven-apidocs: ${{ steps.discover-apidocs.outputs.has-maven-apidocs }}
 
     steps:
@@ -149,6 +152,16 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+
+      - name: Discover Dockerfile
+        id: discover-docker
+        # TODO: Enable lower-level Dockerfile, specified via project input variable. FOLIO-4424
+        run: |
+          if test -f "Dockerfile2"; then
+            echo "has-docker=True" | tee -a $GITHUB_OUTPUT
+          else
+            echo "has-docker=False" | tee -a $GITHUB_OUTPUT
+          fi
 
       - name: Discover ModuleDescriptor
         id: discover-md
