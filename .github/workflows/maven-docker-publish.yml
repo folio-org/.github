@@ -49,6 +49,20 @@ jobs:
         with:
           fetch-depth: 1
 
+      - name: Ensure .dockerignore file
+        run: |
+          cat > .dockerignore2 << EOF
+          *
+          !Dockerfile
+          !docker*
+          !target/*.jar
+          EOF
+          if ! [ -e .dockerignoreX ]; then
+            echo "Missing .dockerignore file. Creating default." | tee -a $GITHUB_STEP_SUMMARY
+            cp .dockerignore2 .dockerignoreX
+          fi
+          cat .dockerignore2
+
       - name: Login to Docker Hub
         uses: docker/login-action@v3
         with:
