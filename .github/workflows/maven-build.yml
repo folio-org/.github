@@ -159,8 +159,10 @@ jobs:
         run: |
           if test -f "Dockerfile"; then
             echo "has-docker=True" | tee -a $GITHUB_OUTPUT
+            echo "has-docker=True" >> $GITHUB_STEP_SUMMARY
           else
             echo "has-docker=False" | tee -a $GITHUB_OUTPUT
+            echo "has-docker=False (only looking for top-level, see README)" >> $GITHUB_STEP_SUMMARY
           fi
 
       - name: Discover ModuleDescriptor
