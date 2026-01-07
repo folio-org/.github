@@ -99,6 +99,8 @@ jobs:
         run: |
           echo "Building image ${{ env.docker-test-tag }} ..."
           docker build --pull=true --no-cache=true -t ${{ env.docker-test-tag }} .
+          echo "Ensure docker run ..."
+          docker run --rm ${{ env.docker-test-tag }}
 
       - name: Build and push Docker image
         uses: docker/build-push-action@v6
