@@ -104,7 +104,19 @@ jobs:
           echo "Starting container with health check ..."
           docker run --detach --health-timeout='2s' --health-retries=2 --cidfile docker_test.cid \
             --health-cmd=${{ env.docker-health-command }} ${{ env.docker-test-tag }} || exit 1
-          echo "container=$(cat docker_test.cid)"
+          cid=$(cat docker_test.cid)
+          echo "Do inspection loop ..."
+          max_startup_wait=40
+          for ((i = 1; i < max_startup_wait; i++))
+          do
+            health=$(docker inspect $cid | jq -r '.[].State.Health.Status')
+            echo "Current status: ${health}"
+            if [ "${health}" == "starting" ]; then
+              sleep 1
+            else
+              break
+            fi
+          done
 
       - name: Build and push Docker image
         uses: docker/build-push-action@v6
