@@ -92,15 +92,19 @@ jobs:
         run: ls -R target
 
       - name: Prepare the Docker test tag
-        run: echo "docker-test-tag=folioci/${{ inputs.artifact-id }}:test" | tee -a $GITHUB_ENV
+        run: |
+          echo "docker-test-tag=folioci/${{ inputs.artifact-id }}:test" | tee -a $GITHUB_ENV
+          echo "docker-health-command='wget --no-verbose --tries=1 --spider http://localhost:8081/admin/health || exit 1'" | tee -a $GITHUB_ENV
 
       - name: Build and test Docker image
         id: build-test
         run: |
           echo "Building image ${{ env.docker-test-tag }} ..."
           docker build --pull=true --no-cache=true -t ${{ env.docker-test-tag }} .
-          echo "Ensure docker run ..."
-          docker run --rm ${{ env.docker-test-tag }}
+          echo "Starting container with health check ..."
+          docker run --detach --health-timeout='2s' --health-retries=2 --cidfile docker_test.cid \
+            --health-cmd=${{ env.docker-health-command }} ${{ env.docker-test-tag }} || exit 1
+          echo "container=$(cat docker_test.cid)"
 
       - name: Build and push Docker image
         uses: docker/build-push-action@v6
