@@ -117,6 +117,13 @@ jobs:
               break
             fi
           done
+          if [ "${health}" != "healthy" ]; then
+            echo "Container health check failed: $health" | tee -a $GITHUB_STEP_SUMMARY
+            exit 1
+          else
+            echo "Container health check passed." | tee -a $GITHUB_STEP_SUMMARY
+          fi
+          echo "loop-count=$i"
 
       - name: Build and push Docker image
         uses: docker/build-push-action@v6
