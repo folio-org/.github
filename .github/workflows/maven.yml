@@ -231,8 +231,10 @@ jobs:
     name: Publish module descriptor
     needs: [set-shared-variables, build, docker-publish]
     if: |
-      needs.build.outputs.has-module-descriptor == 'True' && needs.build.outputs.has-docker == 'True' &&
-      (needs.set-shared-variables.outputs.is-release == 'True' || needs.set-shared-variables.outputs.is-main-branch == 'True')
+      inputs.publish-module-descriptor &&
+      needs.build.outputs.has-module-descriptor == 'True' && needs.build.outputs.has-docker == 'True'
+# &&
+#      (needs.set-shared-variables.outputs.is-release == 'True' || needs.set-shared-variables.outputs.is-main-branch == 'True')
     uses: ./.github/workflows/maven-module-descriptor-publish.yml
     with:
       module-descriptor-registry: ${{ inputs.module-descriptor-registry }}
