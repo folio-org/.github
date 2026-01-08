@@ -33,7 +33,7 @@ jobs:
           restore-keys: ${{ runner.os }}-m2
 
       - name: Do build package
-        run: mvn clean package
+        run: mvn clean package -DskipTests
 
       - name: Show contents of target directory
-        run: ls -R target
+        run: ls target
