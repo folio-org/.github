@@ -99,7 +99,7 @@ jobs:
           echo "docker-test-tag=folioci/${{ inputs.artifact-id }}:test" | tee -a $GITHUB_ENV
 
           if ${{ inputs.docker-health-command != '' }}; then
-            echo "docker-health-command=${{ inputs.docker-health-command }}" | tee -a $GITHUB_STEP_SUMMARY
+            echo "docker-health-command='${{ inputs.docker-health-command }}'" | tee -a $GITHUB_STEP_SUMMARY
           else
             echo "Not doing docker health check. The inputs.docker-health-command is not declared." | tee -a $GITHUB_STEP_SUMMARY
           fi
@@ -111,7 +111,7 @@ jobs:
           docker build --pull=true --no-cache=true -t ${{ env.docker-test-tag }} .
           echo "Starting container with health check ..."
           docker run --detach --health-timeout='2s' --health-retries=2 --cidfile docker_test.cid \
-            --health-cmd=${{ inputs.docker-health-command }} ${{ env.docker-test-tag }} || exit 1
+            --health-cmd='${{ inputs.docker-health-command }}' ${{ env.docker-test-tag }} || exit 1
           cid=$(cat docker_test.cid)
           echo "Doing inspection loop ..."
           max_startup_wait=60
