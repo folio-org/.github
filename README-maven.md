@@ -62,11 +62,11 @@ For example:
 
 ### Configuration: java-version
 
-Optional. Default = '17'
+Optional. Default = '21'
 
 ```yaml
     with:
-      java-version: '21'
+      java-version: '17'
 ```
 
 ### Configuration: publish-module-descriptor

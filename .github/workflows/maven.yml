@@ -1,5 +1,8 @@
 name: Maven workflows
 
+env:
+  documentation: 'https://github.com/folio-org/.github/blob/FOLIO-4126-maven-workflows-1/README-maven.md'
+
 on:
   workflow_call:
     inputs:
@@ -59,7 +62,7 @@ jobs:
     steps:
       - name: Show documentation
         run: |
-          echo "Documentation: https://github.com/folio-org/.github/blob/master/README-maven.md" | tee -a $GITHUB_STEP_SUMMARY
+          echo "Documentation: ${{ env.documentation }}" | tee -a $GITHUB_STEP_SUMMARY
           echo "> [!CAUTION]" >> $GITHUB_STEP_SUMMARY
           echo "> NOTE: In-development [FOLIO-4126](https://folio-org.atlassian.net/browse/FOLIO-4126)" >> $GITHUB_STEP_SUMMARY
 
@@ -137,7 +140,7 @@ jobs:
       - name: Ensure Java version
         run: |
           if [ "${{ inputs.java-version }}" != "17" ] && [ "${{ inputs.java-version }}" != "21" ]; then
-            echo "java-version=${{ inputs.java-version }}: Must '17' or '21'."
+            echo "java-version=${{ inputs.java-version }}: Must be '17' or '21'."
             exit 1
           fi
 
