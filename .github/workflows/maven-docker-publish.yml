@@ -18,6 +18,9 @@ on:
       docker-registry:
         required: true
         type: string
+      docker-health-command:
+        required: true
+        type: string
       do-docker-push:
         required: true
         type: string
@@ -94,6 +97,8 @@ jobs:
       - name: Prepare the Docker test tag
         run: |
           echo "docker-test-tag=folioci/${{ inputs.artifact-id }}:test" | tee -a $GITHUB_ENV
+
+          # Temporary until get "inputs" happening
           echo "docker-health-command='wget --no-verbose --tries=1 --spider http://localhost:8081/admin/health || exit 1'" | tee -a $GITHUB_ENV
 
       - name: Build and test Docker image
@@ -105,7 +110,7 @@ jobs:
           docker run --detach --health-timeout='2s' --health-retries=2 --cidfile docker_test.cid \
             --health-cmd=${{ env.docker-health-command }} ${{ env.docker-test-tag }} || exit 1
           cid=$(cat docker_test.cid)
-          echo "Do inspection loop ..."
+          echo "Doing inspection loop ..."
           max_startup_wait=40
           for ((i = 1; i < max_startup_wait; i++))
           do
@@ -123,7 +128,7 @@ jobs:
           else
             echo "Container health check passed." | tee -a $GITHUB_STEP_SUMMARY
           fi
-          echo "loop-count=$i"
+          echo "loop-count=$i (max_startup_wait=$max_startup_wait)"
 
       - name: Build and push Docker image
         uses: docker/build-push-action@v6
