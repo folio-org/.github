@@ -104,9 +104,6 @@ jobs:
             echo "Not doing docker health check. The inputs.docker-health-command is not declared." | tee -a $GITHUB_STEP_SUMMARY
           fi
 
-          # FIXME: test
-          echo "docker-health-command=wget --foobar --no-verbose --tries=1 --spider http://localhost:8081/admin/health || exit 1" | tee -a $GITHUB_ENV
-
       - name: Build and test Docker image
         if: ${{ inputs.docker-health-command != '' }}
         run: |
@@ -114,7 +111,7 @@ jobs:
           docker build --pull=true --no-cache=true -t ${{ env.docker-test-tag }} .
           echo "Starting container with health check ..."
           docker run --detach --health-timeout='2s' --health-retries=2 --cidfile docker_test.cid \
-            --health-cmd='${{ env.docker-health-command }}' ${{ env.docker-test-tag }} || exit 1
+            --health-cmd='${{ inputs.docker-health-command }}' ${{ env.docker-test-tag }} || exit 1
           cid=$(cat docker_test.cid)
           echo "Doing inspection loop ..."
           max_startup_wait=60
