@@ -160,6 +160,7 @@ jobs:
       branch-name: ${{ needs.set-shared-variables.outputs.branch-name }}
       java-version: ${{ inputs.java-version }}
       artifact-version: ${{ needs.version-number.outputs.version-number }}
+      publish-module-descriptor: ${{ inputs.publish-module-descriptor }}
       allow-snapshots-release: ${{ inputs.allow-snapshots-release }}
       docker-registry: ${{ needs.set-shared-variables.outputs.docker-registry }}
       sonar-exclusions: ${{ inputs.sonar-exclusions }}
@@ -194,6 +195,8 @@ jobs:
       repo-name: ${{ needs.set-shared-variables.outputs.repo-name }}
       java-version: ${{ inputs.java-version }}
       artifact-version: ${{ needs.version-number.outputs.version-number }}
+      publish-module-descriptor: ${{ inputs.publish-module-descriptor }}
+      allow-snapshots-release: ${{ inputs.allow-snapshots-release }}
       docker-registry: ${{ needs.set-shared-variables.outputs.docker-registry }}
       do-docker-push: ${{ needs.set-shared-variables.outputs.do-docker-push }}
 

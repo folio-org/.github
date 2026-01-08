@@ -22,6 +22,9 @@ on:
       artifact-version:
         required: true
         type: string
+      publish-module-descriptor:
+        required: true
+        type: boolean
       allow-snapshots-release:
         required: true
         type: boolean
