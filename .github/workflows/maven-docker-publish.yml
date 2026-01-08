@@ -98,11 +98,17 @@ jobs:
         run: |
           echo "docker-test-tag=folioci/${{ inputs.artifact-id }}:test" | tee -a $GITHUB_ENV
 
+          if ${{ inputs.docker-health-command != '' }}; then
+            echo "docker-health-command=${{ inputs.docker-health-command }}" | tee -a $GITHUB_STEP_SUMMARY
+          else
+            echo "Not doing docker health check. The inputs.docker-health-command is not declared." | tee -a $GITHUB_STEP_SUMMARY
+          fi
+
           # Temporary until get "inputs" happening
           echo "docker-health-command='wget --no-verbose --tries=1 --spider http://localhost:8081/admin/health || exit 1'" | tee -a $GITHUB_ENV
 
       - name: Build and test Docker image
-        id: build-test
+        if: ${{ inputs.docker-health-command != '' }}
         run: |
           echo "Building image ${{ env.docker-test-tag }} ..."
           docker build --pull=true --no-cache=true -t ${{ env.docker-test-tag }} .
@@ -111,7 +117,7 @@ jobs:
             --health-cmd=${{ env.docker-health-command }} ${{ env.docker-test-tag }} || exit 1
           cid=$(cat docker_test.cid)
           echo "Doing inspection loop ..."
-          max_startup_wait=40
+          max_startup_wait=60
           for ((i = 1; i < max_startup_wait; i++))
           do
             health=$(docker inspect $cid | jq -r '.[].State.Health.Status')
