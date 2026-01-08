@@ -28,6 +28,9 @@ on:
       allow-snapshots-release:
         required: true
         type: boolean
+      do-sonar-scan:
+        required: true
+        type: boolean
       docker-registry:
         required: true
         type: string
@@ -110,11 +113,16 @@ jobs:
       - name: Maven build
         run: mvn clean org.jacoco:jacoco-maven-plugin:prepare-agent install org.jacoco:jacoco-maven-plugin:report
 
+      - name: Report whether doing Sonar scan
+        run: echo "do-sonar-scan=${{ inputs.do-sonar-scan }}" | tee -a $GITHUB_STEP_SUMMARY
+
       - name: Format Sonar exclusions list
         id: format-exclusions
+        if: ${{ inputs.do-sonar-scan == 'True' }}
         run: echo formatted=$(tr -d '[:blank:]' <<< "${{ inputs.sonar-exclusions }}") | tee -a $GITHUB_OUTPUT
 
       - name: Run SonarCloud scan
+        if: ${{ inputs.do-sonar-scan == 'True' }}
         run: |
           if ${{ github.event_name == 'pull_request' }}; then
             echo "Do sonar for pull_request ..."

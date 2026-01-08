@@ -30,6 +30,10 @@ on:
         required: false
         type: boolean
         default: false
+      do-sonar-scan:
+        required: false
+        type: boolean
+        default: true
       do-maven-deploy:
         required: false
         type: boolean
@@ -165,6 +169,7 @@ jobs:
       java-version: ${{ inputs.java-version }}
       artifact-version: ${{ needs.version-number.outputs.version-number }}
       publish-module-descriptor: ${{ inputs.publish-module-descriptor }}
+      do-sonar-scan: ${{ inputs.do-sonar-scan }}
       allow-snapshots-release: ${{ inputs.allow-snapshots-release }}
       docker-registry: ${{ needs.set-shared-variables.outputs.docker-registry }}
       sonar-exclusions: ${{ inputs.sonar-exclusions }}
