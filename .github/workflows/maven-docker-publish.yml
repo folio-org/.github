@@ -98,7 +98,7 @@ jobs:
         run: |
           echo "docker-test-tag=folioci/${{ inputs.artifact-id }}:test" | tee -a $GITHUB_ENV
 
-          if ${{ inputs.docker-health-command }}; then
+          if ${{ inputs.docker-health-command != '' }}; then
             echo "docker-health-command=${{ inputs.docker-health-command }}" | tee -a $GITHUB_STEP_SUMMARY
           else
             echo "Not doing docker health check. The inputs.docker-health-command is not declared." | tee -a $GITHUB_STEP_SUMMARY
