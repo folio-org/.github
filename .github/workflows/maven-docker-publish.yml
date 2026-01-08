@@ -129,7 +129,8 @@ jobs:
             fi
           done
           if [ "${health}" != "healthy" ]; then
-            echo "Container health check failed: $health" | tee -a $GITHUB_STEP_SUMMARY
+            echo "> [!IMPORTANT]" >> $GITHUB_STEP_SUMMARY
+            echo "> ERROR: Container health check failed: $health (verify your inputs.docker-health-command)." | tee -a $GITHUB_STEP_SUMMARY
             exit 1
           else
             echo "Container health check passed." | tee -a $GITHUB_STEP_SUMMARY
