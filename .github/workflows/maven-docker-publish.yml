@@ -105,7 +105,7 @@ jobs:
           fi
 
           # FIXME: test
-          echo "docker-health-command=wget --no-verbose --tries=1 --spider http://localhost:8080/admin/health || exit 1" | tee -a $GITHUB_ENV
+          echo "docker-health-command=wget --foobar --no-verbose --tries=1 --spider http://localhost:8081/admin/health || exit 1" | tee -a $GITHUB_ENV
 
       - name: Build and test Docker image
         if: ${{ inputs.docker-health-command != '' }}
