@@ -4,6 +4,11 @@
 
 * DEVOPS-4109 Highlight additional step patch release - in #84
 * FOLIO-3944 Upgrade Actions for workflow-templates API Workflows - in #85
+* FOLIO-4382 Upgrade go-lint-golangci, enable go1.25 - in #86
+* FOLIO-4382 Use actions/checkout v6 - in #87
+* FOLIO-4382 Upgrade actions for docker-description - in #88
+* FOLIO-4382 Upgrade actions for go - in #89
+* Advise to use actionlint while developing - in #90
 
 ## [1.10.1](https://github.com/folio-org/.github/tree/v1.10.1) (2025-10-04)
 [Full Changelog](https://github.com/folio-org/.github/compare/v1.10.0...v1.10.1)
