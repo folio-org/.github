@@ -11,6 +11,8 @@ on:
       version-number:
         description: If a tag, we'll return that tag's version number; otherwise, it will be the derived version number unique to this run
         value: ${{ jobs.get-version-number.outputs.version-number }}
+      project-version:
+        value: ${{ jobs.get-version-number.outputs.project-version }}
 
 jobs:
   get-version-number:
@@ -19,6 +21,7 @@ jobs:
 
     outputs:
       version-number: ${{ steps.final.outputs.version }}
+      project-version: ${{ steps.get-version.outputs.project-version }}
 
     steps:
       - name: Checkout ${{ github.repository }}

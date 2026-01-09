@@ -13,6 +13,15 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
+      - name: Select Nexus repository
+        run: |
+          if [[ "${GITHUB_EVENT_NAME}" == "release" ]]; then
+            echo "NEXUS_REPOSITORY=maven-releases" >> "$GITHUB_ENV"
+          else
+            echo "NEXUS_REPOSITORY=maven-snapshots" >> "$GITHUB_ENV"
+          fi
+          echo "NEXUS_URL=https://repository.folio.org" >> "$GITHUB_ENV"
+
       - name: Checkout ${{ github.repository }}
         uses: actions/checkout@v6
         with:
@@ -37,3 +46,34 @@ jobs:
 
       - name: Show contents of target directory
         run: ls target
+      
+      - name: Get artifactId
+        id: artifact
+        run: |
+          echo "artifact-id=$(mvn help:evaluate -Dexpression=project.artifactId -q -DforceStdout)" >> "$GITHUB_OUTPUT"
+
+      - name: Upload artifact to Nexus
+        uses: SourceSpring/action-nexus-upload@v0.1.10
+        with:
+          nexus-repo-url: ${{ env.NEXUS_URL }}
+          nexus-username: ${{ secrets.GHA_NEXUS_USERNAME }}
+          nexus-password: ${{ secrets.GHA_NEXUS_PASSWORD }}
+          nexus-repository: ${{ env.NEXUS_REPOSITORY }}
+          artifact-path: "target/${{ steps.artifact.outputs.artifact-id }}-${{ needs.version-number.outputs.project-version }}.jar"
+          artifact-format: "maven2"
+          artifact-group-id: "org.folio"
+          artifact-id: ${{ steps.artifact.outputs.artifact-id }}
+          artifact-version: "${{ needs.version-number.outputs.version-number }}"
+
+      - name: Upload artifact to maven-folio Nexus always
+        uses: SourceSpring/action-nexus-upload@v0.1.10
+        with:
+          nexus-repo-url: ${{ env.NEXUS_URL }}
+          nexus-username: ${{ secrets.GHA_NEXUS_USERNAME }}
+          nexus-password: ${{ secrets.GHA_NEXUS_PASSWORD }}
+          nexus-repository: "maven-folio"
+          artifact-path: "target/${{ steps.artifact.outputs.artifact-id }}-${{ needs.version-number.outputs.project-version }}.jar"
+          artifact-format: "maven2"
+          artifact-group-id: "org.folio"
+          artifact-id: ${{ steps.artifact.outputs.artifact-id }}
+          artifact-version: "${{ needs.version-number.outputs.version-number }}"
