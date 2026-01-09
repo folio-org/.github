@@ -230,8 +230,9 @@ jobs:
     name: Publish image description
     needs: [set-shared-variables, build, okapi-dependency-check, docker-publish]
     if: |
-      !cancelled() && inputs.do-docker && needs.build.outputs.has-docker == 'True' &&
-      (needs.set-shared-variables.outputs.is-release == 'True' || needs.set-shared-variables.outputs.is-main-branch == 'True')
+      !cancelled() && inputs.do-docker && needs.build.outputs.has-docker == 'True'
+# &&
+#      (needs.set-shared-variables.outputs.is-release == 'True' || needs.set-shared-variables.outputs.is-main-branch == 'True')
     uses: ./.github/workflows/docker-description.yml
     with:
       artifact-id: ${{ needs.build.outputs.artifact-id }}
