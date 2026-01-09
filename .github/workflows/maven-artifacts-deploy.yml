@@ -26,7 +26,7 @@ jobs:
           else
             echo "NEXUS_REPOSITORY=maven-snapshots" >> "$GITHUB_ENV"
           fi
-          echo "NEXUS_URL=https://repository.folio.org" >> "$GITHUB_ENV"
+          echo "NEXUS_URL=repository.folio.org" >> "$GITHUB_ENV"
 
       - name: Checkout ${{ github.repository }}
         uses: actions/checkout@v6
