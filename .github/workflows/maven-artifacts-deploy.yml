@@ -66,7 +66,7 @@ jobs:
           nexus-password: ${{ secrets.GHA_NEXUS_PASSWORD }}
           nexus-repository: ${{ env.NEXUS_REPOSITORY }}
           artifact-path: "target/${{ steps.artifact.outputs.artifact-id }}-${{ inputs.project-version }}.jar"
-          artifact-format: "maven2"
+          artifact-format: "maven"
           artifact-group-id: "org.folio"
           artifact-id: ${{ steps.artifact.outputs.artifact-id }}
           artifact-version: ${{ inputs.version-number }}
@@ -79,7 +79,7 @@ jobs:
           nexus-password: ${{ secrets.GHA_NEXUS_PASSWORD }}
           nexus-repository: "maven-folio"
           artifact-path: "target/${{ steps.artifact.outputs.artifact-id }}-${{ inputs.project-version }}.jar"
-          artifact-format: "maven2"
+          artifact-format: "maven"
           artifact-group-id: "org.folio"
           artifact-id: ${{ steps.artifact.outputs.artifact-id }}
           artifact-version: ${{ inputs.version-number }}
