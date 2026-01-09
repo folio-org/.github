@@ -53,7 +53,7 @@ jobs:
           echo "artifact-id=$(mvn help:evaluate -Dexpression=project.artifactId -q -DforceStdout)" >> "$GITHUB_OUTPUT"
 
       - name: Upload artifact to Nexus
-        uses: SourceSpring/action-nexus-upload@v0.1.10
+        uses: SourceSpring/action-nexus-upload@v0.1.13
         with:
           nexus-repo-url: ${{ env.NEXUS_URL }}
           nexus-username: ${{ secrets.GHA_NEXUS_USERNAME }}
@@ -66,7 +66,7 @@ jobs:
           artifact-version: "${{ needs.version-number.outputs.version-number }}"
 
       - name: Upload artifact to maven-folio Nexus always
-        uses: SourceSpring/action-nexus-upload@v0.1.10
+        uses: SourceSpring/action-nexus-upload@v0.1.13
         with:
           nexus-repo-url: ${{ env.NEXUS_URL }}
           nexus-username: ${{ secrets.GHA_NEXUS_USERNAME }}
