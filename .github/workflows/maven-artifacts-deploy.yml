@@ -79,7 +79,7 @@ jobs:
           nexus_server: ${{ env.NEXUS_URL }}
           nexus_username: ${{ secrets.GHA_NEXUS_USERNAME }}
           nexus_password: ${{ secrets.GHA_NEXUS_PASSWORD }}
-          nexus_repository: ${{ env.NEXUS_REPOSITORY }}
+          nexus_repository: "maven-folio"
           upload_directory: target
           filename_suffix: .jar
       
