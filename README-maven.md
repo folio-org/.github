@@ -7,6 +7,7 @@
     * [Configuration: java-version](#configuration-java-version)
     * [Configuration: publish-module-descriptor](#configuration-publish-module-descriptor)
     * [Configuration: allow-snapshots-release](#configuration-allow-snapshots-release)
+    * [Configuration: do-sonar-scan](#configuration-do-sonar-scan)
 
 ## Introduction
 
@@ -93,3 +94,13 @@ Optional. Default = false
       allow-snapshots-release: true
 ```
 
+### Configuration: do-sonar-scan
+
+Sonar can be disabled if that is needed, for example when a new project is not yet ready to commence the scans.
+
+Optional. Default = true
+
+```yaml
+    with:
+      do-sonar-scan: false
+```
