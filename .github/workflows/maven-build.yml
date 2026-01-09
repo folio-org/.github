@@ -118,11 +118,11 @@ jobs:
 
       - name: Format Sonar exclusions list
         id: format-exclusions
-        if: ${{ inputs.do-sonar-scan == 'True' }}
+        if: ${{ inputs.do-sonar-scan }}
         run: echo formatted=$(tr -d '[:blank:]' <<< "${{ inputs.sonar-exclusions }}") | tee -a $GITHUB_OUTPUT
 
       - name: Run SonarCloud scan
-        if: ${{ inputs.do-sonar-scan == 'True' }}
+        if: ${{ inputs.do-sonar-scan }}
         run: |
           if ${{ github.event_name == 'pull_request' }}; then
             echo "Do sonar for pull_request ..."
