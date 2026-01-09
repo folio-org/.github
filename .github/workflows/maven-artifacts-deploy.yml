@@ -58,28 +58,36 @@ jobs:
         run: |
           echo "artifact-id=$(mvn help:evaluate -Dexpression=project.artifactId -q -DforceStdout)" >> "$GITHUB_OUTPUT"
 
-      - name: Upload artifact to Primary Nexus Repo
-        uses: SourceSpring/action-nexus-upload@v0.1.13
-        with:
-          nexus-repo-url: ${{ env.NEXUS_URL }}
-          nexus-username: ${{ secrets.GHA_NEXUS_USERNAME }}
-          nexus-password: ${{ secrets.GHA_NEXUS_PASSWORD }}
-          nexus-repository: ${{ env.NEXUS_REPOSITORY }}
-          artifact-path: "target/${{ steps.artifact.outputs.artifact-id }}-${{ inputs.project-version }}.jar"
-          artifact-format: "maven"
-          artifact-group-id: "org.folio"
-          artifact-id: ${{ steps.artifact.outputs.artifact-id }}
-          artifact-version: ${{ inputs.version-number }}
+      # - name: Upload artifact to Primary Nexus Repo
+      #   uses: SourceSpring/action-nexus-upload@v0.1.13
+      #   with:
+      #     nexus-repo-url: ${{ env.NEXUS_URL }}
+      #     nexus-username: ${{ secrets.GHA_NEXUS_USERNAME }}
+      #     nexus-password: ${{ secrets.GHA_NEXUS_PASSWORD }}
+      #     nexus-repository: ${{ env.NEXUS_REPOSITORY }}
+      #     artifact-path: "target/${{ steps.artifact.outputs.artifact-id }}-${{ inputs.project-version }}.jar"
+      #     artifact-format: "maven"
+      #     artifact-group-id: "org.folio"
+      #     artifact-id: ${{ steps.artifact.outputs.artifact-id }}
+      #     artifact-version: ${{ inputs.version-number }}
 
-      - name: Upload artifact to maven-folio Nexus Repo always
-        uses: SourceSpring/action-nexus-upload@v0.1.13
+      - name: "Upload test file to Nexus"
+        id: nexus-upload
+        # ToDo: change/update the line below when testing is completed
+        uses: ModeSevenIndustrialSolutions/nexus-upload-action@v0.1.8
         with:
-          nexus-repo-url: ${{ env.NEXUS_URL }}
-          nexus-username: ${{ secrets.GHA_NEXUS_USERNAME }}
-          nexus-password: ${{ secrets.GHA_NEXUS_PASSWORD }}
-          nexus-repository: "maven-folio"
-          artifact-path: "target/${{ steps.artifact.outputs.artifact-id }}-${{ inputs.project-version }}.jar"
-          artifact-format: "maven"
-          artifact-group-id: "org.folio"
-          artifact-id: ${{ steps.artifact.outputs.artifact-id }}
-          artifact-version: ${{ inputs.version-number }}
+          nexus_server: ${{ env.NEXUS_URL }}
+          nexus_username: ${{ secrets.GHA_NEXUS_USERNAME }}
+          nexus_password: ${{ secrets.GHA_NEXUS_PASSWORD }}
+          nexus_repository: ${{ env.NEXUS_REPOSITORY }}
+          upload_directory: target
+          filename_suffix: .jar
+      
+      - name: "Report results"
+        run: |
+          # Report results
+          echo "errors: ${{ steps.nexus-upload.outputs.errors }}"
+          echo "successes: ${{ steps.nexus-upload.outputs.successes }}"
+          echo "failures: ${{ steps.nexus-upload.outputs.failures }}"
+
+
