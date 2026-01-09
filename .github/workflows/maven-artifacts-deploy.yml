@@ -6,6 +6,12 @@ on:
       java-version:
         required: true
         type: string
+      version-number:
+        required: true
+        type: string
+      project-version:
+        required: true
+        type: string
 
 jobs:
   run:
@@ -52,28 +58,28 @@ jobs:
         run: |
           echo "artifact-id=$(mvn help:evaluate -Dexpression=project.artifactId -q -DforceStdout)" >> "$GITHUB_OUTPUT"
 
-      - name: Upload artifact to Nexus
+      - name: Upload artifact to Primary Nexus Repo
         uses: SourceSpring/action-nexus-upload@v0.1.13
         with:
           nexus-repo-url: ${{ env.NEXUS_URL }}
           nexus-username: ${{ secrets.GHA_NEXUS_USERNAME }}
           nexus-password: ${{ secrets.GHA_NEXUS_PASSWORD }}
           nexus-repository: ${{ env.NEXUS_REPOSITORY }}
-          artifact-path: "target/${{ steps.artifact.outputs.artifact-id }}-${{ needs.version-number.outputs.project-version }}.jar"
+          artifact-path: "target/${{ steps.artifact.outputs.artifact-id }}-${{ inputs.project-version }}.jar"
           artifact-format: "maven2"
           artifact-group-id: "org.folio"
           artifact-id: ${{ steps.artifact.outputs.artifact-id }}
-          artifact-version: "${{ needs.version-number.outputs.version-number }}"
+          artifact-version: ${{ inputs.version-number }}
 
-      - name: Upload artifact to maven-folio Nexus always
+      - name: Upload artifact to maven-folio Nexus Repo always
         uses: SourceSpring/action-nexus-upload@v0.1.13
         with:
           nexus-repo-url: ${{ env.NEXUS_URL }}
           nexus-username: ${{ secrets.GHA_NEXUS_USERNAME }}
           nexus-password: ${{ secrets.GHA_NEXUS_PASSWORD }}
           nexus-repository: "maven-folio"
-          artifact-path: "target/${{ steps.artifact.outputs.artifact-id }}-${{ needs.version-number.outputs.project-version }}.jar"
+          artifact-path: "target/${{ steps.artifact.outputs.artifact-id }}-${{ inputs.project-version }}.jar"
           artifact-format: "maven2"
           artifact-group-id: "org.folio"
           artifact-id: ${{ steps.artifact.outputs.artifact-id }}
-          artifact-version: "${{ needs.version-number.outputs.version-number }}"
+          artifact-version: ${{ inputs.version-number }}
