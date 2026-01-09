@@ -184,7 +184,7 @@ jobs:
   docker-publish:
     needs: [set-shared-variables, version-number, build, okapi-dependency-check]
     if: |
-      !cancelled() && needs.build.outputs.has-docker == 'True' &&
+      !cancelled() && inputs.do-docker && needs.build.outputs.has-docker == 'True' &&
       (needs.okapi-dependency-check.result == 'success' || needs.okapi-dependency-check.result == 'skipped')
     uses: ./.github/workflows/maven-docker-publish.yml
     with:
@@ -230,7 +230,7 @@ jobs:
     name: Publish image description
     needs: [set-shared-variables, build, okapi-dependency-check, docker-publish]
     if: |
-      !cancelled() && needs.build.outputs.has-docker == 'True' &&
+      !cancelled() && inputs.do-docker && needs.build.outputs.has-docker == 'True' &&
       (needs.okapi-dependency-check.result == 'success' || needs.okapi-dependency-check.result == 'skipped') &&
       (needs.set-shared-variables.outputs.is-release == 'True' || needs.set-shared-variables.outputs.is-main-branch == 'True')
     uses: ./.github/workflows/docker-description.yml
@@ -248,7 +248,8 @@ jobs:
     needs: [set-shared-variables, build, okapi-dependency-check, docker-publish]
     if: |
       !cancelled() && inputs.publish-module-descriptor &&
-      needs.build.outputs.has-module-descriptor == 'True' && needs.build.outputs.has-docker == 'True' &&
+      needs.build.outputs.has-module-descriptor == 'True' &&
+      inputs.do-docker && needs.build.outputs.has-docker == 'True' &&
       (needs.okapi-dependency-check.result == 'success' || needs.okapi-dependency-check.result == 'skipped') &&
       (needs.set-shared-variables.outputs.is-release == 'True' || needs.set-shared-variables.outputs.is-main-branch == 'True')
     uses: ./.github/workflows/maven-module-descriptor-publish.yml
