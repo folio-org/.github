@@ -58,11 +58,11 @@ jobs:
       - name: Show description output
         run: cat dockerhub-description.md
 
-#      - name: Publish description
-#        uses: peter-evans/dockerhub-description@v5
-#        with:
-#          username: ${{ secrets.dockerhub-username }}
-#          password: ${{ secrets.dockerhub-token }}
-#          repository: ${{ inputs.docker-registry }}/${{ inputs.artifact-id }}
-#          short-description: ${{ inputs.repo-description }}
-#          readme-filepath: ./dockerhub-description.md
+      - name: Publish description
+        uses: peter-evans/dockerhub-description@v5
+        with:
+          username: ${{ secrets.dockerhub-username }}
+          password: ${{ secrets.dockerhub-token }}
+          repository: ${{ inputs.docker-registry }}/${{ inputs.artifact-id }}
+          short-description: ${{ inputs.repo-description }}
+          readme-filepath: ./dockerhub-description.md
