@@ -8,6 +8,7 @@
     * [Configuration: publish-module-descriptor](#configuration-publish-module-descriptor)
     * [Configuration: allow-snapshots-release](#configuration-allow-snapshots-release)
     * [Configuration: do-sonar-scan](#configuration-do-sonar-scan)
+    * [Configuration: docker-health-command](#configuration-docker-health-command)
 
 ## Introduction
 
@@ -103,4 +104,16 @@ Optional. Default = true
 ```yaml
     with:
       do-sonar-scan: false
+```
+
+### Configuration: docker-health-command
+
+If this variable is provided, then the Docker Health Check will be run prior to the final building of the image.
+If it fails, then no Docker image is built, and a ModuleDescriptor will not be published.
+
+Optional. Default = None
+
+```yaml
+    with:
+      docker-health-command: 'wget --no-verbose --tries=1 --spider http://localhost:8081/admin/health || exit 1'
 ```
