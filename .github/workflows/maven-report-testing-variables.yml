@@ -18,6 +18,9 @@ on:
       artifact-version:
         required: true
         type: string
+      do-docker:
+        required: true
+        type: boolean
       publish-module-descriptor:
         required: true
         type: boolean
@@ -44,6 +47,7 @@ jobs:
           echo "github.ref=${{ github.ref }}"
           echo "is-release=${{ inputs.is-release }}"
           echo "java-version=${{ inputs.java-version }}"
+          echo "do-docker=${{ inputs.do-docker }}"
           echo "publish-module-descriptor=${{ inputs.publish-module-descriptor }}"
           echo "allow-snapshots-release=${{ inputs.allow-snapshots-release }}"
           echo "docker-registry=${{ inputs.docker-registry }}"

@@ -22,6 +22,9 @@ on:
       artifact-version:
         required: true
         type: string
+      do-docker:
+        required: true
+        type: boolean
       publish-module-descriptor:
         required: true
         type: boolean
@@ -168,6 +171,7 @@ jobs:
         id: discover-docker
         # TODO: Enable lower-level Dockerfile, specified via project input variable. FOLIO-4424
         run: |
+          echo "do-docker=${{ inputs.do-docker }}" | tee -a $GITHUB_STEP_SUMMARY
           if test -f "Dockerfile"; then
             echo "has-docker=True" | tee -a $GITHUB_OUTPUT
             echo "has-docker=True" >> $GITHUB_STEP_SUMMARY

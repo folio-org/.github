@@ -10,6 +10,10 @@ on:
         required: false
         type: string
         default: '21'
+      do-docker:
+        required: false
+        type: boolean
+        default: true
       docker-health-command:
         required: false
         type: string
@@ -169,6 +173,7 @@ jobs:
       java-version: ${{ inputs.java-version }}
       artifact-version: ${{ needs.version-number.outputs.version-number }}
       publish-module-descriptor: ${{ inputs.publish-module-descriptor }}
+      do-docker: ${{ inputs.do-docker }}
       do-sonar-scan: ${{ inputs.do-sonar-scan }}
       allow-snapshots-release: ${{ inputs.allow-snapshots-release }}
       docker-registry: ${{ needs.set-shared-variables.outputs.docker-registry }}
@@ -204,6 +209,7 @@ jobs:
       repo-name: ${{ needs.set-shared-variables.outputs.repo-name }}
       java-version: ${{ inputs.java-version }}
       artifact-version: ${{ needs.version-number.outputs.version-number }}
+      do-docker: ${{ inputs.do-docker }}
       publish-module-descriptor: ${{ inputs.publish-module-descriptor }}
       allow-snapshots-release: ${{ inputs.allow-snapshots-release }}
       docker-registry: ${{ needs.set-shared-variables.outputs.docker-registry }}
