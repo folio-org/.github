@@ -209,6 +209,7 @@ jobs:
       repo-name: ${{ needs.set-shared-variables.outputs.repo-name }}
       java-version: ${{ inputs.java-version }}
       artifact-version: ${{ needs.version-number.outputs.version-number }}
+      project-version: ${{ needs.version-number.outputs.project-version }}
       do-docker: ${{ inputs.do-docker }}
       publish-module-descriptor: ${{ inputs.publish-module-descriptor }}
       allow-snapshots-release: ${{ inputs.allow-snapshots-release }}
