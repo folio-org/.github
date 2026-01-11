@@ -6,6 +6,9 @@ on:
       java-version:
         required: true
         type: string
+      artifact-id:
+        required: true
+        type: string
       version-number:
         required: true
         type: string
@@ -52,11 +55,6 @@ jobs:
 
       - name: Show contents of target directory
         run: ls target
-      
-      - name: Get artifactId
-        id: artifact
-        run: |
-          echo "artifact-id=$(mvn help:evaluate -Dexpression=project.artifactId -q -DforceStdout)" >> "$GITHUB_OUTPUT"
 
       # - name: Upload artifact to Primary Nexus Repo
       #   uses: SourceSpring/action-nexus-upload@v0.1.13
@@ -65,11 +63,11 @@ jobs:
       #     nexus-username: ${{ secrets.GHA_NEXUS_USERNAME }}
       #     nexus-password: ${{ secrets.GHA_NEXUS_PASSWORD }}
       #     nexus-repository: ${{ env.NEXUS_REPOSITORY }}
-      #     artifact-path: "target/${{ steps.artifact.outputs.artifact-id }}-${{ inputs.project-version }}.jar"
+      #     artifact-path: "target/${{ inputs.artifact-id }}-${{ inputs.project-version }}.jar"
       #     artifact-format: "maven"
       #     artifact-group-id: "org.folio"
-      #     artifact-id: ${{ steps.artifact.outputs.artifact-id }}
-      #     artifact-version: ${{ inputs.version-number }}
+      #     artifact-id: ${{ inputs.artifact-id }}
+      #     artifact-version: ${{ inputs.version-number }}  # TODO: ? Should this be: ${{ inputs.artifact-id }}-${{ inputs.project-version }}
 
       - name: "Upload test file to Nexus"
         id: nexus-upload
