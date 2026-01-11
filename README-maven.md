@@ -8,8 +8,11 @@
     * [Configuration: publish-module-descriptor](#configuration-publish-module-descriptor)
     * [Configuration: allow-snapshots-release](#configuration-allow-snapshots-release)
     * [Configuration: do-sonar-scan](#configuration-do-sonar-scan)
+    * [Configuration: do-docker](#configuration-do-docker)
     * [Configuration: docker-health-command](#configuration-docker-health-command)
     * [Configuration: docker-label-documentation](#configuration-docker-label-documentation)
+* [Limitations](#limitations)
+    * [Only top-level Dockerfile](#only-top-level-dockerfile)
 
 ## Introduction
 
@@ -107,6 +110,22 @@ Optional. Default = true
       do-sonar-scan: false
 ```
 
+### Configuration: do-docker
+
+Some Maven-based projects do not utilise Docker. If so then provide this variable as "false".
+
+If this variable is "false", then also no ModuleDescriptor will be published.
+
+> [!NOTE]
+> See [Limitations - Only top-level Dockerfile](#only-top-level-dockerfile) at this stage.
+
+Optional. Default = true
+
+```yaml
+    with:
+      do-docker: false
+```
+
 ### Configuration: docker-health-command
 
 If this variable is provided, then the Docker Health Check will be run prior to the final building of the image.
@@ -130,3 +149,8 @@ Optional. Default = None
       docker-label-documentation: 'https://.../documentation.md'
 ```
 
+## Limitations
+
+### Only top-level Dockerfile
+
+At this stage only a top-level Dockerfile is utilised. So these Workflows are not yet ready for projects that have lower-level Dockerfile.
