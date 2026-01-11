@@ -67,7 +67,7 @@ jobs:
       #     artifact-format: "maven"
       #     artifact-group-id: "org.folio"
       #     artifact-id: ${{ inputs.artifact-id }}
-      #     artifact-version: ${{ inputs.version-number }}  # TODO: ? Should this be: ${{ inputs.artifact-id }}-${{ inputs.project-version }}
+      #     artifact-version: ${{ inputs.version-number }}  # TODO: ? Should this be: ${{ inputs.project-version }}
 
       - name: "Upload test file to Nexus"
         id: nexus-upload
