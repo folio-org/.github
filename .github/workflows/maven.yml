@@ -183,6 +183,7 @@ jobs:
 
   docker-publish:
     needs: [set-shared-variables, version-number, build, okapi-dependency-check]
+    # Will always build docker and potentially test, but only push if inputs.do-docker-push=true (i.e. when release or mainline)
     if: |
       !cancelled() && inputs.do-docker && needs.build.outputs.has-docker == 'True' &&
       (needs.okapi-dependency-check.result == 'success' || needs.okapi-dependency-check.result == 'skipped')

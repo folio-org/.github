@@ -138,8 +138,7 @@ jobs:
         uses: docker/build-push-action@v6
         with:
           context: .
-#          push: ${{ inputs.do-docker-push == 'True' }}
-          push: false  # FIXME: Deliberate while developing Workflows.
+          push: ${{ inputs.do-docker-push == 'True' }}
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
 
