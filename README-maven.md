@@ -9,6 +9,7 @@
     * [Configuration: allow-snapshots-release](#configuration-allow-snapshots-release)
     * [Configuration: do-sonar-scan](#configuration-do-sonar-scan)
     * [Configuration: docker-health-command](#configuration-docker-health-command)
+    * [Configuration: docker-label-documentation](#configuration-docker-label-documentation)
 
 ## Introduction
 
@@ -49,7 +50,7 @@ jobs:
 
 ## Configuration
 
-If there is a need to over-ride defaults, then add configuration variables to the "with:" section of the module maven.yml Workflow.
+If there is a need to over-ride defaults, then add configuration variables to the single "with:" section of the module maven.yml Workflow.
 
 Add the section at the end of the Workflow immediately after the "secrets" item.
 For example:
@@ -117,3 +118,15 @@ Optional. Default = None
     with:
       docker-health-command: 'wget --no-verbose --tries=1 --spider http://localhost:8081/admin/health || exit 1'
 ```
+
+### Configuration: docker-label-documentation
+
+If not provided then the "org.opencontainers.image.documentation" label of the Docker image will be empty.
+
+Optional. Default = None
+
+```yaml
+    with:
+      docker-label-documentation: 'https://.../documentation.md'
+```
+
