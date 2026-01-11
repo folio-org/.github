@@ -38,9 +38,6 @@ name: Maven central workflow
 
 on:
   push:
-    branches: ['*']
-    tags:
-      - '[vV][0-9]+.[0-9]+.[0-9]+*'
   pull_request:
   workflow_dispatch:
 
