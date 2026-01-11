@@ -211,6 +211,8 @@ jobs:
       artifact-id: ${{ needs.version-number.outputs.artifact-id }}
       artifact-version: ${{ needs.version-number.outputs.version-number }}
       project-version: ${{ needs.version-number.outputs.project-version }}
+      branch-name: ${{ needs.set-shared-variables.outputs.branch-name }}
+      repo-description: ${{ needs.set-shared-variables.outputs.repo-description }}
       do-docker: ${{ inputs.do-docker }}
       publish-module-descriptor: ${{ inputs.publish-module-descriptor }}
       allow-snapshots-release: ${{ inputs.allow-snapshots-release }}

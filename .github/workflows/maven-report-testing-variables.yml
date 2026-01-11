@@ -24,6 +24,12 @@ on:
       project-version:
         required: true
         type: string
+      branch-name:
+        required: true
+        type: string
+      repo-description:
+        required: true
+        type: string
       do-docker:
         required: true
         type: boolean
@@ -59,6 +65,8 @@ jobs:
           echo "artifact-id=${{ inputs.artifact-id }}"
           echo "project-version=${{ inputs.project-version }}"
           echo "artifact-version=${{ inputs.artifact-version }}"
+          echo "branch-name=${{ inputs.branch-name }}"
+          echo "repo-description=${{ inputs.repo-description }}"
           echo "docker-registry=${{ inputs.docker-registry }}"
           echo "do-docker-push=${{ inputs.do-docker-push }}"
 
