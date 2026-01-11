@@ -13,6 +13,7 @@
     * [Configuration: docker-label-documentation](#configuration-docker-label-documentation)
 * [Limitations](#limitations)
     * [Only top-level Dockerfile](#only-top-level-dockerfile)
+* [Docker image metadata](#docker-image-metadata)
 
 ## Introduction
 
@@ -154,3 +155,13 @@ Optional. Default = None
 ### Only top-level Dockerfile
 
 At this stage only a top-level Dockerfile is utilised. So these Workflows are not yet ready for projects that have lower-level Dockerfile.
+
+## Docker image metadata
+
+The docker image will have various labels automatically applied.
+
+Note: If the "org.opencontainers.image.description" label of the generated image is empty, then that is because the module's GitHub repository is missing the "About" description in the top-right corner of its GitHub front page.
+See advice at [Create a new FOLIO module and do initial setup](https://dev.folio.org/guidelines/create-new-repo/),
+and bear in mind that Docker Hub imposes a [content length limit](https://github.com/peter-evans/dockerhub-description#content-limits) of 100 bytes for that short-description, so it will be truncated at that.
+
+See also the  [Configuration: docker-label-documentation](#configuration-docker-label-documentation) variable.
