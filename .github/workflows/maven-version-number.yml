@@ -11,6 +11,8 @@ on:
       version-number:
         description: If a tag, we'll return that tag's version number; otherwise, it will be the derived version number unique to this run
         value: ${{ jobs.get-version-number.outputs.version-number }}
+      artifact-id:
+        value: ${{ jobs.get-version-number.outputs.artifact-id }}
       project-version:
         value: ${{ jobs.get-version-number.outputs.project-version }}
 
@@ -21,6 +23,7 @@ jobs:
 
     outputs:
       version-number: ${{ steps.final.outputs.version }}
+      artifact-id: ${{ steps.get-artifact-id.outputs.artifact-id }}
       project-version: ${{ steps.get-version.outputs.project-version }}
 
     steps:
@@ -29,7 +32,12 @@ jobs:
 
       - name: Fetch git tags
         run: git fetch --prune --prune-tags --force --depth=1
-      
+
+      - name: Get project artifact-id
+        id: get-artifact-id
+        run: |
+          echo artifact-id="$(mvn help:evaluate -Dexpression=project.artifactId -q -DforceStdout)" | tee -a $GITHUB_OUTPUT
+
       - name: Get project version
         id: get-version
         run: |

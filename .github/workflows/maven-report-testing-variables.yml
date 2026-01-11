@@ -18,6 +18,9 @@ on:
       artifact-version:
         required: true
         type: string
+      artifact-id:
+        required: true
+        type: string
       project-version:
         required: true
         type: string
@@ -53,6 +56,7 @@ jobs:
           echo "do-docker=${{ inputs.do-docker }}"
           echo "publish-module-descriptor=${{ inputs.publish-module-descriptor }}"
           echo "allow-snapshots-release=${{ inputs.allow-snapshots-release }}"
+          echo "artifact-id=${{ inputs.artifact-id }}"
           echo "project-version=${{ inputs.project-version }}"
           echo "artifact-version=${{ inputs.artifact-version }}"
           echo "docker-registry=${{ inputs.docker-registry }}"
