@@ -22,14 +22,14 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Select Nexus repository
-        run: |
-          if [[ "${GITHUB_EVENT_NAME}" == "release" ]]; then
-            echo "NEXUS_REPOSITORY=maven-releases" >> "$GITHUB_ENV"
-          else
-            echo "NEXUS_REPOSITORY=maven-snapshots" >> "$GITHUB_ENV"
-          fi
-          echo "NEXUS_URL=repository.folio.org" >> "$GITHUB_ENV"
+#      - name: Select Nexus repository
+#        run: |
+#          if [[ "${GITHUB_EVENT_NAME}" == "release" ]]; then
+#            echo "NEXUS_REPOSITORY=maven-releases" >> "$GITHUB_ENV"
+#          else
+#            echo "NEXUS_REPOSITORY=maven-snapshots" >> "$GITHUB_ENV"
+#          fi
+#          echo "NEXUS_URL=repository.folio.org" >> "$GITHUB_ENV"
 
       - name: Checkout ${{ github.repository }}
         uses: actions/checkout@v6
@@ -37,11 +37,14 @@ jobs:
           fetch-depth: 1
           submodules: recursive
 
-      - name: Set up JDK
+      - name: Set up JDK for Nexus
         uses: actions/setup-java@v5
         with:
           java-version: ${{ inputs.java-version}}
           distribution: 'temurin'
+          server-id: folio-nexus
+          server-username: MAVEN_USERNAME
+          server-password: MAVEN_PASSWORD
 
       - name: Cache Maven packages
         uses: actions/cache@v5
@@ -50,11 +53,17 @@ jobs:
           key: ${{ runner.os }}-m2-${{ hashFiles('**/pom.xml') }}
           restore-keys: ${{ runner.os }}-m2
 
-      - name: Do build package
-        run: mvn clean package -DskipTests
+      - name: Deploy package
+        run: mvn --batch-mode deploy -DskipTests
+        env:
+          MAVEN_USERNAME: ${{ secrets.GHA_NEXUS_USERNAME }}
+          MAVEN_PASSWORD: ${{ secrets.GHA_NEXUS_PASSWORD }}
 
-      - name: Show contents of target directory
-        run: ls target
+#      - name: Do build package
+#        run: mvn clean package -DskipTests
+#
+#      - name: Show contents of target directory
+#        run: ls target
 
       # - name: Upload artifact to Primary Nexus Repo
       #   uses: SourceSpring/action-nexus-upload@v0.1.13
@@ -69,21 +78,21 @@ jobs:
       #     artifact-id: ${{ inputs.artifact-id }}
       #     artifact-version: ${{ inputs.version-number }}  # TODO: ? Should this be: ${{ inputs.project-version }}
 
-      - name: "Upload test file to Nexus"
-        id: nexus-upload
-        # ToDo: change/update the line below when testing is completed
-        uses: ModeSevenIndustrialSolutions/nexus-upload-action@v0.1.8
-        with:
-          nexus_server: ${{ env.NEXUS_URL }}
-          nexus_username: ${{ secrets.GHA_NEXUS_USERNAME }}
-          nexus_password: ${{ secrets.GHA_NEXUS_PASSWORD }}
-          nexus_repository: "maven-folio"
-          upload_directory: target
-          filename_suffix: .jar
-
-      - name: "Report results"
-        run: |
-          # Report results
-          echo "errors: ${{ steps.nexus-upload.outputs.errors }}"
-          echo "successes: ${{ steps.nexus-upload.outputs.successes }}"
-          echo "failures: ${{ steps.nexus-upload.outputs.failures }}"
+#      - name: "Upload test file to Nexus"
+#        id: nexus-upload
+#        # ToDo: change/update the line below when testing is completed
+#        uses: ModeSevenIndustrialSolutions/nexus-upload-action@v0.1.8
+#        with:
+#          nexus_server: ${{ env.NEXUS_URL }}
+#          nexus_username: ${{ secrets.GHA_NEXUS_USERNAME }}
+#          nexus_password: ${{ secrets.GHA_NEXUS_PASSWORD }}
+#          nexus_repository: "maven-folio"
+#          upload_directory: target
+#          filename_suffix: .jar
+#
+#      - name: "Report results"
+#        run: |
+#          # Report results
+#          echo "errors: ${{ steps.nexus-upload.outputs.errors }}"
+#          echo "successes: ${{ steps.nexus-upload.outputs.successes }}"
+#          echo "failures: ${{ steps.nexus-upload.outputs.failures }}"
