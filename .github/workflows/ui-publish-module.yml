@@ -69,7 +69,7 @@ jobs:
           path: translations
 
       - name: Configure package exclusions
-        uses: DamianReeves/write-file-action@v1.2
+        uses: DamianReeves/write-file-action@v1.3
         with:
           path: .npmignore
           contents: ${{ inputs.publish-exclusions }}
