@@ -69,23 +69,21 @@ jobs:
       #     artifact-id: ${{ inputs.artifact-id }}
       #     artifact-version: ${{ inputs.version-number }}  # TODO: ? Should this be: ${{ inputs.project-version }}
 
-#      - name: "Upload test file to Nexus"
-#        id: nexus-upload
-#        # ToDo: change/update the line below when testing is completed
-#        uses: ModeSevenIndustrialSolutions/nexus-upload-action@v0.1.8
-#        with:
-#          nexus_server: ${{ env.NEXUS_URL }}
-#          nexus_username: ${{ secrets.GHA_NEXUS_USERNAME }}
-#          nexus_password: ${{ secrets.GHA_NEXUS_PASSWORD }}
-#          nexus_repository: "maven-folio"
-#          upload_directory: target
-#          filename_suffix: .jar
-#
-#     - name: "Report results"
-#        run: |
-#          # Report results
-#          echo "errors: ${{ steps.nexus-upload.outputs.errors }}"
-#          echo "successes: ${{ steps.nexus-upload.outputs.successes }}"
-#          echo "failures: ${{ steps.nexus-upload.outputs.failures }}"
+      - name: "Upload test file to Nexus"
+        id: nexus-upload
+        # ToDo: change/update the line below when testing is completed
+        uses: ModeSevenIndustrialSolutions/nexus-upload-action@v0.1.8
+        with:
+          nexus_server: ${{ env.NEXUS_URL }}
+          nexus_username: ${{ secrets.GHA_NEXUS_USERNAME }}
+          nexus_password: ${{ secrets.GHA_NEXUS_PASSWORD }}
+          nexus_repository: "maven-folio"
+          upload_directory: target
+          filename_suffix: .jar
 
-
+      - name: "Report results"
+        run: |
+          # Report results
+          echo "errors: ${{ steps.nexus-upload.outputs.errors }}"
+          echo "successes: ${{ steps.nexus-upload.outputs.successes }}"
+          echo "failures: ${{ steps.nexus-upload.outputs.failures }}"
