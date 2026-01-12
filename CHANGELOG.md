@@ -9,6 +9,7 @@
 * FOLIO-4382 Upgrade actions for docker-description - in #88
 * FOLIO-4382 Upgrade actions for go - in #89
 * Advise to use actionlint while developing - in #90
+* FOLIO-4382 Upgrade various Actions for UI Workflows - in #91
 
 ## [1.10.1](https://github.com/folio-org/.github/tree/v1.10.1) (2025-10-04)
 [Full Changelog](https://github.com/folio-org/.github/compare/v1.10.0...v1.10.1)
