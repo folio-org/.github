@@ -61,7 +61,7 @@ jobs:
 
       # we publish it to the registry as a separate job
       - name: Upload module descriptor as build artifact
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v6
         with:
           name: module-descriptor.json
           path: module-descriptor.json

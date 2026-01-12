@@ -41,7 +41,7 @@ jobs:
         run: git fetch --no-tags ${{ github.server_url }}/${{ github.repository }} +refs/heads/${{ github.event.repository.default_branch }}:refs/remotes/origin/${{ github.event.repository.default_branch }}
 
       - name: Fetch coverage reports (Bigtest)
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v7
         if: ${{ inputs.bigtest-enabled }}
         with:
           name: bigtest-coverage-report
@@ -49,7 +49,7 @@ jobs:
         continue-on-error: true # bigtest may be disabled or have failed
 
       - name: Fetch coverage reports (Jest)
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v7
         if: ${{ inputs.jest-enabled }}
         with:
           name: jest-coverage-report
@@ -62,7 +62,7 @@ jobs:
         run: echo formatted=$(tr -d '[:blank:]' <<< "${{ inputs.sonar-exclusions }}") | tee -a $GITHUB_OUTPUT
 
       - name: Run SonarCloud scan
-        uses: SonarSource/sonarqube-scan-action@v6
+        uses: SonarSource/sonarqube-scan-action@v7
         with:
           args: >
             -Dsonar.organization=folio-org

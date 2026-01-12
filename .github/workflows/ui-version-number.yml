@@ -29,7 +29,7 @@ jobs:
 
       - id: package-version
         name: Get declared version from package.json
-        run: echo version=`jq -r .version package.json` | tee -a $GITHUB_OUTPUT
+        run: echo version=$(jq -r .version package.json) | tee -a $GITHUB_OUTPUT
 
       - name: Checkout folio-org/folio-tools
         if: ${{ inputs.is-release == 'False' }}
@@ -45,7 +45,7 @@ jobs:
         name: Calculate version number, if not a tag
         run: |
           export new_ci=true
-          echo version=`./folio-tools/github-actions-scripts/folioci_npmver.sh` | tee -a $GITHUB_OUTPUT
+          echo version=$(./folio-tools/github-actions-scripts/folioci_npmver.sh) | tee -a $GITHUB_OUTPUT
         env:
           JOB_ID: ${{ github.run_number }}
 
