@@ -57,13 +57,13 @@ jobs:
 
       - name: Download module descriptor
         if: ${{ inputs.module-descriptor-available }}
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v7
         with:
           name: module-descriptor.json
 
       - name: Download compiled translations
         if: ${{ inputs.compiled-translations-available }}
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v7
         with:
           name: translations
           path: translations
