@@ -41,7 +41,7 @@ on:
       do-maven-deploy:
         required: false
         type: boolean
-        default: false
+        default: true
       sonar-exclusions:
         required: false
         type: string
