@@ -43,7 +43,7 @@ jobs:
       - name: Do generate description
         run: |
           if ${{ inputs.publish-module-descriptor }}; then
-            option_md=$(echo "--module-descriptor ModuleDescriptor.json")
+            option_md="--module-descriptor ModuleDescriptor.json"
           else
             option_md=""
           fi
