@@ -11,9 +11,10 @@
     * [Configuration: do-docker](#configuration-do-docker)
     * [Configuration: docker-health-command](#configuration-docker-health-command)
     * [Configuration: docker-label-documentation](#configuration-docker-label-documentation)
+* [Docker image metadata](#docker-image-metadata)
 * [Limitations](#limitations)
     * [Only top-level Dockerfile](#only-top-level-dockerfile)
-* [Docker image metadata](#docker-image-metadata)
+    * [Maven deploy artifacts to Nexus not yet ready](#maven-deploy-artifacts-to-nexus-not-yet-ready)
 
 ## Introduction
 
@@ -147,12 +148,6 @@ Optional. Default = None
       docker-label-documentation: 'https://.../documentation.md'
 ```
 
-## Limitations
-
-### Only top-level Dockerfile
-
-At this stage only a top-level Dockerfile is utilised. So these Workflows are not yet ready for projects that have lower-level Dockerfile.
-
 ## Docker image metadata
 
 The docker image will have various labels automatically applied.
@@ -162,3 +157,14 @@ See advice at [Create a new FOLIO module and do initial setup](https://dev.folio
 and bear in mind that Docker Hub imposes a [content length limit](https://github.com/peter-evans/dockerhub-description#content-limits) of 100 bytes for that short-description, so it will be truncated at that.
 
 See also the  [Configuration: docker-label-documentation](#configuration-docker-label-documentation) variable.
+
+## Limitations
+
+### Only top-level Dockerfile
+
+At this stage only a top-level Dockerfile is utilised. So these Workflows are not yet ready for projects that have lower-level Dockerfile.
+
+### Maven deploy artifacts to Nexus not yet ready
+
+The facility to deploy Maven jar artifacts to FOLIO NEXUS is not yet ready.
+So these Workflows are not yet ready for projects that need to publish artifacts that others depend on.
