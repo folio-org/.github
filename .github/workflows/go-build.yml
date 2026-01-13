@@ -27,7 +27,9 @@ jobs:
         run: go version
 
       - name: Build the program
-        run: make target/${{ inputs.artifact-id }}
+        env:
+          ARTIFACT_ID: ${{ inputs.artifact-id }}
+        run: make "target/$ARTIFACT_ID"
 
       - name: Run the tests
         run: make test
