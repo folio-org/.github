@@ -14,7 +14,6 @@
 * [Docker image metadata](#docker-image-metadata)
 * [Limitations](#limitations)
     * [Only top-level Dockerfile](#only-top-level-dockerfile)
-    * [Maven deploy artifacts to Nexus not yet ready](#maven-deploy-artifacts-to-nexus-not-yet-ready)
 
 ## Introduction
 
@@ -163,8 +162,3 @@ See also the  [Configuration: docker-label-documentation](#configuration-docker-
 ### Only top-level Dockerfile
 
 At this stage only a top-level Dockerfile is utilised. So these Workflows are not yet ready for projects that have lower-level Dockerfile.
-
-### Maven deploy artifacts to Nexus not yet ready
-
-The facility to deploy Maven jar artifacts to FOLIO NEXUS is not yet ready.
-So these Workflows are not yet ready for projects that need to publish artifacts that others depend on.
