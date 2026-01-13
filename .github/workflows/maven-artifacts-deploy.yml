@@ -15,6 +15,11 @@ on:
       project-version:
         required: true
         type: string
+    secrets:
+      nexus-username:
+        required: true
+      nexus-password:
+        required: true
 
 jobs:
   run:
@@ -43,8 +48,8 @@ jobs:
           java-version: ${{ inputs.java-version}}
           distribution: 'temurin'
           server-id: folio-nexus
-          server-username: ${{ secrets.GHA_NEXUS_USERNAME }}
-          server-password: ${{ secrets.GHA_NEXUS_PASSWORD }}
+          server-username: ${{ secrets.nexus-username }}
+          server-password: ${{ secrets.nexus-password }}
 
       - name: Cache Maven packages
         uses: actions/cache@v5
