@@ -12,6 +12,7 @@
     * [Configuration: docker-health-command](#configuration-docker-health-command)
     * [Configuration: docker-label-documentation](#configuration-docker-label-documentation)
 * [Docker image metadata](#docker-image-metadata)
+* [Install the caller Workflow](#install-the-caller-workflow)
 * [Limitations](#limitations)
     * [Only top-level Dockerfile](#only-top-level-dockerfile)
 
@@ -30,8 +31,13 @@ Refer to example build system and workflows at https://github.com/folio-org/mod-
 
 Create a `.github/workflows` directory in the root of the module repository, and add a file named `maven.yml` with the following content.
 
-> [!IMPORTANT]
-> In-development, not ready for use. See above.
+If there is already a workflow named maven.yml for verifying basic Maven builds, then rename that file.
+It will ease management to have the same filename at every repository.
+
+Follow [Install the caller Workflow](#install-the-caller-workflow) section below to install the initial workflow.
+
+After the first Actions run, do not rename this caller workflow, as that will reset the GitHub run number and so wreck the order of the ModuleDescriptor identifiers.
+
 
 ```yaml
 name: Maven central workflow
@@ -156,6 +162,45 @@ See advice at [Create a new FOLIO module and do initial setup](https://dev.folio
 and bear in mind that Docker Hub imposes a [content length limit](https://github.com/peter-evans/dockerhub-description#content-limits) of 100 bytes for that short-description, so it will be truncated at that.
 
 See also the  [Configuration: docker-label-documentation](#configuration-docker-label-documentation) variable.
+
+## Install the caller Workflow
+
+Create a new branch.
+
+Create a file with the content from the [Usage](#usage) section. Add other [Configuration](#configuration) variables to suit your need.
+
+Do `git mv Jenkinsfile Jenkinsfile-disabled` (so that we can restore quickly if needed).
+
+Commit and push.
+
+Dispatch the workflow on your branch.
+
+Raise the pull-request, and review the run results.
+
+The merge will be denied. The "check" for the old Jenkins "pr-merge" will fail.
+
+Edit "Branch protection" to delete that check, and add a new check. For most repositories that will be: \
+`maven / docker-publish / Docker build and publish`
+
+Wait until after the next "Platform build" to give some time if things go amiss.
+https://dev.folio.org/guides/automation/#platform-hourly-build (finishes approx 53m past)
+https://github.com/folio-org/platform-complete/commits/snapshot/
+
+Merge and watch the mainline branch run.
+
+Review the results for the Docker image and ModuleDescriptor. The identifier for all modules will use base number 2000 plus the sequential workflow run_number (i.e. 2001).
+
+Visit the following resources (adjusted for the relevant repository name):
+* https://hub.docker.com/r/folioci/mod-settings/tags
+* https://hub.docker.com/r/folioci/mod-settings (for new generated description)
+* https://folio-registry.dev.folio.org/_/proxy/modules?filter=mod-settings&latest=1
+* https://folio-registry.dev.folio.org/_/proxy/modules?filter=mod-settings&latest=1&full=true
+* https://repository.folio.org/#browse/browse:maven-snapshots:org%2Ffolio%2Fmod-settings
+* https://sonarcloud.io/project/overview?id=org.folio:mod-settings
+
+Await success of the subsequent "Platform hourly build" and see snapshot branch updated.
+
+If there is a need to quickly revert to Jenkins-based build, then [delete](https://github.com/folio-org/mod-settings/blob/master/.github/workflows/delete-test-md.yml) the published ModuleDescriptor, re-configure the branch protection checks, restore the Jenkinsfile.
 
 ## Limitations
 
