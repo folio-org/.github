@@ -1,8 +1,5 @@
 name: Maven checkout and build
 
-env:
-  SONAR_VERSION: '5.5.0.6356'  # https://github.com/SonarSource/sonar-scanner-maven/releases
-
 on:
   workflow_call:
     inputs:
@@ -10,48 +7,19 @@ on:
         description: If we are on a tag vX.Y.Z, this will be "True", otherwise "False"
         required: true
         type: string
-      is-main-branch:
-        required: true
-        type: string
-      branch-name:
-        required: true
-        type: string
       java-version:
         required: true
         type: string
-      artifact-version:
-        required: true
-        type: string
-      do-docker:
-        required: true
-        type: boolean
-      publish-module-descriptor:
-        required: true
-        type: boolean
       allow-snapshots-release:
         required: true
         type: boolean
-      do-sonar-scan:
-        required: true
-        type: boolean
-      docker-registry:
-        required: true
-        type: string
-      sonar-exclusions:
-        required: true
-        type: string
     outputs:
       artifact-id:
         value: ${{ jobs.build.outputs.artifact-id }}
-      has-module-descriptor:
-        value: ${{ jobs.build.outputs.has-module-descriptor }}
       has-docker:
         value: ${{ jobs.build.outputs.has-docker }}
       has-maven-apidocs:
         value: ${{ jobs.build.outputs.has-maven-apidocs }}
-    secrets:
-      SONAR_TOKEN:
-        required: true # fails the check if the PR is from a fork
 
 jobs:
   build:
@@ -60,7 +28,6 @@ jobs:
 
     outputs:
       artifact-id: ${{ steps.vars.outputs.artifact-id }}
-      has-module-descriptor: ${{ steps.discover-md.outputs.has-module-descriptor }}
       has-docker: ${{ steps.discover-docker.outputs.has-docker }}
       has-maven-apidocs: ${{ steps.discover-apidocs.outputs.has-maven-apidocs }}
 
@@ -75,14 +42,7 @@ jobs:
         uses: actions/setup-java@v5
         with:
           java-version: ${{ inputs.java-version }}
-          distribution: 'temurin'
-
-      - name: Cache Sonar packages
-        uses: actions/cache@v5
-        with:
-          path: ~/.sonar/cache
-          key: ${{ runner.os }}-sonar
-          restore-keys: ${{ runner.os }}-sonar
+          distribution: "temurin"
 
       - name: Cache Maven packages
         uses: actions/cache@v5
@@ -102,7 +62,6 @@ jobs:
           {
             echo "Head commit SHA: ${{ steps.vars.outputs.sha-short }}"
             echo "artifact-id: ${{ steps.vars.outputs.artifact-id }}"
-            echo "artifact-version: ${{ inputs.artifact-version }}"
           } | tee -a $GITHUB_STEP_SUMMARY
 
       - name: (Release only) Discover release dependencies that are snapshots
@@ -115,104 +74,6 @@ jobs:
 
       - name: Maven build
         run: mvn --update-snapshots clean org.jacoco:jacoco-maven-plugin:prepare-agent install org.jacoco:jacoco-maven-plugin:report
-
-      - name: Report whether doing Sonar scan
-        run: echo "do-sonar-scan=${{ inputs.do-sonar-scan }}" | tee -a $GITHUB_STEP_SUMMARY
-
-      - name: Format Sonar exclusions list
-        id: format-exclusions
-        if: ${{ inputs.do-sonar-scan }}
-        run: echo formatted=$(tr -d '[:blank:]' <<< "${{ inputs.sonar-exclusions }}") | tee -a $GITHUB_OUTPUT
-
-      - name: Run SonarCloud scan
-        if: ${{ inputs.do-sonar-scan }}
-        run: |
-          if ${{ github.event_name == 'pull_request' }}; then
-            echo "Do sonar for pull_request ..."
-            mvn -B org.sonarsource.scanner.maven:sonar-maven-plugin:${{ env.SONAR_VERSION }}:sonar \
-              -Dsonar.verbose=true \
-              -Dsonar.host.url=https://sonarcloud.io \
-              -Dsonar.organization=${{ github.repository_owner }} \
-              -Dsonar.projectKey=org.folio:${{ github.event.repository.name }} \
-              -Dsonar.projectName=${{ github.event.repository.name }} \
-              -Dsonar.exclusions=${{ steps.format-exclusions.outputs.formatted }} \
-              -Dsonar.pullrequest.base=${{ github.base_ref }} \
-              -Dsonar.pullrequest.branch=${{ inputs.branch-name }} \
-              -Dsonar.pullrequest.key=${{ github.event.pull_request.number }} \
-              -Dsonar.pullrequest.provider=github \
-              -Dsonar.pullrequest.github.repository=${{ github.repository }}
-          elif ${{ inputs.is-main-branch == 'True' }}; then
-            echo "Do sonar for main branch ..."
-            mvn -B org.sonarsource.scanner.maven:sonar-maven-plugin:${{ env.SONAR_VERSION }}:sonar \
-              -Dsonar.verbose=true \
-              -Dsonar.host.url=https://sonarcloud.io \
-              -Dsonar.organization=${{ github.repository_owner }} \
-              -Dsonar.projectKey=org.folio:${{ github.event.repository.name }} \
-              -Dsonar.projectName=${{ github.event.repository.name }} \
-              -Dsonar.exclusions=${{ steps.format-exclusions.outputs.formatted }}
-          else
-            echo "Do sonar for other branch ..."
-            git fetch --no-tags --no-recurse-submodules ${{ github.server_url }}/${{ github.repository }} \
-              +refs/heads/${{ github.event.repository.default_branch }}:refs/remotes/origin/${{ github.event.repository.default_branch }}
-            mvn -B org.sonarsource.scanner.maven:sonar-maven-plugin:${{ env.SONAR_VERSION }}:sonar \
-              -Dsonar.verbose=true \
-              -Dsonar.host.url=https://sonarcloud.io \
-              -Dsonar.organization=${{ github.repository_owner }} \
-              -Dsonar.projectKey=org.folio:${{ github.event.repository.name }} \
-              -Dsonar.projectName=${{ github.event.repository.name }} \
-              -Dsonar.exclusions=${{ steps.format-exclusions.outputs.formatted }} \
-              -Dsonar.branch.name=${{ inputs.branch-name }}
-          fi
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
-
-      - name: Discover Dockerfile
-        id: discover-docker
-        # TODO: Enable lower-level Dockerfile, specified via project input variable. FOLIO-4424
-        run: |
-          echo "do-docker=${{ inputs.do-docker }}" | tee -a $GITHUB_STEP_SUMMARY
-          if test -f "Dockerfile"; then
-            echo "has-docker=True" | tee -a $GITHUB_OUTPUT
-            echo "has-docker=True" >> $GITHUB_STEP_SUMMARY
-          else
-            echo "has-docker=False" | tee -a $GITHUB_OUTPUT
-            echo "has-docker=False (only looking for top-level, see README)" >> $GITHUB_STEP_SUMMARY
-          fi
-
-      - name: Discover ModuleDescriptor
-        id: discover-md
-        run: |
-          echo "publish-module-descriptor=${{ inputs.publish-module-descriptor }}" | tee -a $GITHUB_STEP_SUMMARY
-          if test -f "target/ModuleDescriptor.json"; then
-            echo "has-module-descriptor=True" | tee -a $GITHUB_OUTPUT | tee -a $GITHUB_STEP_SUMMARY
-          else
-            echo "has-module-descriptor=False" | tee -a $GITHUB_OUTPUT | tee -a $GITHUB_STEP_SUMMARY
-          fi
-
-      - name: Update ModuleDescriptor identifiers
-        if: ${{ steps.discover-md.outputs.has-module-descriptor == 'True' }}
-        run: |
-          cd target
-          mv ModuleDescriptor.json ModuleDescriptor.json.orig
-          cat <<< $( \
-            jq '. | .id |= "${{ steps.vars.outputs.artifact-id }}-${{ inputs.artifact-version }}" | if has("launchDescriptor") then
-              .launchDescriptor.dockerImage |= "${{ inputs.docker-registry }}/${{ steps.vars.outputs.artifact-id }}:${{ inputs.artifact-version }}" |
-              .launchDescriptor.dockerPull |= "true" else . end' ModuleDescriptor.json.orig \
-          ) > ModuleDescriptor.json
-
-      - name: Print ModuleDescriptor
-        if: ${{ steps.discover-md.outputs.has-module-descriptor == 'True' }}
-        run: cat target/ModuleDescriptor.json
-
-      # we publish it to the registry as a separate job
-      - name: Upload ModuleDescriptor as build artifact
-        if: ${{ steps.discover-md.outputs.has-module-descriptor == 'True' }}
-        uses: actions/upload-artifact@v6
-        with:
-          name: ModuleDescriptor.json
-          path: target/ModuleDescriptor.json
-          retention-days: 1
 
       - name: Upload all jars as build artifact
         uses: actions/upload-artifact@v6
@@ -235,3 +96,25 @@ jobs:
           name: apidocs
           path: target/apidocs
           retention-days: 1
+
+      - name: Upload additional build artifacts
+        uses: actions/upload-artifact@v6
+        with:
+          name: build-artifacts
+          path: |
+            target
+            !target/**/*.jar
+            !target/apidocs
+          retention-days: 1
+
+      - name: Discover Dockerfile
+        id: discover-docker
+        # TODO: Enable lower-level Dockerfile, specified via project input variable. FOLIO-4424
+        run: |
+          if test -f "Dockerfile"; then
+            echo "has-docker=True" | tee -a $GITHUB_OUTPUT
+            echo "has-docker=True" >> $GITHUB_STEP_SUMMARY
+          else
+            echo "has-docker=False" | tee -a $GITHUB_OUTPUT
+            echo "has-docker=False (only looking for top-level, see README)" >> $GITHUB_STEP_SUMMARY
+          fi

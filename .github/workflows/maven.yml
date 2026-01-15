@@ -162,23 +162,35 @@ jobs:
       is-release: ${{ needs.set-shared-variables.outputs.is-release }}
 
   build:
-    name: Checkout and build
-    needs: [set-shared-variables, version-number]
+    name: Build
+    needs: [set-shared-variables]
     uses: ./.github/workflows/maven-build.yml
     with:
       is-release: ${{ needs.set-shared-variables.outputs.is-release }}
+      java-version: ${{ inputs.java-version }}
+      allow-snapshots-release: ${{ inputs.allow-snapshots-release }}
+
+  sonar:
+    name: SonarCloud Analysis
+    if: ${{ inputs.do-sonar-scan}}
+    needs: [set-shared-variables, build]
+    uses: ./.github/workflows/maven-sonar.yml
+    with:
       is-main-branch: ${{ needs.set-shared-variables.outputs.is-main-branch }}
       branch-name: ${{ needs.set-shared-variables.outputs.branch-name }}
       java-version: ${{ inputs.java-version }}
-      artifact-version: ${{ needs.version-number.outputs.version-number }}
-      publish-module-descriptor: ${{ inputs.publish-module-descriptor }}
-      do-docker: ${{ inputs.do-docker }}
-      do-sonar-scan: ${{ inputs.do-sonar-scan }}
-      allow-snapshots-release: ${{ inputs.allow-snapshots-release }}
-      docker-registry: ${{ needs.set-shared-variables.outputs.docker-registry }}
       sonar-exclusions: ${{ inputs.sonar-exclusions }}
     secrets:
       SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+
+  get-module-descriptor:
+    name: Get module descriptor
+    needs: [set-shared-variables, version-number, build]
+    uses: ./.github/workflows/maven-module-descriptor-get.yml
+    with:
+      artifact-id: ${{ needs.build.outputs.artifact-id }}
+      artifact-version: ${{ needs.version-number.outputs.version-number }}
+      docker-registry: ${{ needs.set-shared-variables.outputs.docker-registry }}
 
   docker-publish:
     needs: [set-shared-variables, version-number, build, okapi-dependency-check]
@@ -221,8 +233,8 @@ jobs:
 
   okapi-dependency-check:
     name: Okapi dependency check
-    needs: [set-shared-variables, build]
-    if: needs.build.outputs.has-module-descriptor == 'True' && needs.set-shared-variables.outputs.is-release == 'True'
+    needs: [set-shared-variables, build, get-module-descriptor, get-module-descriptor]
+    if: needs.get-module-descriptor.outputs.has-module-descriptor == 'True' && needs.set-shared-variables.outputs.is-release == 'True'
     uses: ./.github/workflows/maven-module-descriptor-verify.yml
     with:
       okapi-pull-urls: '{"urls": ["https://folio-registry.dev.folio.org"]}'
@@ -232,7 +244,7 @@ jobs:
 
   docker-description:
     name: Publish image description
-    needs: [set-shared-variables, build, okapi-dependency-check, docker-publish]
+    needs: [set-shared-variables, build, okapi-dependency-check, docker-publish, get-module-descriptor]
     if: |
       !cancelled() && inputs.do-docker && needs.build.outputs.has-docker == 'True' &&
       (needs.set-shared-variables.outputs.is-release == 'True' || needs.set-shared-variables.outputs.is-main-branch == 'True')
@@ -248,10 +260,10 @@ jobs:
 
   publish-module-descriptor:
     name: Publish module descriptor
-    needs: [set-shared-variables, build, okapi-dependency-check, docker-publish]
+    needs: [set-shared-variables, build, okapi-dependency-check, docker-publish, get-module-descriptor]
     if: |
       !cancelled() && inputs.publish-module-descriptor &&
-      needs.build.outputs.has-module-descriptor == 'True' &&
+      needs.get-module-descriptor.outputs.has-module-descriptor == 'True' &&
       inputs.do-docker && needs.build.outputs.has-docker == 'True' &&
       (needs.set-shared-variables.outputs.is-release == 'True' || needs.set-shared-variables.outputs.is-main-branch == 'True')
     uses: ./.github/workflows/maven-module-descriptor-publish.yml
