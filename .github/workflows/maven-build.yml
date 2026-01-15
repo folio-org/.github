@@ -14,8 +14,6 @@ on:
         required: true
         type: boolean
     outputs:
-      artifact-id:
-        value: ${{ jobs.build.outputs.artifact-id }}
       has-docker:
         value: ${{ jobs.build.outputs.has-docker }}
       has-maven-apidocs:
@@ -27,7 +25,6 @@ jobs:
     runs-on: ubuntu-latest
 
     outputs:
-      artifact-id: ${{ steps.vars.outputs.artifact-id }}
       has-docker: ${{ steps.discover-docker.outputs.has-docker }}
       has-maven-apidocs: ${{ steps.discover-apidocs.outputs.has-maven-apidocs }}
 
@@ -51,18 +48,8 @@ jobs:
           key: ${{ runner.os }}-maven-${{ hashFiles('**/pom.xml') }}
           restore-keys: ${{ runner.os }}-maven
 
-      - name: Gather some variables
-        id: vars
-        run: |
-          echo "artifact-id=$(mvn help:evaluate -Dexpression=project.artifactId -q -DforceStdout)" | tee -a $GITHUB_OUTPUT
-          echo "sha-short=$(git rev-parse --short HEAD)" | tee -a $GITHUB_OUTPUT
-
       - name: Print module information to job summary
-        run: |
-          {
-            echo "Head commit SHA: ${{ steps.vars.outputs.sha-short }}"
-            echo "artifact-id: ${{ steps.vars.outputs.artifact-id }}"
-          } | tee -a $GITHUB_STEP_SUMMARY
+        run: 'echo "Head commit SHA: $(git rev-parse --short HEAD)" | tee -a $GITHUB_STEP_SUMMARY'
 
       - name: (Release only) Discover release dependencies that are snapshots
         if: ${{ inputs.is-release == 'True' }}
