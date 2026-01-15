@@ -55,11 +55,11 @@ on:
 
 jobs:
   build:
-    name: Checkout and build
+    name: Build
     runs-on: ubuntu-latest
 
     outputs:
-      artifact-id: ${{ steps.vars1.outputs.artifact-id }}
+      artifact-id: ${{ steps.vars.outputs.artifact-id }}
       has-module-descriptor: ${{ steps.discover-md.outputs.has-module-descriptor }}
       has-docker: ${{ steps.discover-docker.outputs.has-docker }}
       has-maven-apidocs: ${{ steps.discover-apidocs.outputs.has-maven-apidocs }}
@@ -92,29 +92,29 @@ jobs:
           restore-keys: ${{ runner.os }}-maven
 
       - name: Gather some variables
-        id: vars1
+        id: vars
         run: |
-          echo "artifact-id=$(mvn help:evaluate -Dexpression=project.artifactId -q -DforceStdout)" | tee -a $GITHUB_OUTPUT | tee -a $GITHUB_ENV
-          echo "SHA_SHORT=$(git rev-parse --short HEAD)" | tee -a $GITHUB_ENV
+          echo "artifact-id=$(mvn help:evaluate -Dexpression=project.artifactId -q -DforceStdout)" | tee -a $GITHUB_OUTPUT
+          echo "sha-short=$(git rev-parse --short HEAD)" | tee -a $GITHUB_OUTPUT
 
       - name: Print module information to job summary
         run: |
           {
-            echo "Head commit SHA: ${{ env.SHA_SHORT }}"
-            echo "artifact-id: ${{ env.artifact-id }}"
+            echo "Head commit SHA: ${{ steps.vars.outputs.sha-short }}"
+            echo "artifact-id: ${{ steps.vars.outputs.artifact-id }}"
             echo "artifact-version: ${{ inputs.artifact-version }}"
           } | tee -a $GITHUB_STEP_SUMMARY
 
-      - name: Discover release dependencies that are snapshots
+      - name: (Release only) Discover release dependencies that are snapshots
         if: ${{ inputs.is-release == 'True' }}
         run: mvn dependency:list | { grep -i snapshot | tee snapshots.txt || true; }
 
-      - name: Report release dependencies that are snapshots
-        if:  ${{ inputs.is-release == 'True' }}
-        run: if ! ${{ inputs.allow-snapshots-release }} && [ -s snapshots.txt ]; then exit 1; fi
+      - name: (Release only) Report release dependencies that are snapshots
+        if: ${{ inputs.is-release == 'True' && inputs.allow-snapshots-release == 'True' }}
+        run: if [ -s snapshots.txt ]; then exit 1; fi
 
       - name: Maven build
-        run: mvn clean org.jacoco:jacoco-maven-plugin:prepare-agent install org.jacoco:jacoco-maven-plugin:report
+        run: mvn --update-snapshots clean org.jacoco:jacoco-maven-plugin:prepare-agent install org.jacoco:jacoco-maven-plugin:report
 
       - name: Report whether doing Sonar scan
         run: echo "do-sonar-scan=${{ inputs.do-sonar-scan }}" | tee -a $GITHUB_STEP_SUMMARY
@@ -132,7 +132,7 @@ jobs:
             mvn -B org.sonarsource.scanner.maven:sonar-maven-plugin:${{ env.SONAR_VERSION }}:sonar \
               -Dsonar.verbose=true \
               -Dsonar.host.url=https://sonarcloud.io \
-              -Dsonar.organization=folio-org \
+              -Dsonar.organization=${{ github.repository_owner }} \
               -Dsonar.projectKey=org.folio:${{ github.event.repository.name }} \
               -Dsonar.projectName=${{ github.event.repository.name }} \
               -Dsonar.exclusions=${{ steps.format-exclusions.outputs.formatted }} \
@@ -146,7 +146,7 @@ jobs:
             mvn -B org.sonarsource.scanner.maven:sonar-maven-plugin:${{ env.SONAR_VERSION }}:sonar \
               -Dsonar.verbose=true \
               -Dsonar.host.url=https://sonarcloud.io \
-              -Dsonar.organization=folio-org \
+              -Dsonar.organization=${{ github.repository_owner }} \
               -Dsonar.projectKey=org.folio:${{ github.event.repository.name }} \
               -Dsonar.projectName=${{ github.event.repository.name }} \
               -Dsonar.exclusions=${{ steps.format-exclusions.outputs.formatted }}
@@ -157,7 +157,7 @@ jobs:
             mvn -B org.sonarsource.scanner.maven:sonar-maven-plugin:${{ env.SONAR_VERSION }}:sonar \
               -Dsonar.verbose=true \
               -Dsonar.host.url=https://sonarcloud.io \
-              -Dsonar.organization=folio-org \
+              -Dsonar.organization=${{ github.repository_owner }} \
               -Dsonar.projectKey=org.folio:${{ github.event.repository.name }} \
               -Dsonar.projectName=${{ github.event.repository.name }} \
               -Dsonar.exclusions=${{ steps.format-exclusions.outputs.formatted }} \
@@ -196,8 +196,8 @@ jobs:
           cd target
           mv ModuleDescriptor.json ModuleDescriptor.json.orig
           cat <<< $( \
-            jq '. | .id |= "${{ env.artifact-id }}-${{ inputs.artifact-version }}" | if has("launchDescriptor") then
-              .launchDescriptor.dockerImage |= "${{ inputs.docker-registry }}/${{ env.artifact-id }}:${{ inputs.artifact-version }}" |
+            jq '. | .id |= "${{ steps.vars.outputs.artifact-id }}-${{ inputs.artifact-version }}" | if has("launchDescriptor") then
+              .launchDescriptor.dockerImage |= "${{ inputs.docker-registry }}/${{ steps.vars.outputs.artifact-id }}:${{ inputs.artifact-version }}" |
               .launchDescriptor.dockerPull |= "true" else . end' ModuleDescriptor.json.orig \
           ) > ModuleDescriptor.json
 
