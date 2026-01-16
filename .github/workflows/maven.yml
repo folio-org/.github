@@ -233,7 +233,7 @@ jobs:
 
   okapi-dependency-check:
     name: Okapi dependency check
-    needs: [set-shared-variables, build, get-module-descriptor, get-module-descriptor]
+    needs: [set-shared-variables, build, get-module-descriptor]
     if: needs.get-module-descriptor.outputs.has-module-descriptor == 'True' && needs.set-shared-variables.outputs.is-release == 'True'
     uses: ./.github/workflows/maven-module-descriptor-verify.yml
     with:
