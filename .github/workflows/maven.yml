@@ -167,20 +167,27 @@ jobs:
       is-release: ${{ needs.set-shared-variables.outputs.is-release }}
 
   build:
-    name: Checkout and build
+    name: Build
     needs: [set-shared-variables, version-number]
     uses: ./.github/workflows/maven-build.yml
     with:
       is-release: ${{ needs.set-shared-variables.outputs.is-release }}
-      is-main-branch: ${{ needs.set-shared-variables.outputs.is-main-branch }}
-      branch-name: ${{ needs.set-shared-variables.outputs.branch-name }}
       java-version: ${{ inputs.java-version }}
       artifact-version: ${{ needs.version-number.outputs.version-number }}
       publish-module-descriptor: ${{ inputs.publish-module-descriptor }}
       do-docker: ${{ inputs.do-docker }}
-      do-sonar-scan: ${{ inputs.do-sonar-scan }}
       allow-snapshots-release: ${{ inputs.allow-snapshots-release }}
       docker-registry: ${{ needs.set-shared-variables.outputs.docker-registry }}
+
+  sonar:
+    name: SonarCloud Analysis
+    if: ${{ inputs.do-sonar-scan}}
+    needs: [set-shared-variables, build]
+    uses: ./.github/workflows/maven-sonar.yml
+    with:
+      is-main-branch: ${{ needs.set-shared-variables.outputs.is-main-branch }}
+      branch-name: ${{ needs.set-shared-variables.outputs.branch-name }}
+      java-version: ${{ inputs.java-version }}
       sonar-exclusions: ${{ inputs.sonar-exclusions }}
     secrets:
       SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
