@@ -34,7 +34,7 @@ on:
         required: true
 
 jobs:
-  run:
+  docker:
     name: Docker build${{ inputs.do-docker-push == 'True' && ' and publish' || '' }}
     runs-on: ubuntu-latest
 
