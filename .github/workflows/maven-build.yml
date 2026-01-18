@@ -32,14 +32,14 @@ jobs:
       - name: Checkout ${{ github.repository }}
         uses: actions/checkout@v6
         with:
-          fetch-depth: 0
+          fetch-depth: 1
           submodules: recursive
 
       - name: Set up JDK
         uses: actions/setup-java@v5
         with:
           java-version: ${{ inputs.java-version }}
-          distribution: "temurin"
+          distribution: 'temurin'
 
       - name: Cache Maven packages
         uses: actions/cache@v5

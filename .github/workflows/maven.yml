@@ -1,7 +1,7 @@
 name: Maven workflows
 
 env:
-  documentation: 'https://github.com/folio-org/.github/blob/FOLIO-4126-maven-workflows-1/README-maven.md'
+  documentation: "https://github.com/folio-org/.github/blob/FOLIO-4126-maven-workflows-1/README-maven.md"
 
 on:
   workflow_call:
@@ -9,7 +9,7 @@ on:
       java-version:
         required: false
         type: string
-        default: '21'
+        default: "21"
       do-docker:
         required: false
         type: boolean
@@ -17,11 +17,11 @@ on:
       docker-health-command:
         required: false
         type: string
-        default: ''
+        default: ""
       docker-label-documentation:
         required: false
         type: string
-        default: ''
+        default: ""
       publish-module-descriptor:
         required: false
         type: boolean
@@ -230,6 +230,7 @@ jobs:
       allow-snapshots-release: ${{ inputs.allow-snapshots-release }}
       docker-registry: ${{ needs.set-shared-variables.outputs.docker-registry }}
       do-docker-push: ${{ needs.set-shared-variables.outputs.do-docker-push }}
+      do-sonar-scan: ${{ inputs.do-sonar-scan }}
 
   okapi-dependency-check:
     name: Okapi dependency check
@@ -244,7 +245,15 @@ jobs:
 
   docker-description:
     name: Publish image description
-    needs: [set-shared-variables, version-number, build, get-module-descriptor, okapi-dependency-check, docker-publish]
+    needs:
+      [
+        set-shared-variables,
+        version-number,
+        build,
+        get-module-descriptor,
+        okapi-dependency-check,
+        docker-publish,
+      ]
     if: |
       !cancelled() && inputs.do-docker && needs.build.outputs.has-docker == 'True' &&
       (needs.set-shared-variables.outputs.is-release == 'True' || needs.set-shared-variables.outputs.is-main-branch == 'True')
@@ -260,7 +269,14 @@ jobs:
 
   publish-module-descriptor:
     name: Publish module descriptor
-    needs: [set-shared-variables, build, okapi-dependency-check, docker-publish, get-module-descriptor]
+    needs:
+      [
+        set-shared-variables,
+        build,
+        okapi-dependency-check,
+        docker-publish,
+        get-module-descriptor,
+      ]
     if: |
       !cancelled() && inputs.publish-module-descriptor &&
       needs.get-module-descriptor.outputs.has-module-descriptor == 'True' &&
@@ -304,4 +320,3 @@ jobs:
     secrets:
       AWS_S3_ACCESS_KEY_ID: ${{ secrets.S3_ACCESS_KEY_ID }}
       AWS_S3_ACCESS_KEY: ${{ secrets.S3_SECRET_ACCESS_KEY }}
-
