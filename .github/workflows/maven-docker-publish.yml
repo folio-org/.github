@@ -35,7 +35,7 @@ on:
 
 jobs:
   run:
-    name: Docker build and publish
+    name: Docker build${{ inputs.do-docker-push == 'True' && ' and publish' || '' }}
     runs-on: ubuntu-latest
 
     steps:
@@ -134,11 +134,10 @@ jobs:
           fi
           echo "loop-count=$i (max_startup_wait=$max_startup_wait)"
 
-      - name: Build and push Docker image
+      - name: Build ${{ inputs.do-docker-push == 'True' && 'and push ' || '' }}Docker image
         uses: docker/build-push-action@v6
         with:
           context: .
           push: ${{ inputs.do-docker-push == 'True' }}
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
-
