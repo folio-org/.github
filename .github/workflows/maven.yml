@@ -230,6 +230,7 @@ jobs:
       allow-snapshots-release: ${{ inputs.allow-snapshots-release }}
       docker-registry: ${{ needs.set-shared-variables.outputs.docker-registry }}
       do-docker-push: ${{ needs.set-shared-variables.outputs.do-docker-push }}
+      do-sonar-scan: ${{ inputs.do-sonar-scan }}
 
   okapi-dependency-check:
     name: Okapi dependency check

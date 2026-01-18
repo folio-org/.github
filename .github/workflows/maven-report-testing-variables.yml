@@ -45,6 +45,9 @@ on:
       do-docker-push:
         required: true
         type: string
+      do-sonar-scan:
+        required: true
+        type: boolean
 
 jobs:
   run:
@@ -69,5 +72,6 @@ jobs:
           echo "repo-description=${{ inputs.repo-description }}"
           echo "docker-registry=${{ inputs.docker-registry }}"
           echo "do-docker-push=${{ inputs.do-docker-push }}"
+          echo "do-sonar-scan=${{ inputs.do-sonar-scan }}" | tee -a $GITHUB_STEP_SUMMARY
 
 
