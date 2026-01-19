@@ -1,7 +1,7 @@
 name: Maven workflows
 
 env:
-  documentation: 'https://github.com/folio-org/.github/blob/master/README-maven.md'
+  documentation: 'https://github.com/folio-org/.github/blob/FOLIO-4126-maven-workflows-1/README-maven.md'
 
 on:
   workflow_call:
@@ -79,6 +79,8 @@ jobs:
       - name: Show documentation
         run: |
           echo "Documentation: ${{ env.documentation }}" | tee -a $GITHUB_STEP_SUMMARY
+          echo "> [!CAUTION]" >> $GITHUB_STEP_SUMMARY
+          echo "> NOTE: In-development [FOLIO-4126](https://folio-org.atlassian.net/browse/FOLIO-4126)" >> $GITHUB_STEP_SUMMARY
 
   set-shared-variables:
     name: Set shared variables
