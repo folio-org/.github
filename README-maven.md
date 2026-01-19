@@ -180,7 +180,7 @@ Raise the pull-request, and review the run results.
 The merge will be denied. The "check" for the old Jenkins "pr-merge" will fail.
 
 Edit "Branch protection" to delete that check, and add a new check. For most repositories that will be: \
-`maven / docker-publish / Docker build and publish`
+`maven / docker-publish / Docker build`
 
 Wait until after the next "Platform build" to give some time if things go amiss.
 https://dev.folio.org/guides/automation/#platform-hourly-build (finishes approx 53m past)
