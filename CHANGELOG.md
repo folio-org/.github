@@ -2,7 +2,12 @@
 
 ## IN PROGRESS
 
-* DEVOPS-4109 Highlight additional step patch release - in #84
+* (Add progress summary here.)
+
+## [1.11.0](https://github.com/folio-org/.github/tree/v1.11.0) (2026-01-19)
+[Full Changelog](https://github.com/folio-org/.github/compare/v1.10.1...v1.11.0)
+
+* FOLIO-4109 Highlight additional step patch release - in #84
 * FOLIO-3944 Upgrade Actions for workflow-templates API Workflows - in #85
 * FOLIO-4382 Upgrade go-lint-golangci, enable go1.25 - in #86
 * FOLIO-4382 Use actions/checkout v6 - in #87
@@ -10,6 +15,7 @@
 * FOLIO-4382 Upgrade actions for go - in #89
 * Advise to use actionlint while developing - in #90
 * FOLIO-4382 Upgrade various Actions for UI Workflows - in #91
+* FOLIO-4126 Workflows for Maven-based repos Phase 1 - in #92
 
 ## [1.10.1](https://github.com/folio-org/.github/tree/v1.10.1) (2025-10-04)
 [Full Changelog](https://github.com/folio-org/.github/compare/v1.10.0...v1.10.1)
