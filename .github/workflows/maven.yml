@@ -212,7 +212,7 @@ jobs:
       dockerhub-username: ${{ secrets.DOCKERHUB_USERNAME }}
       dockerhub-token: ${{ secrets.DOCKERHUB_TOKEN }}
 
-  report-testing-variables:
+  report-variables:
     needs: [set-shared-variables, version-number]
     uses: ./.github/workflows/maven-report-testing-variables.yml
     with:
