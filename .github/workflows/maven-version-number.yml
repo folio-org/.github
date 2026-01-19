@@ -1,0 +1,65 @@
+name: Maven calculate CI version number
+
+on:
+  workflow_call:
+    inputs:
+      is-release:
+        description: If we are on a tag vX.Y.Z, this will be "True", otherwise "False"
+        required: true
+        type: string
+    outputs:
+      version-number:
+        description: If a tag, we'll return that tag's version number; otherwise, it will be the derived version number unique to this run
+        value: ${{ jobs.get-version-number.outputs.version-number }}
+      artifact-id:
+        value: ${{ jobs.get-version-number.outputs.artifact-id }}
+      project-version:
+        value: ${{ jobs.get-version-number.outputs.project-version }}
+
+jobs:
+  get-version-number:
+    name: Get CI version number
+    runs-on: ubuntu-latest
+
+    outputs:
+      version-number: ${{ steps.final.outputs.version }}
+      artifact-id: ${{ steps.get-artifact-id.outputs.artifact-id }}
+      project-version: ${{ steps.get-version.outputs.project-version }}
+
+    steps:
+      - name: Checkout ${{ github.repository }}
+        uses: actions/checkout@v6
+
+      - name: Fetch git tags
+        run: git fetch --prune --prune-tags --force --depth=1
+
+      - name: Get project artifact-id
+        id: get-artifact-id
+        run: |
+          echo artifact-id="$(mvn help:evaluate -Dexpression=project.artifactId -q -DforceStdout)" | tee -a $GITHUB_OUTPUT
+
+      - name: Get project version
+        id: get-version
+        run: |
+          echo project-version="$(mvn help:evaluate -Dexpression=project.version -q -DforceStdout)" | tee -a $GITHUB_OUTPUT
+
+      - id: calculate
+        if: ${{ inputs.is-release == 'False' }}
+        name: Calculate version number, if not a release tag
+        run: |
+          base_number=2000
+          build_number=$(( base_number + GITHUB_RUN_NUMBER ))
+          echo version="${{ steps.get-version.outputs.project-version }}.${build_number}" | tee -a $GITHUB_OUTPUT
+        env:
+          JOB_ID: ${{ github.run_number }}
+
+      - id: tag-version
+        if: ${{ inputs.is-release == 'True' }}
+        name: Get release tag version number, if applicable
+        run: echo version=${GITHUB_REF#refs/tags/v} | tee -a $GITHUB_OUTPUT
+
+      # used to aggregate tag and non-tag versions into a single output
+      # the irrelevant one will be an empty string
+      - id: final
+        name: Get version from previous steps
+        run: echo version=${{ steps.calculate.outputs.version }}${{ steps.tag-version.outputs.version }} | tee -a $GITHUB_OUTPUT

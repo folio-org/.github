@@ -1,0 +1,65 @@
+name: Maven upload build-time apidocs
+
+# If maven generated apidocs during its build then do special upload to S3.
+
+env:
+  AWS_S3_BUCKET: 'foliodocs'
+  AWS_S3_FOLDER: 'api'
+  AWS_S3_REGION: 'us-east-1'
+
+on:
+  workflow_call:
+    inputs:
+      is-release:
+        description: If we are on a tag vX.Y.Z, this will be "True", otherwise "False"
+        required: true
+        type: string
+      artifact-id:
+        required: true
+        type: string
+      artifact-version:
+        required: true
+        type: string
+    secrets:
+      AWS_S3_ACCESS_KEY_ID:
+        required: true
+      AWS_S3_ACCESS_KEY:
+        required: true
+
+jobs:
+  run:
+    name: Upload build-time apidocs
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Download artifact apidocs
+        uses: actions/download-artifact@v7
+        with:
+          name: apidocs
+          path: apidocs
+
+      - name: Prepare upload apidocs directory
+        run: |
+          uploadBaseDir="upload/${{ inputs.artifact-id }}"
+          if [ "${{ inputs.is-release }}" == 'True' ]; then
+            versionMajMin=$(echo ${{ inputs.artifact-version }} | awk -F '.' '{ print $1 "." $2 }')
+            uploadDir="${uploadBaseDir}/${versionMajMin}/u"
+          else
+            uploadDir="${uploadBaseDir}/u"
+          fi
+          mkdir -p ${uploadDir}
+          find ./apidocs/*.* | sed 's|^.*/||' > ${uploadDir}/files-upload.txt
+          cp apidocs/*.* ${uploadDir}
+          cat ${uploadDir}/files-upload.txt
+
+      - name: Publish to AWS S3
+        uses: sai-sharan/aws-s3-sync-action@v0.1.0
+        with:
+          access_key: ${{ secrets.AWS_S3_ACCESS_KEY_ID }}
+          secret_access_key: ${{ secrets.AWS_S3_ACCESS_KEY }}
+          region: ${{ env.AWS_S3_REGION }}
+          source: upload
+          destination_bucket: ${{ env.AWS_S3_BUCKET }}
+          destination_prefix: ${{ env.AWS_S3_FOLDER }}
+          delete: false
+          quiet: false

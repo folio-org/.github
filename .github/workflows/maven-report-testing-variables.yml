@@ -1,9 +1,9 @@
-name: Maven report testing variables
+name: Maven report some variables
 
 on:
   workflow_call:
     inputs:
-      artifact-id:
+      repo-name:
         required: true
         type: string
       is-release:
@@ -12,20 +12,69 @@ on:
       is-main-branch:
         required: true
         type: string
+      java-version:
+        required: true
+        type: string
+      artifact-version:
+        required: true
+        type: string
+      artifact-id:
+        required: true
+        type: string
+      project-version:
+        required: true
+        type: string
+      branch-name:
+        required: true
+        type: string
+      repo-description:
+        required: true
+        type: string
+      do-docker:
+        required: true
+        type: boolean
+      publish-module-descriptor:
+        required: true
+        type: boolean
+      allow-snapshots-release:
+        required: true
+        type: boolean
+      docker-registry:
+        required: true
+        type: string
       do-docker-push:
         required: true
         type: string
+      do-sonar-scan:
+        required: true
+        type: boolean
 
 jobs:
   run:
-    name: Report testing variables
+    name: Report some variables
     runs-on: ubuntu-latest
 
     steps:
       - name: Show some variables
         run: |
-          echo "is-release=${{ inputs.is-release }}"
-          echo "artifact-id=${{ inputs.artifact-id }}"
-          echo "do-docker-push=${{ inputs.do-docker-push }}"
-          echo "github.ref=${{ github.ref }}"
+          echo "repo-name=${{ inputs.repo-name }}"
           echo "is-main-branch=${{ inputs.is-main-branch }}"
+          echo "github.ref=${{ github.ref }}"
+          echo "is-release=${{ inputs.is-release }}" | tee -a $GITHUB_STEP_SUMMARY
+          echo "java-version=${{ inputs.java-version }}"
+          echo "do-docker=${{ inputs.do-docker }}"
+          echo "publish-module-descriptor=${{ inputs.publish-module-descriptor }}"
+          echo "allow-snapshots-release=${{ inputs.allow-snapshots-release }}"
+          echo "artifact-id=${{ inputs.artifact-id }}" | tee -a $GITHUB_STEP_SUMMARY
+          echo "project-version=${{ inputs.project-version }}" | tee -a $GITHUB_STEP_SUMMARY
+          echo "artifact-version=${{ inputs.artifact-version }}"
+          if [ "${{ inputs.is-release }}" == 'True' ] || [ "${{ inputs.is-main-branch }}" == 'True' ]; then
+            echo "artifact-version=${{ inputs.artifact-version }}" >> $GITHUB_STEP_SUMMARY
+          fi
+          echo "branch-name=${{ inputs.branch-name }}" | tee -a $GITHUB_STEP_SUMMARY
+          echo "repo-description=${{ inputs.repo-description }}"
+          echo "docker-registry=${{ inputs.docker-registry }}"
+          echo "do-docker-push=${{ inputs.do-docker-push }}"
+          echo "do-sonar-scan=${{ inputs.do-sonar-scan }}" | tee -a $GITHUB_STEP_SUMMARY
+
+

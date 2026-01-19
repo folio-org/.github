@@ -1,7 +1,54 @@
 name: Maven workflows
 
+env:
+  documentation: 'https://github.com/folio-org/.github/blob/master/README-maven.md'
+
 on:
   workflow_call:
+    inputs:
+      java-version:
+        required: false
+        type: string
+        default: '21'
+      do-docker:
+        required: false
+        type: boolean
+        default: true
+      docker-health-command:
+        required: false
+        type: string
+        default: ''
+      docker-label-documentation:
+        required: false
+        type: string
+        default: ''
+      publish-module-descriptor:
+        required: false
+        type: boolean
+        default: true
+      module-descriptor-registry:
+        required: false
+        type: string
+        default: https://folio-registry.dev.folio.org
+      allow-snapshots-release:
+        required: false
+        type: boolean
+        default: false
+      do-sonar-scan:
+        required: false
+        type: boolean
+        default: true
+      do-maven-deploy:
+        required: false
+        type: boolean
+        default: true
+      sonar-exclusions:
+        required: false
+        type: string
+        default: >
+          **/*.md,
+          .github/**,
+          **/*.json
     secrets:
       # these need to be non-required to allow anything here for forks
       # however, the sub-workflows will fail appropriately if these are not present, as applicable
@@ -15,6 +62,14 @@ on:
         required: false
       FOLIO_REGISTRY_PASSWORD:
         required: false
+      GHA_NEXUS_USERNAME:
+        required: false
+      GHA_NEXUS_PASSWORD:
+        required: false
+      S3_ACCESS_KEY_ID:
+        required: false
+      S3_SECRET_ACCESS_KEY:
+        required: false
 
 jobs:
   documentation:
@@ -23,9 +78,7 @@ jobs:
     steps:
       - name: Show documentation
         run: |
-          echo "Documentation: https://github.com/folio-org/.github/blob/master/README-maven.md" | tee -a $GITHUB_STEP_SUMMARY
-          echo "> [!CAUTION]" >> $GITHUB_STEP_SUMMARY
-          echo "> NOTE: In-development [FOLIO-4126](https://folio-org.atlassian.net/browse/FOLIO-4126)" >> $GITHUB_STEP_SUMMARY
+          echo "Documentation: ${{ env.documentation }}" | tee -a $GITHUB_STEP_SUMMARY
 
   set-shared-variables:
     name: Set shared variables
@@ -33,9 +86,10 @@ jobs:
     outputs:
       is-release: ${{ steps.logic.outputs.is-release }}
       is-main-branch: ${{ steps.vars1.outputs.is-main-branch }}
+      branch-name: ${{ steps.vars1.outputs.branch-name }}
       do-docker-push: ${{ steps.vars2.outputs.do-docker-push }}
       docker-registry: ${{ steps.logic.outputs.docker-registry }}
-      artifact-id: ${{ steps.vars1.outputs.artifact-id }}
+      repo-name: ${{ steps.vars1.outputs.repo-name }}
       repo-description: ${{ steps.vars1.outputs.repo-description }}
     steps:
       - id: logic
@@ -68,8 +122,13 @@ jobs:
       - id: vars1
         name: Determine first set of other variables
         run: |
-          echo "artifact-id=${GITHUB_REPOSITORY##*/}" | tee -a $GITHUB_OUTPUT
+          echo "repo-name=${GITHUB_REPOSITORY##*/}" | tee -a $GITHUB_OUTPUT
           echo "repo-description=${{ github.event.repository.description }}" | tee -a $GITHUB_OUTPUT
+          if [ "${{ github.event_name }}" == "pull_request" ]; then
+            echo "branch-name=${GITHUB_HEAD_REF}" | tee -a $GITHUB_OUTPUT
+          else
+            echo "branch-name=${GITHUB_REF_NAME}" | tee -a $GITHUB_OUTPUT
+          fi
           # On a fork, the default branch might be other:
           if ${{ github.ref == 'refs/heads/main' || github.ref  == 'refs/heads/master' }}; then
             echo "is-main-branch=True" | tee -a $GITHUB_OUTPUT
@@ -92,12 +151,156 @@ jobs:
             fi
           fi
 
-  report-testing-variables:
+      - name: Ensure Java version
+        run: |
+          if [ "${{ inputs.java-version }}" != "17" ] && [ "${{ inputs.java-version }}" != "21" ]; then
+            echo "java-version=${{ inputs.java-version }}: Must be '17' or '21'."
+            exit 1
+          fi
+
+  version-number:
     needs: [set-shared-variables]
+    uses: ./.github/workflows/maven-version-number.yml
+    with:
+      is-release: ${{ needs.set-shared-variables.outputs.is-release }}
+
+  build:
+    name: Build
+    needs: [set-shared-variables, version-number]
+    uses: ./.github/workflows/maven-build.yml
+    with:
+      is-release: ${{ needs.set-shared-variables.outputs.is-release }}
+      java-version: ${{ inputs.java-version }}
+      artifact-version: ${{ needs.version-number.outputs.version-number }}
+      publish-module-descriptor: ${{ inputs.publish-module-descriptor }}
+      do-docker: ${{ inputs.do-docker }}
+      allow-snapshots-release: ${{ inputs.allow-snapshots-release }}
+      docker-registry: ${{ needs.set-shared-variables.outputs.docker-registry }}
+
+  sonar:
+    name: SonarCloud Analysis
+    if: ${{ inputs.do-sonar-scan}}
+    needs: [set-shared-variables, build]
+    uses: ./.github/workflows/maven-sonar.yml
+    with:
+      is-main-branch: ${{ needs.set-shared-variables.outputs.is-main-branch }}
+      branch-name: ${{ needs.set-shared-variables.outputs.branch-name }}
+      java-version: ${{ inputs.java-version }}
+      sonar-exclusions: ${{ inputs.sonar-exclusions }}
+    secrets:
+      SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+
+  docker-publish:
+    needs: [set-shared-variables, version-number, build, okapi-dependency-check]
+    # Will always build docker and potentially test, but only push if inputs.do-docker-push=true (i.e. when release or mainline)
+    if: |
+      !cancelled() && inputs.do-docker && needs.build.outputs.has-docker == 'True' &&
+      (needs.okapi-dependency-check.result == 'success' || needs.okapi-dependency-check.result == 'skipped')
+    uses: ./.github/workflows/maven-docker-publish.yml
+    with:
+      is-release: ${{ needs.set-shared-variables.outputs.is-release }}
+      is-main-branch: ${{ needs.set-shared-variables.outputs.is-main-branch }}
+      artifact-id: ${{ needs.build.outputs.artifact-id }}
+      artifact-version: ${{ needs.version-number.outputs.version-number }}
+      docker-registry: ${{ needs.set-shared-variables.outputs.docker-registry }}
+      docker-health-command: ${{ inputs.docker-health-command }}
+      do-docker-push: ${{ needs.set-shared-variables.outputs.do-docker-push }}
+      docker-label-documentation: ${{ inputs.docker-label-documentation }}
+    secrets:
+      dockerhub-username: ${{ secrets.DOCKERHUB_USERNAME }}
+      dockerhub-token: ${{ secrets.DOCKERHUB_TOKEN }}
+
+  report-variables:
+    needs: [set-shared-variables, version-number]
     uses: ./.github/workflows/maven-report-testing-variables.yml
     with:
       is-release: ${{ needs.set-shared-variables.outputs.is-release }}
-      is-main-branch: ${{ needs.set-shared-variables.outputs.is-main-branch}}
-      artifact-id: ${{ needs.set-shared-variables.outputs.artifact-id }}
+      is-main-branch: ${{ needs.set-shared-variables.outputs.is-main-branch }}
+      repo-name: ${{ needs.set-shared-variables.outputs.repo-name }}
+      java-version: ${{ inputs.java-version }}
+      artifact-id: ${{ needs.version-number.outputs.artifact-id }}
+      artifact-version: ${{ needs.version-number.outputs.version-number }}
+      project-version: ${{ needs.version-number.outputs.project-version }}
+      branch-name: ${{ needs.set-shared-variables.outputs.branch-name }}
+      repo-description: ${{ needs.set-shared-variables.outputs.repo-description }}
+      do-docker: ${{ inputs.do-docker }}
+      publish-module-descriptor: ${{ inputs.publish-module-descriptor }}
+      allow-snapshots-release: ${{ inputs.allow-snapshots-release }}
+      docker-registry: ${{ needs.set-shared-variables.outputs.docker-registry }}
       do-docker-push: ${{ needs.set-shared-variables.outputs.do-docker-push }}
+      do-sonar-scan: ${{ inputs.do-sonar-scan }}
+
+  okapi-dependency-check:
+    name: Okapi dependency check
+    needs: [set-shared-variables, build]
+    if: needs.build.outputs.has-module-descriptor == 'True' && needs.set-shared-variables.outputs.is-release == 'True'
+    uses: ./.github/workflows/maven-module-descriptor-verify.yml
+    with:
+      okapi-pull-urls: '{"urls": ["https://folio-registry.dev.folio.org"]}'
+    secrets:
+      dockerhub-username: ${{ secrets.DOCKERHUB_USERNAME }}
+      dockerhub-token: ${{ secrets.DOCKERHUB_TOKEN }}
+
+  docker-description:
+    name: Publish image description
+    needs: [set-shared-variables, build, okapi-dependency-check, docker-publish]
+    if: |
+      !cancelled() && inputs.do-docker && needs.build.outputs.has-docker == 'True' &&
+      (needs.set-shared-variables.outputs.is-release == 'True' || needs.set-shared-variables.outputs.is-main-branch == 'True')
+    uses: ./.github/workflows/docker-description.yml
+    with:
+      artifact-id: ${{ needs.build.outputs.artifact-id }}
+      docker-registry: ${{ needs.set-shared-variables.outputs.docker-registry }}
+      repo-description: ${{ needs.set-shared-variables.outputs.repo-description }}
+      publish-module-descriptor: ${{ inputs.publish-module-descriptor }}
+    secrets:
+      dockerhub-username: ${{ secrets.DOCKERHUB_USERNAME }}
+      dockerhub-token: ${{ secrets.DOCKERHUB_TOKEN }}
+
+  publish-module-descriptor:
+    name: Publish module descriptor
+    needs: [set-shared-variables, build, okapi-dependency-check, docker-publish]
+    if: |
+      !cancelled() && inputs.publish-module-descriptor &&
+      needs.build.outputs.has-module-descriptor == 'True' &&
+      inputs.do-docker && needs.build.outputs.has-docker == 'True' &&
+      (needs.set-shared-variables.outputs.is-release == 'True' || needs.set-shared-variables.outputs.is-main-branch == 'True')
+    uses: ./.github/workflows/maven-module-descriptor-publish.yml
+    with:
+      module-descriptor-registry: ${{ inputs.module-descriptor-registry }}
+    secrets:
+      registry-username: ${{ secrets.FOLIO_REGISTRY_USERNAME }}
+      registry-password: ${{ secrets.FOLIO_REGISTRY_PASSWORD }}
+
+  deploy-maven-artifacts:
+    name: Deploy maven artifacts
+    needs: [set-shared-variables, version-number, build, okapi-dependency-check]
+    if: |
+      !cancelled() && inputs.do-maven-deploy &&
+      (needs.okapi-dependency-check.result == 'success' || needs.okapi-dependency-check.result == 'skipped') &&
+      (needs.set-shared-variables.outputs.is-release == 'True' || needs.set-shared-variables.outputs.is-main-branch == 'True')
+    uses: ./.github/workflows/maven-artifacts-deploy.yml
+    with:
+      java-version: ${{ inputs.java-version }}
+      artifact-id: ${{ needs.version-number.outputs.artifact-id }}
+      version-number: ${{ needs.version-number.outputs.version-number }}
+      project-version: ${{ needs.version-number.outputs.project-version }}
+    secrets:
+      nexus-username: ${{ secrets.GHA_NEXUS_USERNAME }}
+      nexus-password: ${{ secrets.GHA_NEXUS_PASSWORD }}
+
+  upload-apidocs:
+    name: Upload build-time apidocs
+    needs: [set-shared-variables, version-number, build]
+    if: |
+      needs.build.outputs.has-maven-apidocs == 'True' &&
+      (needs.set-shared-variables.outputs.is-release == 'True' || needs.set-shared-variables.outputs.is-main-branch == 'True')
+    uses: ./.github/workflows/maven-upload-apidocs.yml
+    with:
+      is-release: ${{ needs.set-shared-variables.outputs.is-release }}
+      artifact-id: ${{ needs.build.outputs.artifact-id }}
+      artifact-version: ${{ needs.version-number.outputs.version-number }}
+    secrets:
+      AWS_S3_ACCESS_KEY_ID: ${{ secrets.S3_ACCESS_KEY_ID }}
+      AWS_S3_ACCESS_KEY: ${{ secrets.S3_SECRET_ACCESS_KEY }}
 

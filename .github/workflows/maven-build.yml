@@ -1,0 +1,169 @@
+name: Maven checkout and build
+
+on:
+  workflow_call:
+    inputs:
+      is-release:
+        description: If we are on a tag vX.Y.Z, this will be "True", otherwise "False"
+        required: true
+        type: string
+      java-version:
+        required: true
+        type: string
+      artifact-version:
+        required: true
+        type: string
+      do-docker:
+        required: true
+        type: boolean
+      publish-module-descriptor:
+        required: true
+        type: boolean
+      allow-snapshots-release:
+        required: true
+        type: boolean
+      docker-registry:
+        required: true
+        type: string
+    outputs:
+      artifact-id:
+        value: ${{ jobs.build.outputs.artifact-id }}
+      has-module-descriptor:
+        value: ${{ jobs.build.outputs.has-module-descriptor }}
+      has-docker:
+        value: ${{ jobs.build.outputs.has-docker }}
+      has-maven-apidocs:
+        value: ${{ jobs.build.outputs.has-maven-apidocs }}
+
+jobs:
+  build:
+    name: Checkout and build
+    runs-on: ubuntu-latest
+
+    outputs:
+      artifact-id: ${{ steps.vars1.outputs.artifact-id }}
+      has-module-descriptor: ${{ steps.discover-md.outputs.has-module-descriptor }}
+      has-docker: ${{ steps.discover-docker.outputs.has-docker }}
+      has-maven-apidocs: ${{ steps.discover-apidocs.outputs.has-maven-apidocs }}
+
+    steps:
+      - name: Checkout ${{ github.repository }}
+        uses: actions/checkout@v6
+        with:
+          fetch-depth: 1
+          submodules: recursive
+
+      - name: Set up JDK
+        uses: actions/setup-java@v5
+        with:
+          java-version: ${{ inputs.java-version }}
+          distribution: 'temurin'
+
+      - name: Cache Maven packages
+        uses: actions/cache@v5
+        with:
+          path: ~/.m2/repository
+          key: ${{ runner.os }}-maven-${{ hashFiles('**/pom.xml') }}
+          restore-keys: ${{ runner.os }}-maven
+
+      - name: Gather some variables
+        id: vars1
+        run: |
+          echo "artifact-id=$(mvn help:evaluate -Dexpression=project.artifactId -q -DforceStdout)" | tee -a $GITHUB_OUTPUT | tee -a $GITHUB_ENV
+          echo "SHA_SHORT=$(git rev-parse --short HEAD)" | tee -a $GITHUB_ENV
+
+      - name: Print some information to job summary
+        run: |
+          {
+            echo "Head commit SHA: ${{ env.SHA_SHORT }}"
+          } | tee -a $GITHUB_STEP_SUMMARY
+
+      - name: Discover release dependencies that are snapshots
+        if: ${{ inputs.is-release == 'True' }}
+        run: mvn dependency:list | { grep -i snapshot | tee snapshots.txt || true; }
+
+      - name: Report release dependencies that are snapshots
+        if:  ${{ inputs.is-release == 'True' }}
+        run: if ! ${{ inputs.allow-snapshots-release }} && [ -s snapshots.txt ]; then exit 1; fi
+
+      - name: Maven build
+        run: mvn clean org.jacoco:jacoco-maven-plugin:prepare-agent install org.jacoco:jacoco-maven-plugin:report
+
+      - name: Discover Dockerfile
+        id: discover-docker
+        # TODO: Enable lower-level Dockerfile, specified via project input variable. FOLIO-4424
+        run: |
+          echo "do-docker=${{ inputs.do-docker }}" | tee -a $GITHUB_STEP_SUMMARY
+          if test -f "Dockerfile"; then
+            echo "has-docker=True" | tee -a $GITHUB_OUTPUT
+            echo "has-docker=True" >> $GITHUB_STEP_SUMMARY
+          else
+            echo "has-docker=False" | tee -a $GITHUB_OUTPUT
+            echo "has-docker=False (only looking for top-level, see README)" >> $GITHUB_STEP_SUMMARY
+          fi
+
+      - name: Discover ModuleDescriptor
+        id: discover-md
+        run: |
+          echo "publish-module-descriptor=${{ inputs.publish-module-descriptor }}" | tee -a $GITHUB_STEP_SUMMARY
+          if test -f "target/ModuleDescriptor.json"; then
+            echo "has-module-descriptor=True" | tee -a $GITHUB_OUTPUT | tee -a $GITHUB_STEP_SUMMARY
+          else
+            echo "has-module-descriptor=False" | tee -a $GITHUB_OUTPUT | tee -a $GITHUB_STEP_SUMMARY
+          fi
+
+      - name: Update ModuleDescriptor identifiers
+        if: ${{ steps.discover-md.outputs.has-module-descriptor == 'True' }}
+        run: |
+          cd target
+          mv ModuleDescriptor.json ModuleDescriptor.json.orig
+          cat <<< $( \
+            jq '. | .id |= "${{ env.artifact-id }}-${{ inputs.artifact-version }}" | if has("launchDescriptor") then
+              .launchDescriptor.dockerImage |= "${{ inputs.docker-registry }}/${{ env.artifact-id }}:${{ inputs.artifact-version }}" |
+              .launchDescriptor.dockerPull |= "true" else . end' ModuleDescriptor.json.orig \
+          ) > ModuleDescriptor.json
+
+      - name: Print ModuleDescriptor
+        if: ${{ steps.discover-md.outputs.has-module-descriptor == 'True' }}
+        run: cat target/ModuleDescriptor.json
+
+      # we publish it to the registry as a separate job
+      - name: Upload ModuleDescriptor as build artifact
+        if: ${{ steps.discover-md.outputs.has-module-descriptor == 'True' }}
+        uses: actions/upload-artifact@v6
+        with:
+          name: ModuleDescriptor.json
+          path: target/ModuleDescriptor.json
+          retention-days: 1
+
+      - name: Upload all jars as build artifact
+        uses: actions/upload-artifact@v6
+        with:
+          name: built-jars
+          path: target/**/*.jar
+          retention-days: 1
+
+      - name: Discover maven built apidocs
+        id: discover-apidocs
+        run: |
+          if test -d "target/apidocs"; then
+            echo "has-maven-apidocs=True" | tee -a $GITHUB_OUTPUT
+          fi
+
+      - name: Upload apidocs as build artifact
+        uses: actions/upload-artifact@v6
+        if: ${{ steps.discover-apidocs.outputs.has-maven-apidocs == 'True' }}
+        with:
+          name: apidocs
+          path: target/apidocs
+          retention-days: 1
+
+      - name: Upload additional build artifacts
+        uses: actions/upload-artifact@v6
+        with:
+          name: build-artifacts
+          path: |
+            target
+            !target/**/*.jar
+            !target/apidocs
+          retention-days: 1

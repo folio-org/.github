@@ -1,0 +1,36 @@
+name: Maven publish ModuleDescriptor
+
+on:
+  workflow_call:
+    inputs:
+      module-descriptor-registry:
+        required: true
+        type: string
+    secrets:
+      registry-username:
+        required: true
+      registry-password:
+        required: true
+
+jobs:
+  run:
+    name: Publish ModuleDescriptor
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Download ModuleDescriptor
+        uses: actions/download-artifact@v7
+        with:
+          name: ModuleDescriptor.json
+
+      - name: Publish ModuleDescriptor
+        uses: fjogeleit/http-request-action@v1
+        with:
+          url: ${{ inputs.module-descriptor-registry }}/_/proxy/modules
+          method: 'POST'
+          contentType: 'application/json; charset=utf-8'
+          customHeaders: '{ "Accept": "application/json; charset=utf-8" }'
+          timeout: 10000
+          file: ModuleDescriptor.json
+          username: ${{ secrets.registry-username }}
+          password: ${{ secrets.registry-password }}

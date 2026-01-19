@@ -1,0 +1,143 @@
+name: Maven Docker build and publish
+
+on:
+  workflow_call:
+    inputs:
+      is-release:
+        required: true
+        type: string
+      is-main-branch:
+        required: true
+        type: string
+      artifact-id:
+        required: true
+        type: string
+      artifact-version:
+        required: true
+        type: string
+      docker-registry:
+        required: true
+        type: string
+      docker-health-command:
+        required: true
+        type: string
+      do-docker-push:
+        required: true
+        type: string
+      docker-label-documentation:
+        required: false
+        type: string
+    secrets:
+      dockerhub-username:
+        required: true
+      dockerhub-token:
+        required: true
+
+jobs:
+  docker:
+    name: Docker build${{ inputs.do-docker-push == 'True' && ' and publish' || '' }}
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Notify whether doing docker push
+        run: |
+          if ${{ inputs.do-docker-push == 'True' }}; then
+            echo "Will do docker build and push, i.e. publish=true" | tee -a $GITHUB_STEP_SUMMARY
+          else
+            echo "Will do docker build, but will not push, i.e. publish=false" | tee -a $GITHUB_STEP_SUMMARY
+          fi
+
+      - name: Checkout ${{ github.repository }}
+        uses: actions/checkout@v6
+        with:
+          fetch-depth: 1
+
+      - name: Ensure .dockerignore file
+        run: |
+          cat > .dockerignore2 << EOF
+          *
+          !Dockerfile
+          !docker*
+          !target/*.jar
+          EOF
+          if ! [ -e .dockerignore ]; then
+            echo "Missing .dockerignore file. Creating default." | tee -a $GITHUB_STEP_SUMMARY
+            mv .dockerignore2 .dockerignore
+          fi
+
+      - name: Login to Docker Hub
+        uses: docker/login-action@v3
+        with:
+          username: ${{ secrets.dockerhub-username }}
+          password: ${{ secrets.dockerhub-token }}
+
+      - name: Extract metadata (tags, labels) for Docker
+        id: meta
+        uses: docker/metadata-action@v5
+        with:
+          images: ${{ inputs.docker-registry }}/${{ inputs.artifact-id }}
+          labels: |
+            org.opencontainers.image.title=FOLIO ${{ inputs.artifact-id }}
+            org.opencontainers.image.documentation=${{ inputs.docker-label-documentation }}
+            org.opencontainers.image.vendor=The Open Library Foundation
+            org.opencontainers.image.licenses=Apache-2.0
+          tags: |
+            type=raw,value=latest
+            type=raw,value=${{ inputs.artifact-version }}
+
+      - name: Download target jars artifact
+        uses: actions/download-artifact@v7
+        with:
+          name: built-jars
+          path: target
+
+      - name: Show contents of target directory
+        run: ls -R target
+
+      - name: Prepare the Docker test tag
+        run: |
+          echo "docker-test-tag=folioci/${{ inputs.artifact-id }}:test" | tee -a $GITHUB_ENV
+
+          if ${{ inputs.docker-health-command != '' }}; then
+            echo "docker-health-command='${{ inputs.docker-health-command }}'" | tee -a $GITHUB_STEP_SUMMARY
+          else
+            echo "Not doing docker health check. The inputs.docker-health-command is not declared." | tee -a $GITHUB_STEP_SUMMARY
+          fi
+
+      - name: Build and test Docker image
+        if: ${{ inputs.docker-health-command != '' }}
+        run: |
+          echo "Building image ${{ env.docker-test-tag }} ..."
+          docker build --pull=true --no-cache=true -t ${{ env.docker-test-tag }} .
+          echo "Starting container with health check ..."
+          docker run --detach --health-timeout='2s' --health-retries=2 --cidfile docker_test.cid \
+            --health-cmd='${{ inputs.docker-health-command }}' ${{ env.docker-test-tag }} || exit 1
+          cid=$(cat docker_test.cid)
+          echo "Doing inspection loop ..."
+          max_startup_wait=60
+          for ((i = 1; i < max_startup_wait; i++))
+          do
+            health=$(docker inspect $cid | jq -r '.[].State.Health.Status')
+            echo "Current status: ${health}"
+            if [ "${health}" == "starting" ]; then
+              sleep 1
+            else
+              break
+            fi
+          done
+          if [ "${health}" != "healthy" ]; then
+            echo "> [!IMPORTANT]" >> $GITHUB_STEP_SUMMARY
+            echo "> ERROR: Container health check failed: $health (verify your inputs.docker-health-command)." | tee -a $GITHUB_STEP_SUMMARY
+            exit 1
+          else
+            echo "Container health check passed." | tee -a $GITHUB_STEP_SUMMARY
+          fi
+          echo "loop-count=$i (max_startup_wait=$max_startup_wait)"
+
+      - name: Build ${{ inputs.do-docker-push == 'True' && 'and push ' || '' }}Docker image
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          push: ${{ inputs.do-docker-push == 'True' }}
+          tags: ${{ steps.meta.outputs.tags }}
+          labels: ${{ steps.meta.outputs.labels }}
