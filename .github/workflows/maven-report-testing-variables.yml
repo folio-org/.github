@@ -68,6 +68,9 @@ jobs:
           echo "artifact-id=${{ inputs.artifact-id }}" | tee -a $GITHUB_STEP_SUMMARY
           echo "project-version=${{ inputs.project-version }}" | tee -a $GITHUB_STEP_SUMMARY
           echo "artifact-version=${{ inputs.artifact-version }}"
+          if [ "${{ inputs.is-release }}" == 'True' ] || [ "${{ inputs.is-main-branch }}" == 'True' ]; then
+            echo "artifact-version=${{ inputs.artifact-version }}" >> $GITHUB_STEP_SUMMARY
+          fi
           echo "branch-name=${{ inputs.branch-name }}" | tee -a $GITHUB_STEP_SUMMARY
           echo "repo-description=${{ inputs.repo-description }}"
           echo "docker-registry=${{ inputs.docker-registry }}"
