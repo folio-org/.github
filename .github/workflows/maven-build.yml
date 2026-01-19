@@ -72,12 +72,10 @@ jobs:
           echo "artifact-id=$(mvn help:evaluate -Dexpression=project.artifactId -q -DforceStdout)" | tee -a $GITHUB_OUTPUT | tee -a $GITHUB_ENV
           echo "SHA_SHORT=$(git rev-parse --short HEAD)" | tee -a $GITHUB_ENV
 
-      - name: Print module information to job summary
+      - name: Print some information to job summary
         run: |
           {
             echo "Head commit SHA: ${{ env.SHA_SHORT }}"
-            echo "artifact-id: ${{ env.artifact-id }}"
-            echo "artifact-version: ${{ inputs.artifact-version }}"
           } | tee -a $GITHUB_STEP_SUMMARY
 
       - name: Discover release dependencies that are snapshots
