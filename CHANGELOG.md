@@ -4,6 +4,11 @@
 
 * (Add progress summary here.)
 
+## [1.11.1](https://github.com/folio-org/.github/tree/v1.11.1) (2026-01-21)
+[Full Changelog](https://github.com/folio-org/.github/compare/v1.11.0...v1.11.1)
+
+* FOLIO-4126 Always update snapshots when building - in #102
+
 ## [1.11.0](https://github.com/folio-org/.github/tree/v1.11.0) (2026-01-19)
 [Full Changelog](https://github.com/folio-org/.github/compare/v1.10.1...v1.11.0)
 
