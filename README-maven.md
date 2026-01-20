@@ -162,15 +162,15 @@ See also the  [Configuration: docker-label-documentation](#configuration-docker-
 
 ## Install the caller Workflow
 
-Create a new branch.
+Create a new branch at the module repository.
 
-Create a file with the content from the [Usage](#usage) section. Add other [Configuration](#configuration) variables to suit your need.
+Create a file at `.github/workflows/maven.yml` as explained at the [Usage](#usage) section. Add other [Configuration](#configuration) variables to suit the needs of the module, e.g. `docker-health-command` variable.
 
-Do `git mv Jenkinsfile Jenkinsfile-disabled` (so that we can restore quickly if needed).
+Do `git mv Jenkinsfile Jenkinsfile-disabled` (so that can be restored quickly if needed).
 
 Commit and push.
 
-Dispatch the workflow on your branch.
+Dispatch the workflow on that branch.
 
 Raise the pull-request, and review the run results.
 
