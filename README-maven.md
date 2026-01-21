@@ -182,6 +182,8 @@ The merge will be denied. The "check" for the old Jenkins "pr-merge" will fail.
 Edit "Branch protection" to delete that check, and add a new check. For most repositories that will be: \
 `maven / docker-publish / Docker build`
 
+If assistance is needed with "Branch protection" then [contact](https://dev.folio.org/faqs/how-to-raise-devops-ticket/#general-folio-devops) FOLIO DevOps.
+
 Wait until after the next "Platform build" to give some time if things go amiss.
 https://dev.folio.org/guides/automation/#platform-hourly-build (finishes approx 53m past)
 https://github.com/folio-org/platform-complete/commits/snapshot/
