@@ -167,7 +167,10 @@ See also the  [Configuration: docker-label-documentation](#configuration-docker-
 
 Create a new branch at the module repository.
 
-Create a file at `.github/workflows/maven.yml` as explained at the [Usage](#usage) section. Add other [Configuration](#configuration) variables to suit the needs of the module, e.g. `docker-health-command` variable.
+Create a file at `.github/workflows/maven.yml` as explained at the [Usage](#usage) section.
+
+Add other [Configuration](#configuration) variables to suit the needs of the module, e.g. `docker-health-command` variable.
+Align properties with the old Jenkinsfile.
 
 Do `git mv Jenkinsfile Jenkinsfile-disabled` (so that can be restored quickly if needed).
 
