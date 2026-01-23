@@ -1,0 +1,63 @@
+name: Maven get ModuleDescriptor
+
+on:
+  workflow_call:
+    inputs:
+      artifact-id:
+        required: true
+        type: string
+      artifact-version:
+        required: true
+        type: string
+      docker-registry:
+        required: true
+        type: string
+    outputs:
+      has-module-descriptor:
+        value: ${{ jobs.get-module-descriptor.outputs.has-module-descriptor }}
+
+jobs:
+  get-module-descriptor:
+    name: Get module descriptor
+    runs-on: ubuntu-latest
+
+    outputs:
+      has-module-descriptor: ${{ steps.discover-md.outputs.has-module-descriptor }}
+
+    steps:
+      - name: Download build artifacts
+        uses: actions/download-artifact@v6
+        with:
+          name: build-artifacts
+
+      - name: Discover ModuleDescriptor
+        id: discover-md
+        run: |
+          if test -f "ModuleDescriptor.json"; then
+            echo "has-module-descriptor=True" | tee -a $GITHUB_OUTPUT | tee -a $GITHUB_STEP_SUMMARY
+          else
+            echo "has-module-descriptor=False" | tee -a $GITHUB_OUTPUT | tee -a $GITHUB_STEP_SUMMARY
+          fi
+
+      - name: Update ModuleDescriptor identifiers
+        if: ${{ steps.discover-md.outputs.has-module-descriptor == 'True' }}
+        run: |
+          mv ModuleDescriptor.json ModuleDescriptor.json.orig
+          cat <<< $( \
+            jq '. | .id |= "${{ inputs.artifact-id }}-${{ inputs.artifact-version }}" | if has("launchDescriptor") then
+              .launchDescriptor.dockerImage |= "${{ inputs.docker-registry }}/${{ inputs.artifact-id }}:${{ inputs.artifact-version }}" |
+              .launchDescriptor.dockerPull |= "true" else . end' ModuleDescriptor.json.orig \
+          ) > ModuleDescriptor.json
+
+      - name: Print ModuleDescriptor
+        if: ${{ steps.discover-md.outputs.has-module-descriptor == 'True' }}
+        run: cat ModuleDescriptor.json
+
+      # we publish it to the registry as a separate job
+      - name: Upload ModuleDescriptor as build artifact
+        if: ${{ steps.discover-md.outputs.has-module-descriptor == 'True' }}
+        uses: actions/upload-artifact@v6
+        with:
+          name: ModuleDescriptor.json
+          path: ModuleDescriptor.json
+          retention-days: 1
