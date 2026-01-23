@@ -176,7 +176,8 @@ Do `git mv Jenkinsfile Jenkinsfile-disabled` (so that can be restored quickly if
 
 Commit and push.
 
-Dispatch the workflow on that branch.
+To do a branch run prior to raising the pull-request, then "dispatch" the workflow on that branch.
+However the line 12 "if:" will need to be temporarily commented-out for one run, because the workflow does not yet exist on mainline branch.
 
 Raise the pull-request, and review the run results.
 
