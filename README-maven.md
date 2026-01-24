@@ -137,6 +137,13 @@ Optional. Default = true
 If this variable is provided, then the Docker Health Check will be run prior to the final building of the image.
 If it fails, then no Docker image is built, and a ModuleDescriptor will not be published.
 
+> [!IMPORTANT]
+> The Health Check is required for Docker-providing modules.
+> Refer to [DR-000007 - Back End Module Health Check Protocol](https://folio-org.atlassian.net/wiki/x/kiJN).
+
+Note that the workflow will utilise this variable if provided, but does not enforce it.
+The status will be reported to the workflow "Summary".
+
 Optional. Default = None
 
 ```yaml
