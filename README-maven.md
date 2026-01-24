@@ -15,6 +15,8 @@
 * [Install the caller Workflow](#install-the-caller-workflow)
 * [Limitations](#limitations)
     * [Only top-level Dockerfile](#only-top-level-dockerfile)
+* [Oddities](#oddities)
+    * [Timeout at ModuleDescriptor registry](#timeout-at-moduledescriptor-registry)
 
 ## Introduction
 
@@ -213,3 +215,13 @@ If there is a need to quickly revert to Jenkins-based build, then [delete](https
 ### Only top-level Dockerfile
 
 At this stage only a top-level Dockerfile is utilised. So these Workflows are not yet ready for projects that have lower-level Dockerfile.
+
+## Oddities
+
+### Timeout at ModuleDescriptor registry
+
+Occasionally the job to "Publish ModuleDescriptor" gets a timeout at the registry.
+
+In this case the Docker image would be published but not the associated ModuleDescriptor.
+
+Do "dispatch" the workflow again to publish a new Docker image and ModuleDescriptor.
