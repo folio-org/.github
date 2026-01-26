@@ -93,6 +93,7 @@ jobs:
       docker-registry: ${{ steps.logic.outputs.docker-registry }}
       repo-name: ${{ steps.vars1.outputs.repo-name }}
       repo-description: ${{ steps.vars1.outputs.repo-description }}
+
     steps:
       - id: logic
         name: Determine default values
@@ -117,10 +118,6 @@ jobs:
           output.write(f"docker-registry={docker_registry}\n")
           output.close()
 
-          output = open(os.environ['GITHUB_ENV'], 'a')
-          output.write("IS_RELEASE=" + str(is_release) + "\n")
-          output.close()
-
       - id: vars1
         name: Determine first set of other variables
         run: |
@@ -132,21 +129,19 @@ jobs:
             echo "branch-name=${GITHUB_REF_NAME}" | tee -a $GITHUB_OUTPUT
           fi
           # On a fork, the default branch might be other:
-          if ${{ github.ref == 'refs/heads/main' || github.ref  == 'refs/heads/master' }}; then
+          if ${{ github.ref_name == github.event.repository.default_branch }}; then
             echo "is-main-branch=True" | tee -a $GITHUB_OUTPUT
-            echo "IS_MAIN_BRANCH=True" >> $GITHUB_ENV
           else
             echo "is-main-branch=False" | tee -a $GITHUB_OUTPUT
-            echo "IS_MAIN_BRANCH=False" >> $GITHUB_ENV
           fi
 
       - id: vars2
         name: Determine second set of other variables
         run: |
-          if ${{ env.IS_RELEASE == 'True' }}; then
+          if ${{ steps.logic.outputs.is-release == 'True' }}; then
             echo "do-docker-push=True" | tee -a $GITHUB_OUTPUT
           else
-            if ${{ env.IS_MAIN_BRANCH == 'True' }}; then
+            if ${{ steps.vars1.outputs.is-main-branch == 'True' }}; then
               echo "do-docker-push=True" | tee -a $GITHUB_OUTPUT
             else
               echo "do-docker-push=False" | tee -a $GITHUB_OUTPUT
