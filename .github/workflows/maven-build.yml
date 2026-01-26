@@ -60,7 +60,7 @@ jobs:
         run: mvn dependency:list | { grep -i snapshot | tee snapshots.txt || true; }
 
       - name: (Release only) Report release dependencies that are snapshots
-        if: ${{ inputs.is-release == 'True' && inputs.allow-snapshots-release == 'True' }}
+        if: ${{ inputs.is-release == 'True' && inputs.allow-snapshots-release }}
         run: if [ -s snapshots.txt ]; then exit 1; fi
 
       - name: Maven build
