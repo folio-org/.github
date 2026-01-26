@@ -70,7 +70,7 @@ jobs:
         uses: actions/upload-artifact@v6
         with:
           name: built-jars
-          path: target/**/*.jar
+          path: '**/target/**/*.jar'
           retention-days: 1
 
       - name: Discover maven built apidocs
@@ -93,9 +93,9 @@ jobs:
         with:
           name: build-artifacts
           path: |
-            target
-            !target/**/*.jar
-            !target/apidocs
+            **/target
+            !**/target/**/*.jar
+            !**/target/apidocs
           retention-days: 1
 
       - name: Discover Dockerfile
