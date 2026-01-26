@@ -91,6 +91,7 @@ jobs:
         run: |
           mkdir -p /tmp/ci-artifacts
           for d in $(find . -type d -name target); do
+            echo "Discovered artifact dir $d"
             mkdir -p "/tmp/ci-artifacts/$(dirname "$d")"
             cp -r "$d" "/tmp/ci-artifacts/$d"
           done

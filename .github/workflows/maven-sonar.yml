@@ -40,7 +40,7 @@ jobs:
           name: build-artifacts
           path: .
 
-      - run: ls -d **/target
+      - run: ls -d target **/target || true
 
       - name: Set up JDK
         uses: actions/setup-java@v5
