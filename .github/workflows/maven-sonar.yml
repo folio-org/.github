@@ -38,7 +38,9 @@ jobs:
         uses: actions/download-artifact@v6
         with:
           name: build-artifacts
-          path: target
+          path: .
+
+      - run: ls -d **/target
 
       - name: Set up JDK
         uses: actions/setup-java@v5

@@ -29,6 +29,7 @@ jobs:
         uses: actions/download-artifact@v6
         with:
           name: build-artifacts
+          path: .
 
       - name: Discover ModuleDescriptor
         id: discover-md
