@@ -62,19 +62,20 @@ jobs:
           echo "github.ref=${{ github.ref }}"
           echo "is-release=${{ inputs.is-release }}" | tee -a $GITHUB_STEP_SUMMARY
           echo "java-version=${{ inputs.java-version }}"
-          echo "do-docker=${{ inputs.do-docker }}"
-          echo "publish-module-descriptor=${{ inputs.publish-module-descriptor }}"
           echo "allow-snapshots-release=${{ inputs.allow-snapshots-release }}"
           echo "artifact-id=${{ inputs.artifact-id }}" | tee -a $GITHUB_STEP_SUMMARY
           echo "project-version=${{ inputs.project-version }}" | tee -a $GITHUB_STEP_SUMMARY
           echo "artifact-version=${{ inputs.artifact-version }}"
           if [ "${{ inputs.is-release }}" == 'True' ] || [ "${{ inputs.is-main-branch }}" == 'True' ]; then
-            echo "artifact-version=${{ inputs.artifact-version }}" >> $GITHUB_STEP_SUMMARY
+            echo "artifact-version=${{ inputs.artifact-version }}" | tee -a $GITHUB_STEP_SUMMARY
           fi
           echo "branch-name=${{ inputs.branch-name }}" | tee -a $GITHUB_STEP_SUMMARY
-          echo "repo-description=${{ inputs.repo-description }}"
+          echo "publish-module-descriptor=${{ inputs.publish-module-descriptor }}" | tee -a $GITHUB_STEP_SUMMARY
+          echo "do-docker=${{ inputs.do-docker }}" | tee -a $GITHUB_STEP_SUMMARY
+          if [ "${{ inputs.do-docker }}" == 'True' ]; then
+            echo "do-docker-push=${{ inputs.do-docker-push }}" | tee -a $GITHUB_STEP_SUMMARY
+          fi
           echo "docker-registry=${{ inputs.docker-registry }}"
-          echo "do-docker-push=${{ inputs.do-docker-push }}"
+          echo "repo-description=${{ inputs.repo-description }}"
           echo "do-sonar-scan=${{ inputs.do-sonar-scan }}" | tee -a $GITHUB_STEP_SUMMARY
-
-
+          echo "Some other variables are reported to the run logs."
