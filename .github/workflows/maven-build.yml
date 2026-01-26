@@ -55,13 +55,13 @@ jobs:
         run: |
           echo "Head commit SHA: $(git rev-parse --short HEAD)" | tee -a $GITHUB_STEP_SUMMARY
 
-      - name: Discover release dependencies that are snapshots
+      - name: (Release only) Discover release dependencies that are snapshots
         if: ${{ inputs.is-release == 'True' }}
         run: mvn dependency:list | { grep -i snapshot | tee snapshots.txt || true; }
 
-      - name: Report release dependencies that are snapshots
-        if:  ${{ inputs.is-release == 'True' }}
-        run: if ! ${{ inputs.allow-snapshots-release }} && [ -s snapshots.txt ]; then exit 1; fi
+      - name: (Release only) Report release dependencies that are snapshots
+        if: ${{ inputs.is-release == 'True' && inputs.allow-snapshots-release == 'True' }}
+        run: if [ -s snapshots.txt ]; then exit 1; fi
 
       - name: Maven build
         run: mvn --update-snapshots clean org.jacoco:jacoco-maven-plugin:prepare-agent install org.jacoco:jacoco-maven-plugin:report
