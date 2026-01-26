@@ -24,7 +24,7 @@ on:
 
 jobs:
   build:
-    name: Checkout and build
+    name: Build
     runs-on: ubuntu-latest
 
     outputs:
