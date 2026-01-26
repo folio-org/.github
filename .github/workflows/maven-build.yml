@@ -90,9 +90,12 @@ jobs:
       - name: Capture build artifacts
         run: |
           mkdir -p /tmp/ci-artifacts
-          cp -r **/target /tmp/ci-artifacts/
+          for d in $(find . -type d -name target); do
+            mkdir -p "/tmp/ci-artifacts/$(dirname "$d")"
+            cp -r "$d" "/tmp/ci-artifacts/$d"
+          done
 
-      - name: Upload all jars as build artifact
+      - name: Upload all jars as a build artifact
         uses: actions/upload-artifact@v6
         with:
           name: built-jars
