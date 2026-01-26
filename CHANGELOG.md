@@ -4,6 +4,11 @@
 
 * (Add progress summary here.)
 
+## [1.12.0](https://github.com/folio-org/.github/tree/v1.12.0) (2026-01-26)
+[Full Changelog](https://github.com/folio-org/.github/compare/v1.11.1...v1.12.0)
+
+* FOLIO-4126 Workflows for Maven-based repos Phase 2 - in #105
+
 ## [1.11.1](https://github.com/folio-org/.github/tree/v1.11.1) (2026-01-21)
 [Full Changelog](https://github.com/folio-org/.github/compare/v1.11.0...v1.11.1)
 

@@ -91,6 +91,7 @@ jobs:
       docker-registry: ${{ steps.logic.outputs.docker-registry }}
       repo-name: ${{ steps.vars1.outputs.repo-name }}
       repo-description: ${{ steps.vars1.outputs.repo-description }}
+
     steps:
       - id: logic
         name: Determine default values
@@ -115,10 +116,6 @@ jobs:
           output.write(f"docker-registry={docker_registry}\n")
           output.close()
 
-          output = open(os.environ['GITHUB_ENV'], 'a')
-          output.write("IS_RELEASE=" + str(is_release) + "\n")
-          output.close()
-
       - id: vars1
         name: Determine first set of other variables
         run: |
@@ -130,21 +127,19 @@ jobs:
             echo "branch-name=${GITHUB_REF_NAME}" | tee -a $GITHUB_OUTPUT
           fi
           # On a fork, the default branch might be other:
-          if ${{ github.ref == 'refs/heads/main' || github.ref  == 'refs/heads/master' }}; then
+          if ${{ github.ref_name == github.event.repository.default_branch }}; then
             echo "is-main-branch=True" | tee -a $GITHUB_OUTPUT
-            echo "IS_MAIN_BRANCH=True" >> $GITHUB_ENV
           else
             echo "is-main-branch=False" | tee -a $GITHUB_OUTPUT
-            echo "IS_MAIN_BRANCH=False" >> $GITHUB_ENV
           fi
 
       - id: vars2
         name: Determine second set of other variables
         run: |
-          if ${{ env.IS_RELEASE == 'True' }}; then
+          if ${{ steps.logic.outputs.is-release == 'True' }}; then
             echo "do-docker-push=True" | tee -a $GITHUB_OUTPUT
           else
-            if ${{ env.IS_MAIN_BRANCH == 'True' }}; then
+            if ${{ steps.vars1.outputs.is-main-branch == 'True' }}; then
               echo "do-docker-push=True" | tee -a $GITHUB_OUTPUT
             else
               echo "do-docker-push=False" | tee -a $GITHUB_OUTPUT
@@ -166,16 +161,13 @@ jobs:
 
   build:
     name: Build
-    needs: [set-shared-variables, version-number]
+    needs: [set-shared-variables]
     uses: ./.github/workflows/maven-build.yml
     with:
       is-release: ${{ needs.set-shared-variables.outputs.is-release }}
       java-version: ${{ inputs.java-version }}
-      artifact-version: ${{ needs.version-number.outputs.version-number }}
-      publish-module-descriptor: ${{ inputs.publish-module-descriptor }}
       do-docker: ${{ inputs.do-docker }}
       allow-snapshots-release: ${{ inputs.allow-snapshots-release }}
-      docker-registry: ${{ needs.set-shared-variables.outputs.docker-registry }}
 
   sonar:
     name: SonarCloud Analysis
@@ -190,6 +182,15 @@ jobs:
     secrets:
       SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
 
+  get-module-descriptor:
+    name: Get module descriptor
+    needs: [set-shared-variables, version-number, build]
+    uses: ./.github/workflows/maven-module-descriptor-get.yml
+    with:
+      artifact-id: ${{ needs.version-number.outputs.artifact-id }}
+      artifact-version: ${{ needs.version-number.outputs.version-number }}
+      docker-registry: ${{ needs.set-shared-variables.outputs.docker-registry }}
+
   docker-publish:
     needs: [set-shared-variables, version-number, build, okapi-dependency-check]
     # Will always build docker and potentially test, but only push if inputs.do-docker-push=true (i.e. when release or mainline)
@@ -200,7 +201,7 @@ jobs:
     with:
       is-release: ${{ needs.set-shared-variables.outputs.is-release }}
       is-main-branch: ${{ needs.set-shared-variables.outputs.is-main-branch }}
-      artifact-id: ${{ needs.build.outputs.artifact-id }}
+      artifact-id: ${{ needs.version-number.outputs.artifact-id }}
       artifact-version: ${{ needs.version-number.outputs.version-number }}
       docker-registry: ${{ needs.set-shared-variables.outputs.docker-registry }}
       docker-health-command: ${{ inputs.docker-health-command }}
@@ -212,7 +213,7 @@ jobs:
 
   report-variables:
     needs: [set-shared-variables, version-number]
-    uses: ./.github/workflows/maven-report-testing-variables.yml
+    uses: ./.github/workflows/maven-report-variables.yml
     with:
       is-release: ${{ needs.set-shared-variables.outputs.is-release }}
       is-main-branch: ${{ needs.set-shared-variables.outputs.is-main-branch }}
@@ -232,8 +233,8 @@ jobs:
 
   okapi-dependency-check:
     name: Okapi dependency check
-    needs: [set-shared-variables, build]
-    if: needs.build.outputs.has-module-descriptor == 'True' && needs.set-shared-variables.outputs.is-release == 'True'
+    needs: [set-shared-variables, build, get-module-descriptor]
+    if: needs.get-module-descriptor.outputs.has-module-descriptor == 'True' && needs.set-shared-variables.outputs.is-release == 'True'
     uses: ./.github/workflows/maven-module-descriptor-verify.yml
     with:
       okapi-pull-urls: '{"urls": ["https://folio-registry.dev.folio.org"]}'
@@ -243,13 +244,21 @@ jobs:
 
   docker-description:
     name: Publish image description
-    needs: [set-shared-variables, build, okapi-dependency-check, docker-publish]
+    needs:
+      [
+        set-shared-variables,
+        version-number,
+        build,
+        get-module-descriptor,
+        okapi-dependency-check,
+        docker-publish,
+      ]
     if: |
       !cancelled() && inputs.do-docker && needs.build.outputs.has-docker == 'True' &&
       (needs.set-shared-variables.outputs.is-release == 'True' || needs.set-shared-variables.outputs.is-main-branch == 'True')
     uses: ./.github/workflows/docker-description.yml
     with:
-      artifact-id: ${{ needs.build.outputs.artifact-id }}
+      artifact-id: ${{ needs.version-number.outputs.artifact-id }}
       docker-registry: ${{ needs.set-shared-variables.outputs.docker-registry }}
       repo-description: ${{ needs.set-shared-variables.outputs.repo-description }}
       publish-module-descriptor: ${{ inputs.publish-module-descriptor }}
@@ -259,10 +268,17 @@ jobs:
 
   publish-module-descriptor:
     name: Publish module descriptor
-    needs: [set-shared-variables, build, okapi-dependency-check, docker-publish]
+    needs:
+      [
+        set-shared-variables,
+        build,
+        get-module-descriptor,
+        okapi-dependency-check,
+        docker-publish,
+      ]
     if: |
       !cancelled() && inputs.publish-module-descriptor &&
-      needs.build.outputs.has-module-descriptor == 'True' &&
+      needs.get-module-descriptor.outputs.has-module-descriptor == 'True' &&
       inputs.do-docker && needs.build.outputs.has-docker == 'True' &&
       (needs.set-shared-variables.outputs.is-release == 'True' || needs.set-shared-variables.outputs.is-main-branch == 'True')
     uses: ./.github/workflows/maven-module-descriptor-publish.yml
@@ -298,7 +314,7 @@ jobs:
     uses: ./.github/workflows/maven-upload-apidocs.yml
     with:
       is-release: ${{ needs.set-shared-variables.outputs.is-release }}
-      artifact-id: ${{ needs.build.outputs.artifact-id }}
+      artifact-id: ${{ needs.version-number.outputs.artifact-id }}
       artifact-version: ${{ needs.version-number.outputs.version-number }}
     secrets:
       AWS_S3_ACCESS_KEY_ID: ${{ secrets.S3_ACCESS_KEY_ID }}

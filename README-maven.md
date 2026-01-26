@@ -14,7 +14,10 @@
 * [Docker image metadata](#docker-image-metadata)
 * [Install the caller Workflow](#install-the-caller-workflow)
 * [Limitations](#limitations)
+    * [Not yet for monorepo](#not-yet-for-monorepo)
     * [Only top-level Dockerfile](#only-top-level-dockerfile)
+* [Oddities](#oddities)
+    * [Timeout at ModuleDescriptor registry](#timeout-at-moduledescriptor-registry)
 
 ## Introduction
 
@@ -132,6 +135,13 @@ Optional. Default = true
 If this variable is provided, then the Docker Health Check will be run prior to the final building of the image.
 If it fails, then no Docker image is built, and a ModuleDescriptor will not be published.
 
+> [!IMPORTANT]
+> The Health Check is required for Docker-providing modules.
+> Refer to [DR-000007 - Back End Module Health Check Protocol](https://folio-org.atlassian.net/wiki/x/kiJN).
+
+Note that the workflow will utilise this variable if provided, but does not enforce it.
+The status will be reported to the workflow "Summary".
+
 Optional. Default = None
 
 ```yaml
@@ -173,7 +183,8 @@ Do `git mv Jenkinsfile Jenkinsfile-disabled` (so that can be restored quickly if
 
 Commit and push.
 
-Dispatch the workflow on that branch.
+To do a branch run prior to raising the pull-request, then "dispatch" the workflow on that branch.
+However the line 12 "if:" will need to be temporarily commented-out for one run, because the workflow does not yet exist on mainline branch.
 
 Raise the pull-request, and review the run results.
 
@@ -206,6 +217,20 @@ If there is a need to quickly revert to Jenkins-based build, then [delete](https
 
 ## Limitations
 
+### Not yet for monorepo
+
+These Workflows are not yet ready for projects that have a Maven "mono-repo" (multiple packages at the same repository), e.g. mod-configuration.
+
 ### Only top-level Dockerfile
 
 At this stage only a top-level Dockerfile is utilised. So these Workflows are not yet ready for projects that have lower-level Dockerfile.
+
+## Oddities
+
+### Timeout at ModuleDescriptor registry
+
+Occasionally the job to "Publish ModuleDescriptor" gets a timeout at the registry.
+
+In this case the Docker image would be published but not the associated ModuleDescriptor.
+
+Do "dispatch" the workflow again to publish a new Docker image and ModuleDescriptor.
