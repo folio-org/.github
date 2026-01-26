@@ -72,7 +72,7 @@ jobs:
           echo "branch-name=${{ inputs.branch-name }}" | tee -a $GITHUB_STEP_SUMMARY
           echo "publish-module-descriptor=${{ inputs.publish-module-descriptor }}" | tee -a $GITHUB_STEP_SUMMARY
           echo "do-docker=${{ inputs.do-docker }}" | tee -a $GITHUB_STEP_SUMMARY
-          if [ "${{ inputs.do-docker }}" == 'True' ]; then
+          if ${{ inputs.do-docker }}; then
             echo "do-docker-push=${{ inputs.do-docker-push }}" | tee -a $GITHUB_STEP_SUMMARY
           fi
           echo "docker-registry=${{ inputs.docker-registry }}"
