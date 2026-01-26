@@ -93,8 +93,9 @@ jobs:
         run: ls -R target
 
       - name: Prepare the Docker test tag
+        id: prepare-docker-test-tag
         run: |
-          echo "docker-test-tag=folioci/${{ inputs.artifact-id }}:test" | tee -a $GITHUB_ENV
+          echo "docker-test-tag=folioci/${{ inputs.artifact-id }}:test" | tee -a $GITHUB_OUTPUT
 
           if ${{ inputs.docker-health-command != '' }}; then
             echo "docker-health-command='${{ inputs.docker-health-command }}'" | tee -a $GITHUB_STEP_SUMMARY
@@ -105,11 +106,11 @@ jobs:
       - name: Build and test Docker image
         if: ${{ inputs.docker-health-command != '' }}
         run: |
-          echo "Building image ${{ env.docker-test-tag }} ..."
-          docker build --pull=true --no-cache=true -t ${{ env.docker-test-tag }} .
+          echo "Building image ${{ steps.prepare-docker-test-tag.outputs.docker-test-tag }} ..."
+          docker build --pull=true --no-cache=true -t ${{ steps.prepare-docker-test-tag.outputs.docker-test-tag }} .
           echo "Starting container with health check ..."
           docker run --detach --health-timeout='2s' --health-retries=2 --cidfile docker_test.cid \
-            --health-cmd='${{ inputs.docker-health-command }}' ${{ env.docker-test-tag }} || exit 1
+            --health-cmd='${{ inputs.docker-health-command }}' ${{ steps.prepare-docker-test-tag.outputs.docker-test-tag }} || exit 1
           cid=$(cat docker_test.cid)
           echo "Doing inspection loop ..."
           max_startup_wait=60
