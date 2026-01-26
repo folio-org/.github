@@ -215,7 +215,7 @@ jobs:
 
   report-variables:
     needs: [set-shared-variables, version-number]
-    uses: ./.github/workflows/maven-report-testing-variables.yml
+    uses: ./.github/workflows/maven-report-variables.yml
     with:
       is-release: ${{ needs.set-shared-variables.outputs.is-release }}
       is-main-branch: ${{ needs.set-shared-variables.outputs.is-main-branch }}
