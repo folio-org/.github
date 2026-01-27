@@ -66,7 +66,6 @@ jobs:
       - name: Maven build
         run: mvn --update-snapshots clean org.jacoco:jacoco-maven-plugin:prepare-agent install org.jacoco:jacoco-maven-plugin:report
 
-      # todo: tbd if monorepo support required
       - name: Discover maven built apidocs
         id: discover-apidocs
         run: |
@@ -74,7 +73,6 @@ jobs:
             echo "has-maven-apidocs=True" | tee -a $GITHUB_OUTPUT
           fi
 
-      # todo: tbd if monorepo support required
       - name: Upload apidocs as build artifact
         uses: actions/upload-artifact@v6
         if: ${{ steps.discover-apidocs.outputs.has-maven-apidocs == 'True' }}
