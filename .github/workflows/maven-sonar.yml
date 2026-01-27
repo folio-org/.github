@@ -35,10 +35,10 @@ jobs:
           submodules: recursive
 
       - name: Retrieve build artifacts
-        uses: actions/download-artifact@v6
+        uses: actions/download-artifact@v7
         with:
           name: build-artifacts
-          path: target
+          path: .
 
       - name: Set up JDK
         uses: actions/setup-java@v5
