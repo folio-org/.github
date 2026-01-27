@@ -20,9 +20,6 @@
 
 ## Introduction
 
-> [!CAUTION]
-> NOTE: In-development [FOLIO-4126](https://folio-org.atlassian.net/browse/FOLIO-4126)
-
 The Workflows in this repository named `maven*.yml` are for building Maven-based back-end modules.
 Docker images are published to FOLIO Docker Hub.
 ModuleDescriptors are published to the FOLIO Registry.
@@ -51,7 +48,7 @@ on:
 
 jobs:
   maven:
-    uses: folio-org/.github/.github/workflows/maven.yml@FOLIO-4126-maven-workflows-1
+    uses: folio-org/.github/.github/workflows/maven.yml@v1
     # Only handle push events from the main branch or tags, to decrease PR noise
     if: github.ref_name == github.event.repository.default_branch || github.event_name != 'push' || github.ref_type == 'tag'
     secrets: inherit
