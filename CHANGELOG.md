@@ -4,6 +4,13 @@
 
 * (Add progress summary here.)
 
+## [1.13.0](https://github.com/folio-org/.github/tree/v1.13.0) (2026-01-27)
+[Full Changelog](https://github.com/folio-org/.github/compare/v1.12.0...v1.13.0)
+
+* FOLIO-4126 Add monorepo support to Maven actions - in #106
+* FOLIO-4427 Ensure build success before deploy-maven-artifacts, docker-publish - in #108
+* FOLIO-4126 Workflows for Maven-based repos Phase 3 - in #109
+
 ## [1.12.0](https://github.com/folio-org/.github/tree/v1.12.0) (2026-01-26)
 [Full Changelog](https://github.com/folio-org/.github/compare/v1.11.1...v1.12.0)
 
