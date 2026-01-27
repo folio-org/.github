@@ -66,13 +66,6 @@ jobs:
       - name: Maven build
         run: mvn --update-snapshots clean org.jacoco:jacoco-maven-plugin:prepare-agent install org.jacoco:jacoco-maven-plugin:report
 
-      - name: Upload all jars as build artifact
-        uses: actions/upload-artifact@v6
-        with:
-          name: built-jars
-          path: target/**/*.jar
-          retention-days: 1
-
       - name: Discover maven built apidocs
         id: discover-apidocs
         run: |
@@ -88,14 +81,33 @@ jobs:
           path: target/apidocs
           retention-days: 1
 
+      # monorepo-aware way of doing this. Without the additional directory, upload-artifact will
+      # flatten single `target` dirs, but not in monorepos with multiple `target` dirs. This keeps
+      # everything consistent and ensures the artifact will result in a dir with a `target` and
+      # subfolders with their own `target`s (if applicable).
+      - name: Capture build artifacts
+        run: |
+          mkdir -p /tmp/ci-artifacts
+          find . -type d -name target -exec sh -c '
+            echo "Discovered artifact dir $1"
+            mkdir -p "/tmp/ci-artifacts/$(dirname "$1")"
+            cp -r "$1" "/tmp/ci-artifacts/$1"
+          ' sh {} \;
+
+      - name: Upload all jars as a build artifact
+        uses: actions/upload-artifact@v6
+        with:
+          name: built-jars
+          path: /tmp/ci-artifacts/**/*.jar
+          retention-days: 1
+
       - name: Upload additional build artifacts
         uses: actions/upload-artifact@v6
         with:
           name: build-artifacts
           path: |
-            target
-            !target/**/*.jar
-            !target/apidocs
+            /tmp/ci-artifacts
+            !/tmp/ci-artifacts/**/*.jar
           retention-days: 1
 
       - name: Discover Dockerfile

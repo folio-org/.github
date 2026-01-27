@@ -14,7 +14,6 @@
 * [Docker image metadata](#docker-image-metadata)
 * [Install the caller Workflow](#install-the-caller-workflow)
 * [Limitations](#limitations)
-    * [Not yet for monorepo](#not-yet-for-monorepo)
     * [Only top-level Dockerfile](#only-top-level-dockerfile)
 * [Oddities](#oddities)
     * [Timeout at ModuleDescriptor registry](#timeout-at-moduledescriptor-registry)
@@ -216,10 +215,6 @@ Await success of the subsequent "Platform hourly build" and see snapshot branch 
 If there is a need to quickly revert to Jenkins-based build, then [delete](https://github.com/folio-org/mod-settings/blob/master/.github/workflows/delete-test-md.yml) the published ModuleDescriptor, re-configure the branch protection checks, restore the Jenkinsfile.
 
 ## Limitations
-
-### Not yet for monorepo
-
-These Workflows are not yet ready for projects that have a Maven "mono-repo" (multiple packages at the same repository), e.g. mod-configuration.
 
 ### Only top-level Dockerfile
 

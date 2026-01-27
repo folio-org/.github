@@ -196,6 +196,7 @@ jobs:
     # Will always build docker and potentially test, but only push if inputs.do-docker-push=true (i.e. when release or mainline)
     if: |
       !cancelled() && inputs.do-docker && needs.build.outputs.has-docker == 'True' &&
+      needs.build.result == 'success' &&
       (needs.okapi-dependency-check.result == 'success' || needs.okapi-dependency-check.result == 'skipped')
     uses: ./.github/workflows/maven-docker-publish.yml
     with:
@@ -293,6 +294,7 @@ jobs:
     needs: [set-shared-variables, version-number, build, okapi-dependency-check]
     if: |
       !cancelled() && inputs.do-maven-deploy &&
+      needs.build.result == 'success' &&
       (needs.okapi-dependency-check.result == 'success' || needs.okapi-dependency-check.result == 'skipped') &&
       (needs.set-shared-variables.outputs.is-release == 'True' || needs.set-shared-variables.outputs.is-main-branch == 'True')
     uses: ./.github/workflows/maven-artifacts-deploy.yml
