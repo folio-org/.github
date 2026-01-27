@@ -34,7 +34,7 @@ jobs:
       - name: Discover ModuleDescriptor
         id: discover-md
         run: |
-          if test -f "ModuleDescriptor.json"; then
+          if test -f "target/ModuleDescriptor.json"; then
             echo "has-module-descriptor=True" | tee -a $GITHUB_OUTPUT | tee -a $GITHUB_STEP_SUMMARY
           else
             echo "has-module-descriptor=False" | tee -a $GITHUB_OUTPUT | tee -a $GITHUB_STEP_SUMMARY
@@ -43,7 +43,7 @@ jobs:
       - name: Update ModuleDescriptor identifiers
         if: ${{ steps.discover-md.outputs.has-module-descriptor == 'True' }}
         run: |
-          mv ModuleDescriptor.json ModuleDescriptor.json.orig
+          cp target/ModuleDescriptor.json ModuleDescriptor.json.orig
           cat <<< $( \
             jq '. | .id |= "${{ inputs.artifact-id }}-${{ inputs.artifact-version }}" | if has("launchDescriptor") then
               .launchDescriptor.dockerImage |= "${{ inputs.docker-registry }}/${{ inputs.artifact-id }}:${{ inputs.artifact-version }}" |
