@@ -37,6 +37,8 @@ It includes "shellcheck". The following typical invocation skips some well-known
 SHELLCHECK_OPTS='--exclude=SC2086,SC2046' actionlint *.yml
 ```
 
+There is an automated workflow that will run `actionlint` on pull-requests.
+
 ## Further information
 
 * [Release procedure](docs/release-procedure.md)

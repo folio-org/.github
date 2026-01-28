@@ -97,7 +97,12 @@ jobs:
           if ${{ inputs.docker-health-command != '' }}; then
             echo "docker-health-command='${{ inputs.docker-health-command }}'" | tee -a $GITHUB_STEP_SUMMARY
           else
-            echo "Not doing docker health check. The inputs.docker-health-command is not declared." | tee -a $GITHUB_STEP_SUMMARY
+            echo "> [!WARNING]" >> $GITHUB_STEP_SUMMARY
+            {
+              echo "> Not doing docker health check. The inputs.docker-health-command is not declared."
+              echo "> The docker image might not be reliable."
+              echo "> Refer to [documentation](https://github.com/folio-org/.github/blob/master/README-maven.md#configuration-docker-health-command)."
+            } | tee -a $GITHUB_STEP_SUMMARY
           fi
 
       - name: Build and test Docker image
@@ -123,7 +128,11 @@ jobs:
           done
           if [ "${health}" != "healthy" ]; then
             echo "> [!IMPORTANT]" >> $GITHUB_STEP_SUMMARY
-            echo "> ERROR: Container health check failed: $health (verify your inputs.docker-health-command)." | tee -a $GITHUB_STEP_SUMMARY
+            {
+              echo "> ERROR: Container health check failed: $health"
+              echo "> Verify your source-code and Dockerfile and inputs.docker-health-command."
+              echo "> The docker image might not be reliable."
+            } | tee -a $GITHUB_STEP_SUMMARY
             exit 1
           else
             echo "Container health check passed." | tee -a $GITHUB_STEP_SUMMARY
