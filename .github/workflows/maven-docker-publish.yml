@@ -130,7 +130,7 @@ jobs:
             echo "> [!IMPORTANT]" >> $GITHUB_STEP_SUMMARY
             {
               echo "> ERROR: Container health check failed: $health"
-              echo "> (Verify your source-code and Dockerfile and inputs.docker-health-command)."
+              echo "> Verify your source-code and Dockerfile and inputs.docker-health-command."
               echo "> The docker image might not be reliable."
             } | tee -a $GITHUB_STEP_SUMMARY
             exit 1
