@@ -12,7 +12,7 @@ The release is tagged three times:
 * Create a new lightweight tag "v1.7" which corresponds with the release.
 * Move the existing lightweight tag "v1" to correspond with the release.
 
-See additional step for [patch release](#similarly-for-a-patch-release).
+See similar steps for [patch release](#similarly-for-a-patch-release).
 
 ## Create new annotated tag for release via GitHub
 
@@ -49,11 +49,17 @@ git tag v1             # create a new local tag at HEAD
 git push origin v1     # push new tag to remote
 ```
 
+## Ensure that tags are appropriate
+
+Verify that the three tags are the same SHA at https://github.com/folio-org/.github/tags
+
 ## Similarly for a patch release
 
 When a "patch" release is needed (e.g. for "v1.6.1") then follow a similar procedure:
 
 * Create the actual release with an annotated tag with the three-part "v1.6.1"
 * Move the existing lightweight tag "v1.6" to correspond with the release.
+  * As for [Move existing lightweight tag for major version](#move-existing-lightweight-tag-for-major-version) but using "v1.6" rather than "v1".
 * Move the existing lightweight tag "v1" to correspond with the release.
+  * i.e. As at [Move existing lightweight tag for major version](#move-existing-lightweight-tag-for-major-version)
 
