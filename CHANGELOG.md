@@ -2,8 +2,15 @@
 
 ## IN PROGRESS
 
-* Add actionlint CI task - in #107
 * (Add more progress summary items here.)
+
+## [1.13.2](https://github.com/folio-org/.github/tree/v1.13.2) (2026-01-29)
+[Full Changelog](https://github.com/folio-org/.github/compare/v1.13.1...v1.13.2)
+
+* Add actionlint CI task - in #107
+* FOLIO-4424 Emphasise docker-health-command failure or missing - in #111
+* FOLIO-4132 Document more for branch protection checks - in #112
+* FOLIO-4126 Workflows for Maven-based repos Phase 5 - in #113
 
 ## [1.13.1](https://github.com/folio-org/.github/tree/v1.13.1) (2026-01-27)
 [Full Changelog](https://github.com/folio-org/.github/compare/v1.13.0...v1.13.1)
