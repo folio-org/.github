@@ -2,6 +2,7 @@
 
 ## IN PROGRESS
 
+* FOLIO-4109 Improve release-procedures doc patch release - in #114
 * (Add more progress summary items here.)
 
 ## [1.13.2](https://github.com/folio-org/.github/tree/v1.13.2) (2026-01-29)
