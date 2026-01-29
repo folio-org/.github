@@ -176,23 +176,28 @@ Create a new branch at the module repository.
 Create a file at `.github/workflows/maven.yml` as explained at the [Usage](#usage) section.
 
 Add other [Configuration](#configuration) variables to suit the needs of the module, e.g. `docker-health-command` variable.
-Align properties with the old Jenkinsfile.
+Align properties with the old Jenkinsfile (noting the defaults shown in the [Configuration](#configuration) section).
 
-Do `git mv Jenkinsfile Jenkinsfile-disabled` (so that can be restored quickly if needed).
+Do `git mv Jenkinsfile Jenkinsfile-disabled` (so that it can be restored quickly if needed, and still be able to review its properties).
 
 Commit and push.
 
-To do a branch run prior to raising the pull-request, then "dispatch" the workflow on that branch.
-However the line 12 "if:" will need to be temporarily commented-out for one run, because the workflow does not yet exist on mainline branch.
+(If it is desired to do a branch run prior to raising the pull-request, then "dispatch" the workflow on that branch.
+However the line 12 "if:" will need to be temporarily commented-out for one run, because the workflow does not yet exist on mainline branch.)
 
 Raise the pull-request, and review the run results.
 
 The merge will be denied. The "check" for the old Jenkins "pr-merge" will fail.
 
-Edit "Branch protection" to delete that check, and add a new check. For most repositories that will be: \
+Edit "Branch protection" to delete that check, and add a new `GitHub Actions` check:
+
+For most Docker-providing repositories the check will be: \
 `maven / docker-publish / Docker build`
 
-If assistance is needed with "Branch protection" then [contact](https://dev.folio.org/faqs/how-to-raise-devops-ticket/#general-folio-devops) FOLIO DevOps.
+For non-Docker repositories the check will be: \
+`maven / Build / Build`
+
+If assistance is needed with "Branch protection" then [contact](https://dev.folio.org/faqs/how-to-raise-devops-ticket/#general-folio-devops) FOLIO DevOps and advise the checks that you need.
 
 Wait until after the next "Platform build" to give some time if things go amiss.
 https://dev.folio.org/guides/automation/#platform-hourly-build (finishes approx 53m past)
@@ -200,7 +205,7 @@ https://github.com/folio-org/platform-complete/commits/snapshot/
 
 Merge and watch the mainline branch run.
 
-Review the results for the Docker image and ModuleDescriptor. The identifier for all modules will use base number 2000 plus the sequential workflow run_number (i.e. 2001).
+Review the results for the Docker image and ModuleDescriptor. The identifier for all modules will use base number 2000 plus the sequential workflow run_number (e.g. 2002 for the second run).
 
 Visit the following resources (adjusted for the relevant repository name):
 * https://hub.docker.com/r/folioci/mod-settings/tags
@@ -212,7 +217,7 @@ Visit the following resources (adjusted for the relevant repository name):
 
 Await success of the subsequent "Platform hourly build" and see snapshot branch updated.
 
-If there is a need to quickly revert to Jenkins-based build, then [delete](https://github.com/folio-org/mod-settings/blob/master/.github/workflows/delete-test-md.yml) the published ModuleDescriptor, re-configure the branch protection checks, restore the Jenkinsfile.
+If there is a need to quickly revert to Jenkins-based build, then [delete](https://github.com/folio-org/mod-settings/blob/master/.github/workflows/delete-test-md.yml) the published ModuleDescriptor (with great care), re-configure the branch protection checks, restore the Jenkinsfile.
 
 ## Limitations
 
