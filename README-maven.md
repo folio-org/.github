@@ -13,6 +13,7 @@
     * [Configuration: docker-label-documentation](#configuration-docker-label-documentation)
 * [Docker image metadata](#docker-image-metadata)
 * [Install the caller Workflow](#install-the-caller-workflow)
+* [Release procedures](#release-procedures)
 * [Limitations](#limitations)
     * [Only top-level Dockerfile](#only-top-level-dockerfile)
 * [Oddities](#oddities)
@@ -221,6 +222,22 @@ Visit the following resources (adjusted for the relevant repository name):
 Await success of the subsequent "Platform hourly build" and see snapshot branch updated.
 
 If there is a need to quickly revert to Jenkins-based build, then [delete](https://github.com/folio-org/mod-settings/blob/master/.github/workflows/delete-test-md.yml) the published ModuleDescriptor (with great care), re-configure the branch protection checks, restore the Jenkinsfile.
+
+## Release procedures
+
+Add to NEWS.md
+
+Ensure POM has the relevant "version" number.
+
+Tag the git repository with the appropriate vX.Y.Z version. Do push tags.
+
+Watch the GitHub Actions run.
+
+Do "Draft a new release". The version tag will already be available. Add release notes. Publish.
+
+Follow-up to ensure that POM has the "version" as the next minor.
+
+Announce to Slack `#folio-releases` channel.
 
 ## Limitations
 
