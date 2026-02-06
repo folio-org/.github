@@ -47,6 +47,9 @@ on:
   pull_request:
   workflow_dispatch:
 
+permissions:
+  contents: read
+
 jobs:
   maven:
     uses: folio-org/.github/.github/workflows/maven.yml@v1
