@@ -14,6 +14,7 @@
 * [Docker image metadata](#docker-image-metadata)
 * [Install the caller Workflow](#install-the-caller-workflow)
 * [Release procedures](#release-procedures)
+  * [Release procedures FAQ](#release-procedures-faq)
 * [Limitations](#limitations)
     * [Only top-level Dockerfile](#only-top-level-dockerfile)
 * [Oddities](#oddities)
@@ -228,19 +229,60 @@ If there is a need to quickly revert to Jenkins-based build, then [delete](https
 
 ## Release procedures
 
-Add to NEWS.md
+1. Create a temporary release branch `tmp-release-X.Y.Z`;
+2. Commit all relevant changes and this release's date to `NEWS.md`;
+3. Run `mvn -DautoVersionSubmodules=true release:clean release:prepare` and follow the interactive instructions:
+   - Ensure all snapshot dependencies are resolved (unless the workflow has [allow-snapshots-release](#configuration-allow-snapshots-release) enabled),
+   - Use the format `vX.Y.Z` for the created tag,
+   - Set the new development version by:
+     - Incrementing the **minor** version for regular releases (`X.Y+1.0`) or
+     - Incrementing the **patch version** for bugfix releases (`X.Y.Z+1`);
+4. Push the test branch to GitHub and create a pull request against the mainline branch;
+5. Once the PR passes, merge the pull request (do _not_ use a squash commit — merge the full release branch history) and push the tag (`git push --tags`);
+6. Wait for the tag's GitHub Actions build to run (you can find it in the list under the `Actions` tab — look for the middle column specifying the tag's name);
+7. Announce it to the world:
+   - Create a release on GitHub using the tag already pushed; the description should be the same as the entries in `NEWS.md` and `latest` should be set if applicable;
+   - Send an annoucement to [#folio-releases on Slack](https://open-libr-foundation.slack.com/archives/CGPMHLX9B);
+   - Ensure all applicable Jira tickets were given the proper `Fix version`; and
+   - Mark the Jira version as released and create a new one; and
+8. Prepare for future development locally by running `mvn release:clean`.
 
-Ensure POM has the relevant "version" number.
+### Release procedures FAQ
 
-Tag the git repository with the appropriate vX.Y.Z version. Do push tags.
+// notes about manual versions in MD/etc?
+// notes about Jenkins for old tags
+<details>
+  <summary><strong>Can't use Maven's release plugin due to failing tests?</strong></summary>
 
-Watch the GitHub Actions run.
+  If you are unable to use the Maven release plugin due to test issues (e.g. unable to run tests on your machine's architecture), you may skip tests with the following command:
+  ```sh
+  mvn -DskipTests -Darguments=-DskipTests -DautoVersionSubmodules=true release:clean release:prepare
+  ```
+</details>
 
-Do "Draft a new release". The version tag will already be available. Add release notes. Publish.
+<details>
+  <summary><strong>Don't want to use Maven's release plugin whatsoever?</strong></summary>
 
-Follow-up to ensure that POM has the "version" as the next minor.
+  If you don't want to use the release plugin, you may perform its steps manually. Instead of running step 3 manually, do the following (and then resume the normal release procedure):
+  1. Resolve all snapshot dependencies, remove the `-SNAPSHOT` from the POM's current version, and set the source control's `<scm><tag>` to the current `vX.Y.Z` (see [this example](https://github.com/folio-org/mod-lists/pull/265/changes/b00c3820f01f741f22c94bd21a703e357883ff95));
+  2. Commit these changes to your branch and create a tag `vX.Y.Z`;
+  3. Restore snapshot dependencies as applicable, restore the source control's tag to `HEAD`, and set the POM's version to the next snapshot; and
+  4. Commit these changes as a separate commit.
+</details>
 
-Announce to Slack `#folio-releases` channel.
+<details>
+  <summary><strong>Doing a hotfix to an older branch of your repository that still uses Jenkins?</strong></summary>
+
+  You have two options if you need to release on an older branch that does not use the new GitHub Actions workflow:
+  1. Migrate the branch to GitHub Actions (see [Usage](#usage)); or
+  2. Use Jenkins for the release.
+
+  If using Jenkins, everything will be the same except step six. Instead, navigate to the tag's build page at `https://jenkins-aws.indexdata.com/job/folio-org/job/mod-MY-MODULE/view/tags/job/vX.Y.Z/` and click `Build now` in the sidebar. Once this is complete, resume the normal release procedure.
+</details>
+
+> [!NOTE]
+> 
+> Skipping local test execution (in the plugin or by bypassing the plugin entirely) will only skip tests locally — tests still **must** pass in GitHub Actions for the release to proceed.
 
 ## Limitations
 
