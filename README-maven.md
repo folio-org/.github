@@ -249,8 +249,6 @@ If there is a need to quickly revert to Jenkins-based build, then [delete](https
 
 ### Release procedures FAQ
 
-// notes about manual versions in MD/etc?
-// notes about Jenkins for old tags
 <details>
   <summary><strong>Can't use Maven's release plugin due to failing tests?</strong></summary>
 
