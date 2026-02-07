@@ -272,7 +272,10 @@ If there is a need to quickly revert to Jenkins-based build, then [delete](https
 <details>
   <summary><strong>Doing a hotfix to an older branch of your repository that still uses Jenkins?</strong></summary>
 
-  You have two options if you need to release on an older branch that does not use the new GitHub Actions workflow:
+  You have two options if you need to release on an older branch that does not use the new GitHub Actions workflow.
+
+  However note that Option 1 is preferred because Jenkins might go away soon.
+
   1. Migrate the branch to GitHub Actions (see [Usage](#usage)); or
   2. Use Jenkins for the release.
 
