@@ -231,21 +231,22 @@ If there is a need to quickly revert to Jenkins-based build, then [delete](https
 
 1. Create a temporary release branch `tmp-release-X.Y.Z`;
 2. Commit all relevant changes and this release's date to `NEWS.md`;
-3. Run `mvn -DautoVersionSubmodules=true release:clean release:prepare` and follow the interactive instructions:
+   - `git log --pretty=format:"%s" $(git describe --tags --abbrev=0)..HEAD | grep -e '^.[A-Z]\+-[0-9]\+' | sort -u` can be used to grab all commits with Jira-like names since the last tag
+4. Run `mvn -DautoVersionSubmodules=true release:clean release:prepare` and follow the interactive instructions:
    - Ensure all snapshot dependencies are resolved (unless the workflow has [allow-snapshots-release](#configuration-allow-snapshots-release) enabled),
    - Use the format `vX.Y.Z` for the created tag,
    - Set the new development version by:
      - Incrementing the **minor** version for regular releases (`X.Y+1.0`) or
      - Incrementing the **patch version** for bugfix releases (`X.Y.Z+1`);
-4. Push the test branch to GitHub and create a pull request against the mainline branch;
-5. Once the PR passes, merge the pull request (do _not_ use a squash commit — merge the full release branch history) and push the tag (`git push --tags`);
-6. Wait for the tag's GitHub Actions build to run (you can find it in the list under the `Actions` tab — look for the middle column specifying the tag's name);
-7. Announce it to the world:
+5. Push the test branch to GitHub and create a pull request against the mainline branch;
+6. Once the PR passes, merge the pull request (do _not_ use a squash commit — merge the full release branch history) and push the tag (`git push --tags`);
+7. Wait for the tag's GitHub Actions build to run (you can find it in the list under the `Actions` tab — look for the middle column specifying the tag's name);
+8. Announce it to the world:
    - Create a release on GitHub using the tag already pushed; the description should be the same as the entries in `NEWS.md` and `latest` should be set if applicable;
    - Send an annoucement to [#folio-releases on Slack](https://open-libr-foundation.slack.com/archives/CGPMHLX9B);
    - Ensure all applicable Jira tickets were given the proper `Fix version`; and
    - Mark the Jira version as released and create a new one; and
-8. Prepare for future development locally by running `mvn release:clean`.
+9. Prepare for future development locally by running `mvn release:clean`.
 
 ### Release procedures FAQ
 
