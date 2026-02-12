@@ -57,6 +57,8 @@ jobs:
         with:
           check_name: Jest Unit Test Results
           files: '${{ inputs.jest-junit-output-dir }}/*.xml'
+          # disable comments on dependabot branches, see FOLIO-4462 for more details
+          comment_mode: ${{ github.actor == 'dependabot[bot]' && 'off' || 'always' }}
 
       - name: Publish Jest coverage report
         uses: actions/upload-artifact@v6

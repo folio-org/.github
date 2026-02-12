@@ -53,6 +53,8 @@ jobs:
         with:
           check_name: Bigtest Unit Test Results
           files: '${{ inputs.bigtest-junit-output-dir }}/*.xml'
+          # disable comments on dependabot branches, see FOLIO-4462 for more details
+          comment_mode: ${{ github.actor == 'dependabot[bot]' && 'off' || 'always' }}
 
       - name: Publish Bigtest coverage report
         uses: actions/upload-artifact@v6
