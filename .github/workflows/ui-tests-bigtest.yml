@@ -49,12 +49,11 @@ jobs:
 
       - name: Publish Bigtest unit test results
         uses: EnricoMi/publish-unit-test-result-action@v2
-        if: ${{ !cancelled() }}
+        # disable comments on dependabot branches, see FOLIO-4462 for more details
+        if: ${{ !cancelled() && github.actor == 'dependabot[bot]' }}
         with:
           check_name: Bigtest Unit Test Results
-          files: '${{ inputs.bigtest-junit-output-dir }}/*.xml'
-          # disable comments on dependabot branches, see FOLIO-4462 for more details
-          comment_mode: ${{ github.actor == 'dependabot[bot]' && 'off' || 'always' }}
+          files: "${{ inputs.bigtest-junit-output-dir }}/*.xml"
 
       - name: Publish Bigtest coverage report
         uses: actions/upload-artifact@v6
