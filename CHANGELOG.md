@@ -7,8 +7,8 @@
 ## [1.13.3](https://github.com/folio-org/.github/tree/v1.13.3) (2026-02-12)
 [Full Changelog](https://github.com/folio-org/.github/compare/v1.13.2...v1.13.3)
 * FOLIO-4109 Improve release-procedures doc patch release - in #114
-* FOLIO-4454 Document Maven release procedures - in #115 
-* FOLIO-4462 Disable UI test result comments on PRs for dependabot branches - in #116
+* FOLIO-4454 Document Maven release procedures - in #115
+* FOLIO-4462 Disable UI test result comments on PRs for dependabot branches - in #117
 
 ## [1.13.2](https://github.com/folio-org/.github/tree/v1.13.2) (2026-01-29)
 [Full Changelog](https://github.com/folio-org/.github/compare/v1.13.1...v1.13.2)
