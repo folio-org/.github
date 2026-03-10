@@ -114,7 +114,7 @@ jobs:
           docker run --detach --health-timeout='2s' --health-retries=2 --cidfile docker_test.cid \
             --health-cmd='${{ inputs.docker-health-command }}' ${{ steps.prepare-docker-test-tag.outputs.docker-test-tag }} || exit 1
           cid=$(cat docker_test.cid)
-          echo "Doing inspection loop ..."
+          echo "Doing inspection loop (maximum=60) ..."
           max_startup_wait=60
           for ((i = 1; i < max_startup_wait; i++))
           do
