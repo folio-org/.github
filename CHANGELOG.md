@@ -4,6 +4,12 @@
 
 * (Add more progress summary items here.)
 
+## [1.13.4](https://github.com/folio-org/.github/tree/v1.13.4) (2026-03-10)
+
+* FOLIO-4472 Increase timeout for all ModuleDescriptor publish - in #121
+
+[Full Changelog](https://github.com/folio-org/.github/compare/v1.13.3...v1.13.4)
+
 ## [1.13.3](https://github.com/folio-org/.github/tree/v1.13.3) (2026-02-12)
 [Full Changelog](https://github.com/folio-org/.github/compare/v1.13.2...v1.13.3)
 * FOLIO-4109 Improve release-procedures doc patch release - in #114
