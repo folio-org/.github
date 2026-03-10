@@ -60,6 +60,7 @@ jobs:
           method: 'POST'
           contentType: 'application/json; charset=utf-8'
           customHeaders: '{ "Accept": "application/json; charset=utf-8" }'
+          timeout: 10000
           file: ModuleDescriptor.json
 
       - name: Show Okapi response

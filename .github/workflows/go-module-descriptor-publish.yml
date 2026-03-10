@@ -30,6 +30,7 @@ jobs:
           method: 'POST'
           contentType: 'application/json; charset=utf-8'
           customHeaders: '{ "Accept": "application/json; charset=utf-8" }'
+          timeout: 10000
           file: ModuleDescriptor.json
           username: ${{ secrets.registry-username }}
           password: ${{ secrets.registry-password }}
