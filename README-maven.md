@@ -300,4 +300,4 @@ Occasionally the job to "Publish ModuleDescriptor" gets a timeout at the registr
 
 In this case the Docker image would be published but not the associated ModuleDescriptor.
 
-Do "dispatch" the workflow again to publish a new Docker image and ModuleDescriptor.
+Either re-run that failed job, or "dispatch" the complete workflow again to publish a new Docker image and ModuleDescriptor.
