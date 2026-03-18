@@ -3,6 +3,7 @@
 ## IN PROGRESS
 
 * (Add more progress summary items here.)
+* bump node-version from v20.x to v22.x. Refs FOLIO-4469.
 
 ## [1.13.4](https://github.com/folio-org/.github/tree/v1.13.4) (2026-03-10)
 
