@@ -38,7 +38,7 @@ jobs:
         run: sleep 10
 
       - name: Pull all module descriptors into Okapi
-        uses: fjogeleit/http-request-action@v1
+        uses: fjogeleit/http-request-action@v2
         with:
           url: http://${{ steps.okapi-ip.outputs.ip }}:9130/_/proxy/pull/modules
           method: 'POST'
@@ -54,7 +54,7 @@ jobs:
 
       - name: Send ModuleDescriptor to Okapi
         id: send-md
-        uses: fjogeleit/http-request-action@v1
+        uses: fjogeleit/http-request-action@v2
         with:
           url: http://${{ steps.okapi-ip.outputs.ip }}:9130/_/proxy/modules?preRelease=false&npmSnapshot=false
           method: 'POST'
