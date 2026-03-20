@@ -4,14 +4,26 @@
 
 * (Add more progress summary items here.)
 
+## [1.14.1](https://github.com/folio-org/.github/tree/v1.14.1) (2026-03-20)
+[Full Changelog](https://github.com/folio-org/.github/compare/v1.14.0...v1.14.1)
+
+* FOLIO-4382 Upgrade various Actions for Maven and Docker Workflows in #125
+
+## [1.14.0](https://github.com/folio-org/.github/tree/v1.14.0) (2026-03-18)
+[Full Changelog](https://github.com/folio-org/.github/compare/v1.13.4...v1.14.0)
+
+* Doc: Update README-maven.md - in #122
+* FOLIO-4132 Doc: Do re-run failed job Publish ModuleDescriptor - in #123
+* FOLIO-4469 bump node from v20.x to v22.x - in #124
+
 ## [1.13.4](https://github.com/folio-org/.github/tree/v1.13.4) (2026-03-10)
+[Full Changelog](https://github.com/folio-org/.github/compare/v1.13.3...v1.13.4)
 
 * FOLIO-4472 Increase timeout for all ModuleDescriptor publish - in #121
 
-[Full Changelog](https://github.com/folio-org/.github/compare/v1.13.3...v1.13.4)
-
 ## [1.13.3](https://github.com/folio-org/.github/tree/v1.13.3) (2026-02-12)
 [Full Changelog](https://github.com/folio-org/.github/compare/v1.13.2...v1.13.3)
+
 * FOLIO-4109 Improve release-procedures doc patch release - in #114
 * FOLIO-4454 Document Maven release procedures - in #115
 * FOLIO-4462 Disable UI test result comments on PRs for dependabot branches - in #117
