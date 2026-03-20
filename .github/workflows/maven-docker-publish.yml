@@ -64,14 +64,14 @@ jobs:
           EOF
 
       - name: Login to Docker Hub
-        uses: docker/login-action@v3
+        uses: docker/login-action@v4
         with:
           username: ${{ secrets.dockerhub-username }}
           password: ${{ secrets.dockerhub-token }}
 
       - name: Extract metadata (tags, labels) for Docker
         id: meta
-        uses: docker/metadata-action@v5
+        uses: docker/metadata-action@v6
         with:
           images: ${{ inputs.docker-registry }}/${{ inputs.artifact-id }}
           labels: |
@@ -140,7 +140,7 @@ jobs:
           echo "loop-count=$i (max_startup_wait=$max_startup_wait)"
 
       - name: Build ${{ inputs.do-docker-push == 'True' && 'and push ' || '' }}Docker image
-        uses: docker/build-push-action@v6
+        uses: docker/build-push-action@v7
         with:
           context: .
           push: ${{ inputs.do-docker-push == 'True' }}
