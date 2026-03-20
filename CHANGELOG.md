@@ -4,6 +4,11 @@
 
 * (Add more progress summary items here.)
 
+## [1.14.1](https://github.com/folio-org/.github/tree/v1.14.1) (2026-03-20)
+[Full Changelog](https://github.com/folio-org/.github/compare/v1.14.0...v1.14.1)
+
+* FOLIO-4382 Upgrade various Actions for Maven and Docker Workflows in #125
+
 ## [1.14.0](https://github.com/folio-org/.github/tree/v1.14.0) (2026-03-18)
 [Full Changelog](https://github.com/folio-org/.github/compare/v1.13.4...v1.14.0)
 
