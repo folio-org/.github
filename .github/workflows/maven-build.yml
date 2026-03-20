@@ -74,7 +74,7 @@ jobs:
           fi
 
       - name: Upload apidocs as build artifact
-        uses: actions/upload-artifact@v6
+        uses: actions/upload-artifact@v7
         if: ${{ steps.discover-apidocs.outputs.has-maven-apidocs == 'True' }}
         with:
           name: apidocs
@@ -95,14 +95,14 @@ jobs:
           ' sh {} \;
 
       - name: Upload all jars as a build artifact
-        uses: actions/upload-artifact@v6
+        uses: actions/upload-artifact@v7
         with:
           name: built-jars
           path: /tmp/ci-artifacts/**/*.jar
           retention-days: 1
 
       - name: Upload additional build artifacts
-        uses: actions/upload-artifact@v6
+        uses: actions/upload-artifact@v7
         with:
           name: build-artifacts
           path: |

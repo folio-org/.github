@@ -19,12 +19,12 @@ jobs:
 
     steps:
       - name: Download ModuleDescriptor
-        uses: actions/download-artifact@v7
+        uses: actions/download-artifact@v8
         with:
           name: ModuleDescriptor.json
 
       - name: Publish ModuleDescriptor
-        uses: fjogeleit/http-request-action@v1
+        uses: fjogeleit/http-request-action@v2
         with:
           url: ${{ inputs.module-descriptor-registry }}/_/proxy/modules
           method: 'POST'
