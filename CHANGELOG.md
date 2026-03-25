@@ -2,6 +2,7 @@
 
 ## IN PROGRESS
 
+* FOLIO-4382 Upgrade actions/setup-node from v4 to v6 - in #126
 * (Add more progress summary items here.)
 
 ## [1.14.1](https://github.com/folio-org/.github/tree/v1.14.1) (2026-03-20)
