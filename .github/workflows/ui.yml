@@ -139,7 +139,7 @@ on:
         required: false
       DOCKER_PASSWORD:
         required: false
-      NPM_TOKEN:
+      NPM_TOKEN_2:
         required: false
       FOLIO_REGISTRY_USERNAME:
         required: false
