@@ -52,7 +52,7 @@ jobs:
         run: npm config set @folio:registry ${{ inputs.folio-npm-registry }}
 
       - name: Authenticate to FOLIO NPM registry
-        run: npm config set ${{ inputs.folio-npm-registry-auth }}:_auth ${{ secrets.npm-token }}
+        run: npm config set ${{ inputs.folio-npm-registry-auth }}:_authToken ${{ secrets.npm-token }}
 
       - name: Download module descriptor
         if: ${{ inputs.module-descriptor-available }}
