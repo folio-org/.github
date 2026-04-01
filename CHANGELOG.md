@@ -1,9 +1,11 @@
 # Change history for .github
 
-## IN PROGRESS
+## [1.14.2]((https://github.com/folio-org/.github/tree/v1.14.2) (2026-04-01)
+[Full Changelog](https://github.com/folio-org/.github/compare/v1.14.1...v1.14.2)
 
 * FOLIO-4382 Upgrade actions/setup-node from v4 to v6 - in #126
-* (Add more progress summary items here.)
+* Use _authToken NPM Bearer Token for NPM registry auth
+* Use NPM_TOKEN_2 GA secret
 
 ## [1.14.1](https://github.com/folio-org/.github/tree/v1.14.1) (2026-03-20)
 [Full Changelog](https://github.com/folio-org/.github/compare/v1.14.0...v1.14.1)
