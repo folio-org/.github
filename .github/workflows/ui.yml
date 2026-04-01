@@ -337,4 +337,4 @@ jobs:
       compiled-translations-available: ${{ inputs.compile-translations }}
       install-before-publish: ${{ inputs.install-before-publish }}
     secrets:
-      npm-token: ${{ secrets.NPM_TOKEN }}
+      npm-token: ${{ secrets.NPM_TOKEN_2 }}
