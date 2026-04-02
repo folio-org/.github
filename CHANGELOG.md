@@ -1,5 +1,8 @@
 # Change history for .github
 
+## IN PROGRESS
+* (Add more progress summary items here.)
+
 ## [1.14.2]((https://github.com/folio-org/.github/tree/v1.14.2) (2026-04-01)
 [Full Changelog](https://github.com/folio-org/.github/compare/v1.14.1...v1.14.2)
 
