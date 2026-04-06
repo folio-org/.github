@@ -44,6 +44,37 @@ jobs:
           java-version: ${{ inputs.java-version }}
           distribution: 'temurin'
 
+      - name: Configure custom FOLIO Maven settings.xml
+        run: | 
+          mkdir -p ~/.m2
+          echo "<settings>
+                  <activeProfiles>
+                    <activeProfile>folio-gha-repo-order-profile</activeProfile>
+                  </activeProfiles>
+
+                  <profiles>
+                    <profile>
+                      <id>folio-gha-repo-order-profile</id>
+                      <repositories>
+                        <!-- 1. Maven Central First -->
+                        <repository>
+                          <id>central</id>
+                          <name>Maven Central</name>
+                          <url>https://repo.maven.apache.org/maven2/</url>
+                          <releases><enabled>true</enabled></releases>
+                          <snapshots><enabled>false</enabled></snapshots>
+                        </repository>
+                        <!-- 2. FOLIO Repository Second -->
+                        <repository>
+                          <id>folio-nexus</id>
+                          <name>FOLIO Maven Repository</name>
+	                  <url>https://repository.folio.org/repository/maven-folio</url>
+	                </repository>
+                      </repositories>
+                    </profile>
+                  </profiles>
+                </settings>"
+
       - name: Cache Maven packages
         uses: actions/cache@v5
         with:
