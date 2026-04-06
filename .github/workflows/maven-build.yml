@@ -73,7 +73,7 @@ jobs:
                       </repositories>
                     </profile>
                   </profiles>
-                </settings>"
+                </settings>" > ~/.m2/settings.xml
 
       - name: Cache Maven packages
         uses: actions/cache@v5
