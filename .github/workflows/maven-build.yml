@@ -45,13 +45,12 @@ jobs:
           distribution: 'temurin'
 
       - name: Configure custom FOLIO Maven settings.xml
-        run: | 
+        run: |
           mkdir -p ~/.m2
           echo "<settings>
                   <activeProfiles>
                     <activeProfile>folio-gha-repo-order-profile</activeProfile>
                   </activeProfiles>
-
                   <profiles>
                     <profile>
                       <id>folio-gha-repo-order-profile</id>
@@ -68,8 +67,8 @@ jobs:
                         <repository>
                           <id>folio-nexus</id>
                           <name>FOLIO Maven Repository</name>
-	                  <url>https://repository.folio.org/repository/maven-folio</url>
-	                </repository>
+                          <url>https://repository.folio.org/repository/maven-folio</url>
+                        </repository>
                       </repositories>
                     </profile>
                   </profiles>
