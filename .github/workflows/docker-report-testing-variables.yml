@@ -23,8 +23,13 @@ jobs:
 
     steps:
       - name: Show some variables
+        env:
+          IS_RELEASE: ${{ inputs.is-release }}
+          ARTIFACT_ID: ${{ inputs.artifact-id }}
+          ARTIFACT_VERSION: ${{ inputs.artifact-version }}
+          DOCKER_PUSH: ${{ inputs.docker-push }}
         run: |
-          echo "is-release=${{ inputs.is-release }}"
-          echo "artifact-id=${{ inputs.artifact-id }}"
-          echo "artifact-version=${{ inputs.artifact-version }}"
-          echo "docker-push=${{ inputs.docker-push }}"
+          echo "is-release=$IS_RELEASE"
+          echo "artifact-id=$ARTIFACT_ID"
+          echo "artifact-version=$ARTIFACT_VERSION"
+          echo "docker-push=$DOCKER_PUSH"
