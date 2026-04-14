@@ -35,32 +35,29 @@ jobs:
     steps:
       - id: logic
         name: Determine default values
-        shell: python
         run: |
-          import os
-          import re
-
-          ref = "${{ github.ref }}"
-          print("We are on ref:", ref)
-          if re.match(r'^refs/tags/v\d+\..+', ref):
-            print("  We are on a tag vX.Y")
-            is_release = True
-            docker_registry = "folioorg"
-          else:
-            print("  We are not on a version tag")
-            is_release = False
-            docker_registry = "folioci"
-
-          output = open(os.environ['GITHUB_OUTPUT'], 'a')
-          output.write("is-release=" + str(is_release) + "\n")
-          output.write(f"docker-registry={docker_registry}\n")
-          output.close()
+          echo "We are on ref: $GITHUB_REF"
+          if [[ "$GITHUB_REF" =~ ^refs/tags/v\d+\.. ]]; then
+            echo "  We are on a tag vX.Y"
+            echo "is-release=True" | tee -a $GITHUB_OUTPUT
+            echo "docker-registry=folioorg" | tee -a $GITHUB_OUTPUT
+          else
+            echo "  We are not on a version tag"
+            echo "is-release=False" | tee -a $GITHUB_OUTPUT
+            echo "docker-registry=folioci" | tee -a $GITHUB_OUTPUT
+          fi
 
       - id: vars
         name: Determine other variables
+        env:
+          DESCRIPTION: ${{ github.event.repository.description }}
         run: |
           echo "artifact-id=${GITHUB_REPOSITORY##*/}" | tee -a $GITHUB_OUTPUT
-          echo "repo-description=${{ github.event.repository.description }}" | tee -a $GITHUB_OUTPUT
+          # multi line description
+          UUID=$(uuidgen)
+          echo "repo-description<<$UUID" | tee -a $GITHUB_OUTPUT
+          echo "$DESCRIPTION" | tee -a $GITHUB_OUTPUT
+          echo "$UUID" | tee -a $GITHUB_OUTPUT
 
   version-number:
     needs: [set-shared-variables]
