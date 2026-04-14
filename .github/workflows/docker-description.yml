@@ -41,8 +41,12 @@ jobs:
           name: ModuleDescriptor.json
 
       - name: Do generate description
+        env:
+          PUBLISH_MODULE_DESCRIPTOR: ${{ inputs.publish-module-descriptor }}
+          ARTIFACT_ID: ${{ inputs.artifact-id }}
+          DESCRIPTION: ${{ inputs.repo-description }}
         run: |
-          if ${{ inputs.publish-module-descriptor }}; then
+          if [ "$PUBLISH_MODULE_DESCRIPTOR" = "true" ]; then
             option_md="--module-descriptor ModuleDescriptor.json"
           else
             option_md=""
@@ -51,8 +55,8 @@ jobs:
           python3 folio-tools/github-actions-scripts/generate_dockerhub_description.py \
             --loglevel debug \
             --repo-url "${GITHUB_SERVER_URL}/${GITHUB_REPOSITORY}" \
-            --module-name ${{ inputs.artifact-id }} \
-            --description "${{ inputs.repo-description }}" \
+            --module-name "$ARTIFACT_ID" \
+            --description "$DESCRIPTION" \
             --output-file dockerhub-description.md ${option_md}
 
       - name: Show description output
