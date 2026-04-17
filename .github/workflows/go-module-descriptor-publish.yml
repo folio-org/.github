@@ -24,13 +24,15 @@ jobs:
           name: ModuleDescriptor.json
 
       - name: Publish ModuleDescriptor
-        uses: fjogeleit/http-request-action@v1
+        uses: fjogeleit/http-request-action@v2
         with:
           url: ${{ inputs.module-descriptor-registry }}/_/proxy/modules
           method: 'POST'
           contentType: 'application/json; charset=utf-8'
           customHeaders: '{ "Accept": "application/json; charset=utf-8" }'
           timeout: 10000
+          retry: 10
+          retryWait: 21000
           file: ModuleDescriptor.json
           username: ${{ secrets.registry-username }}
           password: ${{ secrets.registry-password }}
