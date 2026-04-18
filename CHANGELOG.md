@@ -3,6 +3,12 @@
 ## IN PROGRESS
 * (Add more progress summary items here.)
 
+## [1.15.0](https://github.com/folio-org/.github/tree/v1.15.0) (2026-04-18)
+[Full Changelog](https://github.com/folio-org/.github/compare/v1.14.4...v1.15.0)
+
+* FOLIO-4498: Retry when ModuleDescriptor registry times out - in #136
+* FOLIO-4423 Wait until Okapi is actually ready for dependency check - in #137
+
 ## [1.14.4](https://github.com/folio-org/.github/tree/v1.14.4) (2026-04-14)
 [Full Changelog](https://github.com/folio-org/.github/compare/v1.14.3...v1.14.4)
 
