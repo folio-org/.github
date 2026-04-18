@@ -40,7 +40,7 @@ jobs:
         run: wget --retry-connrefused -O - "http://${IP}:9130/_/version"
 
       - name: Pull all module descriptors into Okapi
-        uses: fjogeleit/http-request-action@v1
+        uses: fjogeleit/http-request-action@v2
         with:
           url: http://${{ steps.okapi-ip.outputs.ip }}:9130/_/proxy/pull/modules
           method: 'POST'
@@ -48,6 +48,8 @@ jobs:
           customHeaders: '{ "Accept": "application/json; charset=utf-8" }'
           data: ${{ inputs.okapi-pull-urls }}
           timeout: 60000
+          retry: 10
+          retryWait: 21000
 
       - name: Download ModuleDescriptor
         uses: actions/download-artifact@v6
@@ -55,11 +57,13 @@ jobs:
           name: ModuleDescriptor.json
 
       - name: Send ModuleDescriptor to Okapi
-        uses: fjogeleit/http-request-action@v1
+        uses: fjogeleit/http-request-action@v2
         with:
           url: http://${{ steps.okapi-ip.outputs.ip }}:9130/_/proxy/modules
           method: 'POST'
           contentType: 'application/json; charset=utf-8'
           customHeaders: '{ "Accept": "application/json; charset=utf-8" }'
           timeout: 10000
+          retry: 10
+          retryWait: 21000
           file: ModuleDescriptor.json
