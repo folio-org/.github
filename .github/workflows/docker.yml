@@ -61,7 +61,7 @@ jobs:
 
   version-number:
     needs: [set-shared-variables]
-    uses: ./.github/workflows/docker-version-number.yml
+    uses: ./.github/workflows/version-number.yml
     with:
       is-release: ${{ needs.set-shared-variables.outputs.is-release }}
 
