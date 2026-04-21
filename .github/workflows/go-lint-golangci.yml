@@ -21,22 +21,10 @@ jobs:
           # the go version for golangci-lint, not the go version for our module
           go-version: 'stable'
 
-      - name: Checkout folio-org/folio-tools
-        uses: actions/checkout@v6
-        with:
-          repository: folio-org/folio-tools
-          path: folio-tools
-          fetch-depth: 1
-
-      - name: Determine golangci-lint arguments
-        run: echo golangci_args=$(./folio-tools/github-actions-scripts/go-golangci-lint-args.sh) | tee -a $GITHUB_ENV
-        env:
-          CONFIG_FILE: ${{ inputs.golangci-config-file }}
-
       - name: Run golangci-lint
         uses: golangci/golangci-lint-action@v9
         with:
           # The golangci-lint version
-          version: v2.6
-          args: ${{ env.golangci_args }}
+          version: v2.11
+          args: --config=${{ inputs.golangci-config-file }} --disable errcheck --disable staticcheck --enable gosec
 
