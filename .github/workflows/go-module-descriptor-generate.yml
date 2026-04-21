@@ -25,15 +25,19 @@ jobs:
           fetch-depth: 1
 
       - name: Generate ModuleDescriptor
+        env:
+          VERSION: ${{ inputs.artifact-version }}
         run: |
           cd target
-          VERSION=${{ inputs.artifact-version }} make
+          make
 
       - name: Update LaunchDescriptor
+        env:
+          IMAGE: ${{ inputs.docker-registry }}/${{ inputs.artifact-id }}:${{ inputs.artifact-version }}
         run: |
           cd target
           mv ModuleDescriptor.json ModuleDescriptor.json.orig
-          jq  ". | .launchDescriptor.dockerImage |= \"${{ inputs.docker-registry }}/${{ inputs.artifact-id }}:${{ inputs.artifact-version }}\" | .launchDescriptor.dockerPull |= \"true\"" \
+          jq --arg image "$IMAGE" '.launchDescriptor.dockerImage |= $image | .launchDescriptor.dockerPull |= "true"' \
             ModuleDescriptor.json.orig > ModuleDescriptor.json
 
       - name: Print ModuleDescriptor
