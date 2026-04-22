@@ -26,10 +26,16 @@ jobs:
 
     steps:
       - name: Show some variables
+        env:
+          IS_RELEASE: ${{ inputs.is-release }}
+          ARTIFACT_ID: ${{ inputs.artifact-id }}
+          ARTIFACT_VERSION: ${{ inputs.artifact-version }}
+          DO_DOCKER_PUSH: ${{ inputs.do-docker-push }}
+          IS_MAIN_BRANCH: ${{ inputs.is-main-branch }}
         run: |
-          echo "is-release=${{ inputs.is-release }}"
-          echo "artifact-id=${{ inputs.artifact-id }}"
-          echo "artifact-version=${{ inputs.artifact-version }}"
-          echo "do-docker-push=${{ inputs.do-docker-push }}"
-          echo "github.ref=${{ github.ref }}"
-          echo "is-main-branch=${{ inputs.is-main-branch }}"
+          echo "is-release=$IS_RELEASE"
+          echo "artifact-id=$ARTIFACT_ID"
+          echo "artifact-version=$ARTIFACT_VERSION"
+          echo "do-docker-push=$DO_DOCKER_PUSH"
+          echo "github.ref=$GITHUB_REF"
+          echo "is-main-branch=$IS_MAIN_BRANCH"
