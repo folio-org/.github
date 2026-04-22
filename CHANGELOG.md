@@ -3,6 +3,14 @@
 ## IN PROGRESS
 * (Add more progress summary items here.)
 
+## [1.15.1](https://github.com/folio-org/.github/tree/v1.15.1) (2026-04-22)
+[Full Changelog](https://github.com/folio-org/.github/compare/v1.15.0...v1.15.1)
+
+* FOLIO-4489 Use env vars for go workflows
+* FOLIO-4501: Bump golangci-lint 2.6 -> 2.11, avoid go-golangci-lint-args.sh - in #140
+* FOLIO-4502: Bump staticcheck 2025.1 to 2026.1 in go-lint-staticcheck.yml - in #141
+* FOLIO-4503: Merge duplicate code: docker-/go-version-number.yml - in #144
+
 ## [1.15.0](https://github.com/folio-org/.github/tree/v1.15.0) (2026-04-18)
 [Full Changelog](https://github.com/folio-org/.github/compare/v1.14.4...v1.15.0)
 
