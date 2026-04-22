@@ -24,11 +24,7 @@ jobs:
         run: go install github.com/kisielk/errcheck@latest
 
       - name: Run errcheck
-        run: |
-          if ${{ inputs.errcheck-excludes-file != '' }}; then
-            option_errcheck_exclude="-exclude ${{ inputs.errcheck-excludes-file }}"
-          else
-            option_errcheck_exclude=''
-          fi
-          errcheck $option_errcheck_exclude ./...
+        env:
+          EXCLUDE: ${{ inputs.errcheck-excludes-file }}
+        run: errcheck -exclude "$EXCLUDE" ./...
 
