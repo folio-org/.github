@@ -207,6 +207,8 @@ jobs:
       folio-npm-registry: ${{ needs.set-shared-variables.outputs.folio-npm-registry }}
       allow-lint-errors: ${{ inputs.allow-lint-errors }}
       yarn-lock-retention-days: ${{ inputs.yarn-lock-retention-days }}
+      # On release tags, fail if the lockfile still pins snapshots from npm-folioci.
+      fail-on-snapshot-deps: ${{ needs.set-shared-variables.outputs.is-release == 'True' }}
 
   jest-tests:
     name: Run Jest tests

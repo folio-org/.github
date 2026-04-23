@@ -17,6 +17,11 @@ on:
       allow-lint-errors:
         required: true
         type: boolean
+      # release validation
+      fail-on-snapshot-deps:
+        required: false
+        type: boolean
+        default: false
 
 jobs:
   run:
@@ -51,6 +56,16 @@ jobs:
 
       - name: List installed FOLIO package versions
         run: yarn list --pattern @folio
+
+      # Snapshots resolve from the npm-folioci repository; released versions resolve from npm-folio.
+      # This job installs with yarn classic, so any npm-folioci "resolved" URL in yarn.lock is a snapshot.
+      - name: Fail on snapshot dependencies
+        if: inputs.fail-on-snapshot-deps
+        run: |
+          if grep -nE '^\s+resolved "https?://[^"]*npm-folioci' yarn.lock; then
+            echo "::error file=yarn.lock::yarn.lock contains snapshot (npm-folioci) resolutions - regenerate against npm-folio before releasing"
+            exit 1
+          fi
 
       - name: Publish yarn.lock
         uses: actions/upload-artifact@v7
