@@ -55,7 +55,7 @@ jobs:
           files: "${{ inputs.bigtest-junit-output-dir }}/*.xml"
 
       - name: Publish Bigtest coverage report
-        uses: actions/upload-artifact@v6
+        uses: actions/upload-artifact@v7
         if: ${{ !cancelled() }}
         with:
           name: bigtest-coverage-report

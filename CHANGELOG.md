@@ -4,6 +4,7 @@
 
 * FOLIO-3202 api-lint: Improve yarn install - in #146
 * FOLIO-4382 Upgrade various Actions for Go Workflows - in #147
+* FOLIO-4382 Upgrade various Actions for UI Workflows - in #148
 * (Add more progress summary items here.)
 
 ## [1.15.1](https://github.com/folio-org/.github/tree/v1.15.1) (2026-04-22)
