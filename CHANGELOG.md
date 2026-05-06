@@ -2,6 +2,7 @@
 
 ## IN PROGRESS
 
+* FOLIO-4382 Upgrade various Actions for UI and Go Workflows - in #151
 * (Add more progress summary items here.)
 
 ## [1.15.2](https://github.com/folio-org/.github/tree/v1.15.2) (2026-05-06)
