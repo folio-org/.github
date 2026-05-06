@@ -2,7 +2,7 @@
 
 ## IN PROGRESS
 
-* FOLIO-4382 Upgrade various Actions for UI and Go Workflows - in #151
+* FOLIO-4382 Upgrade various Actions for UI and Go Workflows
 * (Add more progress summary items here.)
 
 ## [1.15.2](https://github.com/folio-org/.github/tree/v1.15.2) (2026-05-06)
@@ -41,8 +41,8 @@
 [Full Changelog](https://github.com/folio-org/.github/compare/v1.14.1...v1.14.2)
 
 * FOLIO-4382 Upgrade actions/setup-node from v4 to v6 - in #126
-* Use _authToken NPM Bearer Token for NPM registry auth
-* Use NPM_TOKEN_2 GA secret
+* Use `_authToken` NPM Bearer Token for NPM registry auth
+* Use `NPM_TOKEN_2` GA secret
 
 ## [1.14.1](https://github.com/folio-org/.github/tree/v1.14.1) (2026-03-20)
 [Full Changelog](https://github.com/folio-org/.github/compare/v1.14.0...v1.14.1)
