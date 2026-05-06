@@ -2,10 +2,15 @@
 
 ## IN PROGRESS
 
+* (Add more progress summary items here.)
+
+## [1.15.2](https://github.com/folio-org/.github/tree/v1.15.2) (2026-05-06)
+[Full Changelog](https://github.com/folio-org/.github/compare/v1.15.1...v1.15.2)
+
 * FOLIO-3202 api-lint: Improve yarn install - in #146
 * FOLIO-4382 Upgrade various Actions for Go Workflows - in #147
 * FOLIO-4382 Upgrade various Actions for UI Workflows - in #148
-* (Add more progress summary items here.)
+* FOLIO-4506 Fail release builds when lockfiles pin snapshot dependencies - in #149
 
 ## [1.15.1](https://github.com/folio-org/.github/tree/v1.15.1) (2026-04-22)
 [Full Changelog](https://github.com/folio-org/.github/compare/v1.15.0...v1.15.1)
