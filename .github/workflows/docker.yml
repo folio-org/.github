@@ -37,7 +37,7 @@ jobs:
         name: Determine default values
         run: |
           echo "We are on ref: $GITHUB_REF"
-          if [[ "$GITHUB_REF" =~ ^refs/tags/v\d+\.. ]]; then
+          if [[ "$GITHUB_REF" =~ ^refs/tags/v[0-9]+\.. ]]; then
             echo "  We are on a tag vX.Y"
             echo "is-release=True" | tee -a $GITHUB_OUTPUT
             echo "docker-registry=folioorg" | tee -a $GITHUB_OUTPUT
