@@ -2,9 +2,13 @@
 
 ## IN PROGRESS
 
+* (Add more progress summary items here.)
+
+## [1.15.3](https://github.com/folio-org/.github/tree/v1.15.3) (2026-05-18)
+[Full Changelog](https://github.com/folio-org/.github/compare/v1.15.2...v1.15.3)
+
 * FOLIO-4382 Upgrade various Actions for UI and Go Workflows
 * FOLIO-4515 Use 0-9 rather than \d for bash regex docker Workflow - in #152
-* (Add more progress summary items here.)
 
 ## [1.15.2](https://github.com/folio-org/.github/tree/v1.15.2) (2026-05-06)
 [Full Changelog](https://github.com/folio-org/.github/compare/v1.15.1...v1.15.2)
