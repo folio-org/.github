@@ -166,8 +166,8 @@ jobs:
           for package in inputs_apt:
             if not package in packages_apt_valid:
               print(f"WARN: package '{package}' is not enabled. Skipping.")
-          else:
-            packages_apt += f" {package}"
+            else:
+              packages_apt += f" {package}"
           os.environ["GITHUB_OUTPUT"] += f"packages-apt={packages_apt.lstrip()}\n"
 
       - name: Ensure Java version
