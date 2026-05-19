@@ -162,7 +162,7 @@ jobs:
 
           packages_apt_valid = ["libyaz5"]
           packages_apt = ""
-          inputs_apt = $APT_PACKAGES.replace(" ", "").split(",")
+          inputs_apt = os.environ["APT_PACKAGES"].replace(" ", "").split(",")
           for package in inputs_apt:
             if not package in packages_apt_valid:
               print(f"WARN: package '{package}' is not enabled. Skipping.")
