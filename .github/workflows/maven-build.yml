@@ -85,10 +85,12 @@ jobs:
           key: ${{ runner.os }}-maven-${{ hashFiles('**/pom.xml') }}
           restore-keys: ${{ runner.os }}-maven
 
-      - name: Show apt inputs
-        # if: ${{ inputs.packages-apt != '' }}
+      - name: Install apt dependencies
+        if: ${{ inputs.packages-apt != '' }}
         run: |
           echo "packages-apt=${{ inputs.packages-apt }}"
+          sudo apt-get update
+          sudo apt-get -y install ${{ inputs.packages-apt }}
 
       - name: Print some information to job summary
         run: |
