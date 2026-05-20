@@ -77,6 +77,8 @@ For example:
 
 ### Configuration: java-version
 
+Allowed values: 17 or 21 or 25
+
 Optional. Default = '21'
 
 ```yaml
