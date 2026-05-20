@@ -2,6 +2,7 @@
 
 ## IN PROGRESS
 
+FOLIO-4509 Enable maven install apt dependencies from restricted list - in #154
 * (Add more progress summary items here.)
 
 ## [1.15.3](https://github.com/folio-org/.github/tree/v1.15.3) (2026-05-18)
