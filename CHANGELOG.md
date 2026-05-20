@@ -2,10 +2,14 @@
 
 ## IN PROGRESS
 
+* (Add more progress summary items here.)
+
+## [1.16.0](https://github.com/folio-org/.github/tree/v1.16.0) (2026-05-20)
+[Full Changelog](https://github.com/folio-org/.github/compare/v1.15.3...v1.16.0)
+
 FOLIO-4509 Enable maven install apt dependencies from restricted list - in #154
 FOLIO-4382 Upgrade golangci-lint from 2.11 to 2.12 - in #155
 FOLIO-4518 Use opzkit/godeadcode-action at go-lint-deadcode.yml - in #156
-* (Add more progress summary items here.)
 
 ## [1.15.3](https://github.com/folio-org/.github/tree/v1.15.3) (2026-05-18)
 [Full Changelog](https://github.com/folio-org/.github/compare/v1.15.2...v1.15.3)
