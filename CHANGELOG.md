@@ -4,6 +4,7 @@
 
 FOLIO-4509 Enable maven install apt dependencies from restricted list - in #154
 FOLIO-4382 Upgrade golangci-lint from 2.11 to 2.12 - in #155
+FOLIO-4518 Use opzkit/godeadcode-action at go-lint-deadcode.yml - in #156
 * (Add more progress summary items here.)
 
 ## [1.15.3](https://github.com/folio-org/.github/tree/v1.15.3) (2026-05-18)
