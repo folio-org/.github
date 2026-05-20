@@ -175,8 +175,8 @@ jobs:
 
       - name: Ensure Java version
         run: |
-          if [ "${{ inputs.java-version }}" != "17" ] && [ "${{ inputs.java-version }}" != "21" ]; then
-            echo "java-version=${{ inputs.java-version }}: Must be '17' or '21'."
+          if [ "${{ inputs.java-version }}" != "17" ] && [ "${{ inputs.java-version }}" != "21" ] && [ "${{ inputs.java-version }}" != "25" ]; then
+            echo "java-version=${{ inputs.java-version }}: Must be '17' or '21' or '25'."
             exit 1
           fi
 

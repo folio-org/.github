@@ -4,6 +4,11 @@
 
 * (Add more progress summary items here.)
 
+## [1.16.1](https://github.com/folio-org/.github/tree/v1.16.1) (2026-05-21)
+[Full Changelog](https://github.com/folio-org/.github/compare/v1.16.0...v1.16.1)
+
+* FOLIO-4126 Enable java-version=25 for upcoming Umbrellaleaf - in #158
+
 ## [1.16.0](https://github.com/folio-org/.github/tree/v1.16.0) (2026-05-20)
 [Full Changelog](https://github.com/folio-org/.github/compare/v1.15.3...v1.16.0)
 
