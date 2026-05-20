@@ -25,6 +25,6 @@ jobs:
         uses: golangci/golangci-lint-action@v9
         with:
           # The golangci-lint version
-          version: v2.11
+          version: v2.12
           args: --config=${{ inputs.golangci-config-file }} --disable errcheck --disable staticcheck --enable gosec
 
