@@ -90,7 +90,7 @@ jobs:
         run: |
           echo "packages-apt=${{ inputs.packages-apt }}"
           sudo apt-get update
-          sudo apt-get -y install ${{ inputs.packages-apt }}
+          sudo apt-get --quiet install -y ${{ inputs.packages-apt }}
 
       - name: Print some information to job summary
         run: |
