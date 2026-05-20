@@ -49,6 +49,11 @@ on:
           **/*.md,
           .github/**,
           **/*.json
+      apt-packages:
+        required: false
+        type: string
+        default: ''
+
     secrets:
       # these need to be non-required to allow anything here for forks
       # however, the sub-workflows will fail appropriately if these are not present, as applicable
@@ -91,6 +96,7 @@ jobs:
       docker-registry: ${{ steps.logic.outputs.docker-registry }}
       repo-name: ${{ steps.vars1.outputs.repo-name }}
       repo-description: ${{ steps.vars1.outputs.repo-description }}
+      packages-apt: ${{ steps.vars3.outputs.packages-apt }}
 
     steps:
       - id: logic
@@ -146,6 +152,27 @@ jobs:
             fi
           fi
 
+      - id: vars3
+        name: Validate specified apt dependencies
+        env:
+          APT_PACKAGES: ${{ inputs.apt-packages }}
+        shell: python
+        run: |
+          import os
+
+          packages_apt_valid = ["libyaz5"]
+          packages_apt = ""
+          inputs_apt = os.environ["APT_PACKAGES"].replace(" ", "").split(",")
+          for package in inputs_apt:
+            if not package in packages_apt_valid:
+              print(f"WARN: package '{package}' is not enabled. Skipping.")
+            else:
+              print(f"INFO: package '{package}' is acceptable.")
+              packages_apt += f" {package}"
+          output = open(os.environ["GITHUB_OUTPUT"], "a")
+          output.write(f"packages-apt={packages_apt.lstrip()}\n")
+          output.close()
+
       - name: Ensure Java version
         run: |
           if [ "${{ inputs.java-version }}" != "17" ] && [ "${{ inputs.java-version }}" != "21" ]; then
@@ -168,6 +195,7 @@ jobs:
       java-version: ${{ inputs.java-version }}
       do-docker: ${{ inputs.do-docker }}
       allow-snapshots-release: ${{ inputs.allow-snapshots-release }}
+      packages-apt: ${{ needs.set-shared-variables.outputs.packages-apt }}
 
   sonar:
     name: SonarCloud Analysis

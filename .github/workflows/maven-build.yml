@@ -16,6 +16,10 @@ on:
       allow-snapshots-release:
         required: true
         type: boolean
+      packages-apt:
+        description: Comma-separated list of apt packages, matching the allowed values
+        required: true
+        type: string
     outputs:
       has-docker:
         value: ${{ jobs.build.outputs.has-docker }}
@@ -80,6 +84,13 @@ jobs:
           path: ~/.m2/repository
           key: ${{ runner.os }}-maven-${{ hashFiles('**/pom.xml') }}
           restore-keys: ${{ runner.os }}-maven
+
+      - name: Install apt dependencies
+        if: ${{ inputs.packages-apt != '' }}
+        run: |
+          echo "packages-apt=${{ inputs.packages-apt }}"
+          sudo apt-get update
+          sudo apt-get --quiet install -y ${{ inputs.packages-apt }}
 
       - name: Print some information to job summary
         run: |
