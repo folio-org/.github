@@ -18,7 +18,7 @@ Use intermediate environment variables rather that variable interpolation of inp
 
 See ticket [FOLIO-4489](https://folio-org.atlassian.net/browse/FOLIO-4489).
 
-Refer to an example at "docker-push":
+Refer to an example at "docker-push": \
 [workflows/docker-publish.yml#L18](https://github.com/folio-org/.github/blob/a3d7eeb768269e0d919a90530834572e0043fda0/.github/workflows/docker-publish.yml#L18) \
 [workflows/docker-publish.yml#L38](https://github.com/folio-org/.github/blob/a3d7eeb768269e0d919a90530834572e0043fda0/.github/workflows/docker-publish.yml#L38)
 
