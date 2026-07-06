@@ -44,4 +44,5 @@ There is an automated workflow that will run `actionlint` on pull-requests.
 ## Further information
 
 * [Release procedure](docs/release-procedure.md)
+* [Guidelines for security](docs/guidelines-security.md)
 
