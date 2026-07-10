@@ -9,12 +9,14 @@ These are some guidelines regarding the security aspects of the Workflows.
 <!-- $GH_FOLIO/okapi/doc/md2toc -l 2 -h 3 guidelines-security.md -->
 * [Intermediate environment variables](#intermediate-environment-variables)
 * [yarn install](#yarn-install)
+* [Specific version for Okapi](#specific-version-for-okapi)
+* [Use secret for module-descriptor-registry](#use-secret-for-module-descriptor-registry)
 * [Specific SHA for folio-tools](#specific-sha-for-folio-tools)
 * [Prefer locally-stored scripts](#prefer-locally-stored-scripts)
 
 ## Intermediate environment variables
 
-Use intermediate environment variables rather that variable interpolation of input variables in the `run:`` steps.
+Use intermediate environment variables rather than variable interpolation of input variables in the `run:` steps.
 
 See ticket [FOLIO-4489](https://folio-org.atlassian.net/browse/FOLIO-4489).
 
@@ -22,10 +24,19 @@ Refer to an example at "docker-push": \
 [workflows/docker-publish.yml#L18](https://github.com/folio-org/.github/blob/a3d7eeb768269e0d919a90530834572e0043fda0/.github/workflows/docker-publish.yml#L18) \
 [workflows/docker-publish.yml#L38](https://github.com/folio-org/.github/blob/a3d7eeb768269e0d919a90530834572e0043fda0/.github/workflows/docker-publish.yml#L38)
 
-
 ## yarn install
 
 Use `yarn install --frozen-lockfile --ignore-scripts --non-interactive`
+
+## Specific version for Okapi
+
+Use a specific version for Okapi, rather than `okapi:latest`.
+At the various `*-descriptor-verify.yml` Workflows.
+
+## Use secret for module-descriptor-registry
+
+Use a secret rather than hardcoded URL.
+At the various `*-module-descriptor-publish.yml` Workflows.
 
 ## Specific SHA for folio-tools
 
