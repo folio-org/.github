@@ -3,6 +3,7 @@
 ## IN PROGRESS
 
 * (Add more progress summary items here.)
+* FOLIO-4544 Add switch for turning off UI module publish step - in #159
 
 ## [1.16.1](https://github.com/folio-org/.github/tree/v1.16.1) (2026-05-21)
 [Full Changelog](https://github.com/folio-org/.github/compare/v1.16.0...v1.16.1)
