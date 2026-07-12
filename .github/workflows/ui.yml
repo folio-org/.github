@@ -115,6 +115,10 @@ on:
         default: https://folio-registry.dev.folio.org
 
       # module publishing
+      publish-module:
+        required: false
+        type: boolean
+        default: true
       folio-npm-registry-auth:
         required: false
         type: string
@@ -319,6 +323,7 @@ jobs:
     # always (!cancelled), and then check specifically.
     if: |
       !cancelled() &&
+      inputs.publish-module &&
       needs.install-and-lint.result == 'success' &&
       needs.version-number.result == 'success' &&
       (needs.generate-module-descriptor.result == 'success' || needs.generate-module-descriptor.result == 'skipped') &&
