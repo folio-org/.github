@@ -22,6 +22,10 @@ on:
         required: false
         type: string
         default: ''
+      docker-enable-other-artifacts:
+        required: false
+        type: boolean
+        default: false
       publish-module-descriptor:
         required: false
         type: boolean
@@ -236,6 +240,7 @@ jobs:
       docker-health-command: ${{ inputs.docker-health-command }}
       do-docker-push: ${{ needs.set-shared-variables.outputs.do-docker-push }}
       docker-label-documentation: ${{ inputs.docker-label-documentation }}
+      docker-enable-other-artifacts: ${{ inputs.docker-enable-other-artifacts }}
     secrets:
       dockerhub-username: ${{ secrets.DOCKERHUB_USERNAME }}
       dockerhub-token: ${{ secrets.DOCKERHUB_TOKEN }}

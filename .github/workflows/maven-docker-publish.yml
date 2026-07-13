@@ -27,6 +27,9 @@ on:
       docker-label-documentation:
         required: false
         type: string
+      docker-enable-other-artifacts:
+        required: true
+        type: boolean
     secrets:
       dockerhub-username:
         required: true
@@ -87,6 +90,13 @@ jobs:
         uses: actions/download-artifact@v8
         with:
           name: built-jars
+          path: .
+
+      - name: Download target build artifacts
+        if: ${{ inputs.docker-enable-other-artifacts }}
+        uses: actions/download-artifact@v8
+        with:
+          name: build-artifacts
           path: .
 
       - name: List contents target directory
