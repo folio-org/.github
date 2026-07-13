@@ -89,6 +89,9 @@ jobs:
           name: built-jars
           path: .
 
+      - name: List contents target directory
+        run: ls -R target
+
       - name: Prepare the Docker test tag
         id: prepare-docker-test-tag
         run: |
