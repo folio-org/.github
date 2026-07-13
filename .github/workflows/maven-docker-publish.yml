@@ -27,6 +27,9 @@ on:
       docker-label-documentation:
         required: false
         type: string
+      docker-enable-other-artifacts:
+        required: true
+        type: boolean
     secrets:
       dockerhub-username:
         required: true
@@ -88,6 +91,16 @@ jobs:
         with:
           name: built-jars
           path: .
+
+      - name: Download target build artifacts
+        if: ${{ inputs.docker-enable-other-artifacts }}
+        uses: actions/download-artifact@v8
+        with:
+          name: build-artifacts
+          path: .
+
+      - name: List contents target directory
+        run: ls -R target
 
       - name: Prepare the Docker test tag
         id: prepare-docker-test-tag

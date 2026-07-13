@@ -10,6 +10,7 @@
     * [Configuration: apt-packages](#configuration-apt-packages)
     * [Configuration: do-sonar-scan](#configuration-do-sonar-scan)
     * [Configuration: do-docker](#configuration-do-docker)
+    * [Configuration: docker-enable-other-artifacts](#configuration-docker-enable-other-artifacts)
     * [Configuration: docker-health-command](#configuration-docker-health-command)
     * [Configuration: docker-label-documentation](#configuration-docker-label-documentation)
 * [Docker image metadata](#docker-image-metadata)
@@ -156,6 +157,22 @@ Optional. Default = true
 ```yaml
     with:
       do-docker: false
+```
+
+### Configuration: docker-enable-other-artifacts
+
+If this variable is provided and "true", then do download the "build-artifacts" artifact which was prepared via the earlier job.
+(Otherwise only the default "built-jars" artifact is downloaded.)
+
+This will include everything from the "target" directory.
+
+Be sure to use the `.dockerignore` file to filter only the desired pieces.
+
+Optional. Default = false
+
+```yaml
+    with:
+      docker-enable-other-artifacts: true
 ```
 
 ### Configuration: docker-health-command

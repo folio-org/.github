@@ -4,6 +4,12 @@
 
 * (Add more progress summary items here.)
 
+## [1.16.2](https://github.com/folio-org/.github/tree/v1.16.2) (2026-07-13)
+[Full Changelog](https://github.com/folio-org/.github/compare/v1.16.1...v1.16.2)
+
+* FOLIO-4544 Add switch for turning off UI module publish step - in #159
+* FOLIO-4547 Enable configure docker-enable-other-artifacts - in #160
+
 ## [1.16.1](https://github.com/folio-org/.github/tree/v1.16.1) (2026-05-21)
 [Full Changelog](https://github.com/folio-org/.github/compare/v1.16.0...v1.16.1)
 
