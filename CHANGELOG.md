@@ -4,6 +4,11 @@
 
 * (Add more progress summary items here.)
 
+## [1.16.3](https://github.com/folio-org/.github/tree/v1.16.3) (2026-07-14)
+[Full Changelog](https://github.com/folio-org/.github/compare/v1.16.2...v1.16.3)
+
+* FOLIO-4547 Enable configure docker-enable-other-artifacts improve ls target - in #162
+
 ## [1.16.2](https://github.com/folio-org/.github/tree/v1.16.2) (2026-07-13)
 [Full Changelog](https://github.com/folio-org/.github/compare/v1.16.1...v1.16.2)
 
