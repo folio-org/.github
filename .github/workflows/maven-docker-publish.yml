@@ -100,7 +100,12 @@ jobs:
           path: .
 
       - name: List contents target directory
-        run: ls -R target
+        run: |
+          if [ -d target ]; then
+            ls -R target
+          else
+            echo "WARNING: Missing target directory."
+          fi
 
       - name: Prepare the Docker test tag
         id: prepare-docker-test-tag
