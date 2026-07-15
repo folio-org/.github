@@ -43,6 +43,8 @@ After the first Actions run, do not rename the filename of this caller workflow,
 
 
 ```yaml
+# https://github.com/folio-org/.github/blob/master/README-maven.md
+
 name: Maven central workflow
 
 on:
