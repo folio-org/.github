@@ -1,0 +1,52 @@
+name: Dependency Submission
+
+on:
+  workflow_call:
+    inputs:
+      gradle-directory:
+        description: Directory containing the Gradle project.
+        required: false
+        type: string
+        default: service
+
+      java-version:
+        description: Java version.
+        required: false
+        type: string
+        default: "17"
+
+jobs:
+
+  dependency-submission:
+
+    runs-on: ubuntu-latest
+
+    timeout-minutes: 15
+
+    permissions:
+      contents: write
+
+    defaults:
+      run:
+        shell: bash
+        working-directory: ${{ inputs.gradle-directory }}
+
+    steps:
+
+      - name: Checkout source
+        uses: actions/checkout@v4
+
+      - name: Validate Gradle Wrapper
+        uses: gradle/actions/wrapper-validation@v4
+
+      - name: Setup Java
+        uses: actions/setup-java@v5
+        with:
+          distribution: temurin
+          java-version: ${{ inputs.java-version }}
+
+      - name: Setup Gradle
+        uses: gradle/actions/setup-gradle@v4
+
+      - name: Submit Dependency Graph
+        uses: gradle/actions/dependency-submission@v4

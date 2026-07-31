@@ -1,0 +1,54 @@
+name: Publish ModuleDescriptor
+
+on:
+  workflow_call:
+    inputs:
+      module-descriptor-registry:
+        description: URL of the ModuleDescriptor registry.
+        required: true
+        type: string
+
+    secrets:
+      registry-username:
+        required: true
+
+      registry-password:
+        required: true
+
+jobs:
+  publish:
+
+    name: Publish ModuleDescriptor
+
+    runs-on: ubuntu-latest
+
+    timeout-minutes: 10
+
+    permissions:
+      contents: read
+
+    steps:
+
+      # Download ModuleDescriptor produced by gradle-build.yml
+      - name: Download ModuleDescriptor
+        uses: actions/download-artifact@v4
+        with:
+          name: ModuleDescriptor.json
+
+      # Publish ModuleDescriptor
+      - name: Publish ModuleDescriptor
+        uses: fjogeleit/http-request-action@v2
+        with:
+          url: ${{ inputs.module-descriptor-registry }}/_/proxy/modules
+          method: POST
+          contentType: application/json; charset=utf-8
+          customHeaders: >
+            {
+              "Accept": "application/json; charset=utf-8"
+            }
+          timeout: 10000
+          retry: 10
+          retryWait: 21000
+          file: ModuleDescriptor.json
+          username: ${{ secrets.registry-username }}
+          password: ${{ secrets.registry-password }}

@@ -1,0 +1,62 @@
+name: Build Metadata
+
+description: Generates build metadata for snapshot and release builds.
+
+inputs:
+
+  gradle-version:
+    description: Gradle project version.
+    required: true
+
+outputs:
+
+  version:
+    description: Build version.
+    value: ${{ steps.metadata.outputs.version }}
+
+  is-release:
+    description: Whether the build is a release.
+    value: ${{ steps.metadata.outputs.is-release }}
+
+  docker-organization:
+    description: Docker organization.
+    value: ${{ steps.metadata.outputs.docker-organization }}
+
+runs:
+  using: composite
+
+  steps:
+
+    - id: metadata
+      shell: bash
+      env:
+        GRADLE_VERSION: ${{ inputs.gradle-version }}
+
+      run: |
+        set -euo pipefail
+
+        REF="${GITHUB_REF}"
+
+        RUN_NUMBER="${GITHUB_RUN_NUMBER}"
+
+        if [[ "${REF}" == refs/tags/* ]]; then
+
+            VERSION="${GRADLE_VERSION}"
+            IS_RELEASE=true
+            DOCKER_ORG="folioorg"
+        elif [[ "${GRADLE_VERSION}" == *"-SNAPSHOT" ]]; then
+        
+            VERSION="${GRADLE_VERSION}.${RUN_NUMBER}"
+            IS_RELEASE=false
+            DOCKER_ORG="folioci"
+        else
+            VERSION="${GRADLE_VERSION}"
+            IS_RELEASE=false
+            DOCKER_ORG="folioci"
+        fi
+
+        echo "version=$VERSION" >> "$GITHUB_OUTPUT"
+
+        echo "is-release=$IS_RELEASE" >> "$GITHUB_OUTPUT"
+
+        echo "docker-organization=$DOCKER_ORG" >> "$GITHUB_OUTPUT"

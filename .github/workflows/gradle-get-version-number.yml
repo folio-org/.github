@@ -1,0 +1,40 @@
+name: Get Gradle Version
+
+description: Retrieves the Gradle project version.
+
+inputs:
+  working-directory:
+    description: Directory containing the Gradle project.
+    required: false
+    default: service
+
+outputs:
+  version:
+    description: Gradle project version.
+    value: ${{ steps.version.outputs.version }}
+
+runs:
+  using: composite
+  steps:
+
+    - name: Read project version
+      id: version
+      shell: bash
+      working-directory: ${{ inputs.working-directory }}
+      run: |
+        set -euo pipefail
+
+        VERSION=$(
+          ./gradlew properties \
+            --quiet \
+            | awk -F': ' '/^version:/ {print $2}'
+        )
+
+        if [[ -z "$VERSION" ]]; then
+          echo "::error::Unable to determine Gradle version."
+          exit 1
+        fi
+
+        echo "Detected Gradle version: $VERSION"
+
+        echo "version=$VERSION" >> "$GITHUB_OUTPUT"

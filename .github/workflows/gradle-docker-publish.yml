@@ -1,0 +1,56 @@
+name: Docker Publish
+
+on:
+  workflow_call:
+    inputs:
+      docker-organization:
+        required: true
+        type: string
+
+      image-name:
+        required: true
+        type: string
+
+      version:
+        required: true
+        type: string
+
+    secrets:
+      dockerhub-username:
+        required: true
+
+      dockerhub-token:
+        required: true
+
+jobs:
+
+  publish:
+
+    runs-on: ubuntu-latest
+
+    timeout-minutes: 15
+
+    permissions:
+      contents: read
+
+    steps:
+
+      - name: Download Docker image
+        uses: actions/download-artifact@v4
+        with:
+          name: docker-image
+
+      - name: Load Docker image
+        run: docker load -i docker-image.tar
+
+      - name: Login to Docker Hub
+        run: |
+          echo "${{ secrets.dockerhub-token }}" \
+            | docker login \
+                --username "${{ secrets.dockerhub-username }}" \
+                --password-stdin
+
+      - name: Push Docker image
+        run: |
+          docker push \
+            "${{ inputs.docker-organization }}/${{ inputs.image-name }}:${{ inputs.version }}"
