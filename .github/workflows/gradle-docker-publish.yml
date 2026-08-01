@@ -22,7 +22,7 @@ on:
         description: Docker health check command.
         required: false
         type: string
-        default: ""
+        default: ''
 
       do-docker-push:
         description: Whether to publish the Docker image.
@@ -33,7 +33,7 @@ on:
         description: Documentation URL for OCI label.
         required: false
         type: string
-        default: ""
+        default: ''
 
     secrets:
       dockerhub-username:
@@ -70,7 +70,7 @@ jobs:
       - name: Restore Gradle build directory
         run: |
           mkdir -p service/build/libs
-          mv *.jar service/build/libs/
+          mv -- *.jar service/build/libs/
 
       # Notify whether publishing Docker image
       - name: Notify whether doing Docker push

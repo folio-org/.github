@@ -1,113 +1,108 @@
 name: Build Metadata
 
-description: Generate build metadata for Gradle backend modules.
+on:
+  workflow_call:
+    inputs:
+      gradle-version:
+        description: Version returned from get-gradle-version workflow.
+        required: true
+        type: string
 
-inputs:
-  gradle-version:
-    description: Resolved Gradle project version.
-    required: true
+    outputs:
+      artifact-version:
+        description: Final artifact version.
+        value: ${{ jobs.metadata.outputs.artifact-version }}
 
-outputs:
-  artifact-version:
-    description: Version to use for artifacts and Docker images.
-    value: ${{ steps.metadata.outputs.artifact-version }}
+      docker-registry:
+        description: Docker Hub organization.
+        value: ${{ jobs.metadata.outputs.docker-registry }}
 
-  docker-registry:
-    description: Docker Hub organization.
-    value: ${{ steps.metadata.outputs.docker-registry }}
+      is-release:
+        description: Whether this is a release build.
+        value: ${{ jobs.metadata.outputs.is-release }}
 
-  is-release:
-    description: Whether this is a release build.
-    value: ${{ steps.metadata.outputs.is-release }}
+      is-main-branch:
+        description: Whether this build is running on the default branch.
+        value: ${{ jobs.metadata.outputs.is-main-branch }}
 
-  is-main-branch:
-    description: Whether this build is running on the master branch.
-    value: ${{ steps.metadata.outputs.is-main-branch }}
+      do-docker-push:
+        description: Whether Docker images should be pushed.
+        value: ${{ jobs.metadata.outputs.do-docker-push }}
 
-  do-docker-push:
-    description: Whether Docker images should be pushed.
-    value: ${{ steps.metadata.outputs.do-docker-push }}
+jobs:
+  metadata:
+    name: Generate Build Metadata
 
-runs:
-  using: composite
+    runs-on: ubuntu-latest
 
-  steps:
+    timeout-minutes: 10
 
-    - name: Generate build metadata
-      id: metadata
-      shell: bash
-      env:
-        GRADLE_VERSION: ${{ inputs.gradle-version }}
-        GITHUB_REF: ${{ github.ref }}
-        GITHUB_RUN_NUMBER: ${{ github.run_number }}
-      run: |
+    outputs:
+      artifact-version: ${{ steps.metadata.outputs.artifact-version }}
+      docker-registry: ${{ steps.metadata.outputs.docker-registry }}
+      is-release: ${{ steps.metadata.outputs.is-release }}
+      is-main-branch: ${{ steps.metadata.outputs.is-main-branch }}
+      do-docker-push: ${{ steps.metadata.outputs.do-docker-push }}
 
-        set -euo pipefail
+    steps:
+      - name: Generate metadata
+        id: metadata
+        shell: bash
+        env:
+          GRADLE_VERSION: ${{ inputs.gradle-version }}
+          RUN_NUMBER: ${{ github.run_number }}
+          REF_TYPE: ${{ github.ref_type }}
+          REF_NAME: ${{ github.ref_name }}
+          EVENT_NAME: ${{ github.event_name }}
+          DEFAULT_BRANCH: ${{ github.event.repository.default_branch }}
+        run: |
+          echo "Gradle version: ${GRADLE_VERSION}"
+          echo "Git ref: ${REF_NAME} (${REF_TYPE})"
 
-        RUN_NUMBER="${GITHUB_RUN_NUMBER}"
+          if [[ "${REF_TYPE}" == "tag" ]]; then
+            ARTIFACT_VERSION="${GRADLE_VERSION}"
+            IS_RELEASE=true
+            DOCKER_REGISTRY="folioorg"
+          elif [[ "${GRADLE_VERSION}" == *"-SNAPSHOT" ]]; then
+            ARTIFACT_VERSION="${GRADLE_VERSION}.${RUN_NUMBER}"
+            IS_RELEASE=false
+            DOCKER_REGISTRY="folioci"
+          else
+            ARTIFACT_VERSION="${GRADLE_VERSION}"
+            IS_RELEASE=false
+            DOCKER_REGISTRY="folioci"
+          fi
 
-        #
-        # Determine build type
-        #
-        if [[ "${GITHUB_REF}" =~ ^refs/tags/v[0-9] ]]; then
+          if [[ "${REF_NAME}" == "${DEFAULT_BRANCH}" ]]; then
+            IS_MAIN_BRANCH=true
+          else
+            IS_MAIN_BRANCH=false
+          fi
 
-          echo "Release build detected."
+          if [[ "${EVENT_NAME}" == "pull_request" ]]; then
+            DO_DOCKER_PUSH=false
+          elif [[ "${IS_RELEASE}" == "true" || "${IS_MAIN_BRANCH}" == "true" ]]; then
+            DO_DOCKER_PUSH=true
+          else
+            DO_DOCKER_PUSH=false
+          fi
 
-          ARTIFACT_VERSION="${GRADLE_VERSION}"
-          IS_RELEASE=true
-          DOCKER_REGISTRY="folioorg"
+          {
+            echo "artifact-version=${ARTIFACT_VERSION}"
+            echo "docker-registry=${DOCKER_REGISTRY}"
+            echo "is-release=${IS_RELEASE}"
+            echo "is-main-branch=${IS_MAIN_BRANCH}"
+            echo "do-docker-push=${DO_DOCKER_PUSH}"
+          } >> "$GITHUB_OUTPUT"
 
-        elif [[ "${GRADLE_VERSION}" == *"-SNAPSHOT" ]]; then
-
-          echo "Snapshot build detected."
-
-          ARTIFACT_VERSION="${GRADLE_VERSION}.${RUN_NUMBER}"
-          IS_RELEASE=false
-          DOCKER_REGISTRY="folioci"
-
-        else
-
-          echo "Non-tagged release version detected."
-
-          #
-          # Safety net:
-          # Never publish an untagged release image to the official
-          # Docker organization.
-          #
-          ARTIFACT_VERSION="${GRADLE_VERSION}"
-          IS_RELEASE=false
-          DOCKER_REGISTRY="folioci"
-
-        fi
-
-        #
-        # Determine whether this is the master branch.
-        #
-        if [[ "${GITHUB_REF}" == "refs/heads/master" ]]; then
-          IS_MAIN_BRANCH=true
-        else
-          IS_MAIN_BRANCH=false
-        fi
-
-        #
-        # Docker images are only published from:
-        #   - master
-        #   - version tags
-        #
-        if [[ "${IS_MAIN_BRANCH}" == "true" || "${IS_RELEASE}" == "true" ]]; then
-          DO_DOCKER_PUSH=true
-        else
-          DO_DOCKER_PUSH=false
-        fi
-
-        echo "artifact-version=${ARTIFACT_VERSION}" >> "${GITHUB_OUTPUT}"
-        echo "docker-registry=${DOCKER_REGISTRY}" >> "${GITHUB_OUTPUT}"
-        echo "is-release=${IS_RELEASE}" >> "${GITHUB_OUTPUT}"
-        echo "is-main-branch=${IS_MAIN_BRANCH}" >> "${GITHUB_OUTPUT}"
-        echo "do-docker-push=${DO_DOCKER_PUSH}" >> "${GITHUB_OUTPUT}"
-
-        echo "Artifact Version : ${ARTIFACT_VERSION}"
-        echo "Docker Registry : ${DOCKER_REGISTRY}"
-        echo "Release Build   : ${IS_RELEASE}"
-        echo "Main Branch     : ${IS_MAIN_BRANCH}"
-        echo "Docker Push     : ${DO_DOCKER_PUSH}"
+          {
+            echo "### Build Metadata"
+            echo ""
+            echo "| Property | Value |"
+            echo "|----------|-------|"
+            echo "| Artifact Version | ${ARTIFACT_VERSION} |"
+            echo "| Docker Registry | ${DOCKER_REGISTRY} |"
+            echo "| Release Build | ${IS_RELEASE} |"
+            echo "| Main Branch | ${IS_MAIN_BRANCH} |"
+            echo "| Docker Push | ${DO_DOCKER_PUSH} |"
+          } >> "$GITHUB_STEP_SUMMARY"

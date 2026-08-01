@@ -16,7 +16,7 @@ on:
 
       module-descriptor-registry:
         description: Okapi ModuleDescriptor registry URL.
-        required: true
+        required: false
         default: https://folio-registry.dev.folio.org
         type: string
 
@@ -46,7 +46,7 @@ on:
 jobs:
   get-gradle-version:
     name: Determine Gradle Version
-    uses: ./.github/workflows/get-gradle-version.yml
+    uses: ./.github/workflows/gradle-get-version-number.yml
     with:
       gradle-directory: ${{ inputs.gradle-directory }}
 
@@ -55,7 +55,7 @@ jobs:
     name: Build Metadata
     needs:
       - get-gradle-version
-    uses: ./.github/workflows/build-metadata.yml
+    uses: ./.github/workflows/gradle-build-metadata.yml
     with:
       gradle-version: ${{ needs.get-gradle-version.outputs.gradle-version }}
 
@@ -67,14 +67,13 @@ jobs:
     uses: ./.github/workflows/gradle-build.yml
     with:
       gradle-directory: ${{ inputs.gradle-directory }}
-      artifact-version: ${{ needs.metadata.outputs.artifact-version }}
 
 # Dependency submission
   dependency-submission:
     name: Dependency Submission
     needs:
       - gradle-build
-    uses: ./.github/workflows/dependency-submission.yml
+    uses: ./.github/workflows/gradle-dependency-submission.yml
     with:
       gradle-directory: ${{ inputs.gradle-directory }}
 
@@ -84,7 +83,7 @@ jobs:
     needs:
       - metadata
       - gradle-build
-    uses: ./.github/workflows/docker-build.yml
+    uses: ./.github/workflows/gradle-docker-publish.yml
     with:
       artifact-id: ${{ inputs.artifact-id }}
       artifact-version: ${{ needs.metadata.outputs.artifact-version }}
@@ -104,7 +103,7 @@ jobs:
     needs:
       - metadata
       - docker-build
-    uses: ./.github/workflows/publish-module-descriptor.yml
+    uses: ./.github/workflows/gradle-module-descriptor-publish.yml
     with:
       module-descriptor-registry: ${{ inputs.module-descriptor-registry }}
 
