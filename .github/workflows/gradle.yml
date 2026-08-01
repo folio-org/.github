@@ -1,155 +1,110 @@
-name: Backend Module CI
+name: Gradle Backend Module
 
 on:
   workflow_call:
     inputs:
-      image-name:
-        description: Docker image name.
-        required: true
-        type: string
-
-      module-descriptor-registry:
-        description: ModuleDescriptor registry URL.
+      artifact-id:
+        description: Artifact/module name (e.g. mod-agreements).
         required: true
         type: string
 
       gradle-directory:
         description: Directory containing the Gradle project.
         required: false
-        type: string
         default: service
-
-      java-version:
-        description: Java version.
-        required: false
         type: string
-        default: "17"
 
-      build-command:
-        description: Gradle build command.
-        required: false
+      module-descriptor-registry:
+        description: Okapi ModuleDescriptor registry URL.
+        required: true
+        default: https://folio-registry.dev.folio.org
         type: string
-        default: clean build
+
+      docker-health-command:
+        description: Docker health check command.
+        required: false
+        default: ""
+        type: string
+
+      docker-label-documentation:
+        description: OCI documentation label.
+        required: false
+        default: ""
+        type: string
 
     secrets:
       dockerhub-username:
         required: true
-
       dockerhub-token:
         required: true
-
       registry-username:
         required: true
-
       registry-password:
         required: true
 
+# Determine Gradle version
 jobs:
+  get-gradle-version:
+    name: Determine Gradle Version
+    uses: ./.github/workflows/get-gradle-version.yml
+    with:
+      gradle-directory: ${{ inputs.gradle-directory }}
 
-  # Determine build metadata
+# Build metadata
   metadata:
-
     name: Build Metadata
+    needs:
+      - get-gradle-version
+    uses: ./.github/workflows/build-metadata.yml
+    with:
+      gradle-version: ${{ needs.get-gradle-version.outputs.gradle-version }}
 
-    runs-on: ubuntu-latest
-
-    outputs:
-      version: ${{ steps.metadata.outputs.version }}
-      docker-organization: ${{ steps.metadata.outputs.docker-organization }}
-      is-release: ${{ steps.metadata.outputs.is-release }}
-
-    steps:
-
-      - name: Checkout
-        uses: actions/checkout@v4
-
-      - name: Get Gradle Version
-        id: gradle-version
-        uses: ./.github/workflows/gradle-get-version-number
-        with:
-          working-directory: ${{ inputs.gradle-directory }}
-
-      - name: Generate Build Metadata
-        id: metadata
-        uses: ./.github/workflows/gradle-build-metadata
-        with:
-          gradle-version: ${{ steps.gradle-version.outputs.version }}
-
-  # Build application
+# Build application
   gradle-build:
-
-    needs: metadata
-
+    name: Gradle Build
+    needs:
+      - metadata
     uses: ./.github/workflows/gradle-build.yml
-
     with:
       gradle-directory: ${{ inputs.gradle-directory }}
-      java-version: ${{ inputs.java-version }}
-      build-command: ${{ inputs.build-command }}
+      artifact-version: ${{ needs.metadata.outputs.artifact-version }}
 
-
-  # Submit dependency graph
+# Dependency submission
   dependency-submission:
-
-    needs: metadata
-
+    name: Dependency Submission
+    needs:
+      - gradle-build
     uses: ./.github/workflows/dependency-submission.yml
-
     with:
       gradle-directory: ${{ inputs.gradle-directory }}
-      java-version: ${{ inputs.java-version }}
 
-
-  # Build Docker image
+# Docker build
   docker-build:
-
+    name: Docker Build
     needs:
       - metadata
       - gradle-build
-
     uses: ./.github/workflows/docker-build.yml
-
     with:
-      image-name: ${{ inputs.image-name }}
-      docker-organization: ${{ needs.metadata.outputs.docker-organization }}
-      version: ${{ needs.metadata.outputs.version }}
-
-
-  # Push Docker image
-  docker-publish:
-
-    needs:
-      - metadata
-      - docker-build
-
-    if: |
-      github.ref == 'refs/heads/master' ||
-      startsWith(github.ref, 'refs/tags/v')
-
-    uses: ./.github/workflows/docker-publish.yml
-
-    with:
-      docker-organization: ${{ needs.metadata.outputs.docker-organization }}
-      image-name: ${{ inputs.image-name }}
-      version: ${{ needs.metadata.outputs.version }}
+      artifact-id: ${{ inputs.artifact-id }}
+      artifact-version: ${{ needs.metadata.outputs.artifact-version }}
+      docker-registry: ${{ needs.metadata.outputs.docker-registry }}
+      docker-health-command: ${{ inputs.docker-health-command }}
+      docker-label-documentation: ${{ inputs.docker-label-documentation }}
+      do-docker-push: ${{ fromJSON(needs.metadata.outputs.do-docker-push) }}
 
     secrets:
       dockerhub-username: ${{ secrets.dockerhub-username }}
       dockerhub-token: ${{ secrets.dockerhub-token }}
 
-  # Publish ModuleDescriptor
+# Publish ModuleDescriptor
   publish-module-descriptor:
-
+    name: Publish ModuleDescriptor
+    if: needs.metadata.outputs.do-docker-push == 'true'
     needs:
-      - gradle-build
       - metadata
-
-    if: |
-      github.ref == 'refs/heads/master' ||
-      startsWith(github.ref, 'refs/tags/v')
-
+      - docker-build
     uses: ./.github/workflows/publish-module-descriptor.yml
-
     with:
       module-descriptor-registry: ${{ inputs.module-descriptor-registry }}
 

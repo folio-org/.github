@@ -1,19 +1,39 @@
-name: Docker Publish
+name: Gradle Docker Build and Publish
 
 on:
   workflow_call:
     inputs:
-      docker-organization:
+      artifact-id:
+        description: Docker image name.
         required: true
         type: string
 
-      image-name:
+      artifact-version:
+        description: Artifact version.
         required: true
         type: string
 
-      version:
+      docker-registry:
+        description: Docker registry/organization.
         required: true
         type: string
+
+      docker-health-command:
+        description: Docker health check command.
+        required: false
+        type: string
+        default: ""
+
+      do-docker-push:
+        description: Whether to publish the Docker image.
+        required: true
+        type: boolean
+
+      docker-label-documentation:
+        description: Documentation URL for OCI label.
+        required: false
+        type: string
+        default: ""
 
     secrets:
       dockerhub-username:
@@ -23,34 +43,148 @@ on:
         required: true
 
 jobs:
-
-  publish:
+  docker:
+    name: Docker Build${{ inputs.do-docker-push && ' and Publish' || '' }}
 
     runs-on: ubuntu-latest
 
-    timeout-minutes: 15
+    timeout-minutes: 30
 
     permissions:
       contents: read
 
     steps:
+      # Checkout
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 1
 
-      - name: Download Docker image
+      # Download Gradle build artifacts
+      - name: Download built JARs
         uses: actions/download-artifact@v4
         with:
-          name: docker-image
+          name: built-jars
+          path: .
 
-      - name: Load Docker image
-        run: docker load -i docker-image.tar
+      - name: Restore Gradle build directory
+        run: |
+          mkdir -p service/build/libs
+          mv *.jar service/build/libs/
 
+      # Notify whether publishing Docker image
+      - name: Notify whether doing Docker push
+        run: |
+          if ${{ inputs.do-docker-push }}; then
+            echo "Will build and publish Docker image." | tee -a "$GITHUB_STEP_SUMMARY"
+          else
+            echo "Will build Docker image only (publish=false)." | tee -a "$GITHUB_STEP_SUMMARY"
+          fi
+
+      # Login to Docker Hub
       - name: Login to Docker Hub
-        run: |
-          echo "${{ secrets.dockerhub-token }}" \
-            | docker login \
-                --username "${{ secrets.dockerhub-username }}" \
-                --password-stdin
+        if: inputs.do-docker-push
+        uses: docker/login-action@v4
+        with:
+          username: ${{ secrets.dockerhub-username }}
+          password: ${{ secrets.dockerhub-token }}
 
-      - name: Push Docker image
+      # Extract Docker metadata
+      - name: Extract Docker metadata
+        id: meta
+        uses: docker/metadata-action@v5
+        with:
+          images: ${{ inputs.docker-registry }}/${{ inputs.artifact-id }}
+
+          labels: |
+            org.opencontainers.image.title=FOLIO ${{ inputs.artifact-id }}
+            org.opencontainers.image.documentation=${{ inputs.docker-label-documentation }}
+            org.opencontainers.image.vendor=The Open Library Foundation
+            org.opencontainers.image.licenses=Apache-2.0
+            org.opencontainers.image.version=${{ inputs.artifact-version }}
+
+          tags: |
+            type=raw,value=latest
+            type=raw,value=${{ inputs.artifact-version }}
+
+      # Prepare Docker test image
+      - name: Prepare Docker test tag
+        id: prepare-docker-test-tag
         run: |
-          docker push \
-            "${{ inputs.docker-organization }}/${{ inputs.image-name }}:${{ inputs.version }}"
+          echo "docker-test-tag=folioci/${{ inputs.artifact-id }}:test" >> "$GITHUB_OUTPUT"
+
+          if ${{ inputs.docker-health-command != '' }}; then
+            echo "docker-health-command='${{ inputs.docker-health-command }}'" | tee -a $GITHUB_STEP_SUMMARY
+          else
+            echo "> [!WARNING]" >> $GITHUB_STEP_SUMMARY
+            {
+              echo "> Not doing docker health check. The inputs.docker-health-command is not declared."
+              echo "> The docker image might not be reliable."
+              echo "> Refer to [documentation](https://github.com/folio-org/.github/blob/master/README-maven.md#configuration-docker-health-command)."
+            } | tee -a $GITHUB_STEP_SUMMARY
+          fi
+
+      # Build and validate Docker image
+      - name: Build and test Docker image
+        if: inputs.docker-health-command != ''
+        run: |
+          echo "Building test image..."
+          docker build \
+            --pull=true \
+            --no-cache=true \
+            -t "${{ steps.prepare-docker-test-tag.outputs.docker-test-tag }}" .
+
+          echo "Starting test container..."
+
+          docker run \
+            --detach \
+            --health-timeout=2s \
+            --health-retries=2 \
+            --cidfile docker_test.cid \
+            --health-cmd='${{ inputs.docker-health-command }}' \
+            "${{ steps.prepare-docker-test-tag.outputs.docker-test-tag }}"
+
+          cid=$(cat docker_test.cid)
+
+          echo "Waiting for container health..."
+
+          max_startup_wait=60
+
+          for ((i=1;i<=max_startup_wait;i++)); do
+
+            health=$(docker inspect "$cid" | jq -r '.[0].State.Health.Status')
+
+            echo "Current status: ${health}"
+
+            if [[ "${health}" == "starting" ]]; then
+              sleep 1
+            else
+              break
+            fi
+
+          done
+
+          if [[ "${health}" != "healthy" ]]; then
+
+            echo "Container health check failed."
+
+            echo "========== Docker Logs =========="
+            docker logs "$cid" || true
+
+            echo "========== Docker Inspect =========="
+            docker inspect "$cid" || true
+
+            exit 1
+
+          fi
+
+          echo "Container health check passed."
+
+      # Build and optionally publish Docker image
+      - name: Build${{ inputs.do-docker-push && ' and Publish' || '' }} Docker image
+        uses: docker/build-push-action@v7
+        with:
+          context: .
+          push: ${{ inputs.do-docker-push }}
+          tags: ${{ steps.meta.outputs.tags }}
+          labels: ${{ steps.meta.outputs.labels }}
