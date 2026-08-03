@@ -56,13 +56,13 @@ jobs:
     steps:
       # Checkout
       - name: Checkout repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
         with:
           fetch-depth: 1
 
       # Download Gradle build artifacts
       - name: Download built JARs
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v8
         with:
           name: built-jars
           path: .
@@ -92,7 +92,7 @@ jobs:
       # Extract Docker metadata
       - name: Extract Docker metadata
         id: meta
-        uses: docker/metadata-action@v5
+        uses: docker/metadata-action@v6
         with:
           images: ${{ inputs.docker-registry }}/${{ inputs.artifact-id }}
 
