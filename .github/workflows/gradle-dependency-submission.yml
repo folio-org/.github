@@ -53,3 +53,5 @@ jobs:
 
       - name: Submit Dependency Graph
         uses: gradle/actions/dependency-submission@v6
+        with:
+          build-root-directory: ${{ inputs.gradle-directory }}
