@@ -33,13 +33,13 @@ on:
         type: string
 
     secrets:
-      dockerhub-username:
+      DOCKERHUB_USERNAME:
         required: true
-      dockerhub-token:
+      DOCKERHUB_TOKEN:
         required: true
-      registry-username:
+      FOLIO_REGISTRY_USERNAME:
         required: true
-      registry-password:
+      FOLIO_REGISTRY_PASSWORD:
         required: true
 
 # Determine Gradle version
@@ -93,8 +93,8 @@ jobs:
       do-docker-push: ${{ fromJSON(needs.metadata.outputs.do-docker-push) }}
 
     secrets:
-      dockerhub-username: ${{ secrets.dockerhub-username }}
-      dockerhub-token: ${{ secrets.dockerhub-token }}
+      dockerhub-username: ${{ secrets.DOCKERHUB_USERNAME }}
+      dockerhub-token: ${{ secrets.DOCKERHUB_TOKEN}}
 
 # Publish ModuleDescriptor
   publish-module-descriptor:
@@ -108,5 +108,5 @@ jobs:
       module-descriptor-registry: ${{ inputs.module-descriptor-registry }}
 
     secrets:
-      registry-username: ${{ secrets.registry-username }}
-      registry-password: ${{ secrets.registry-password }}
+      registry-username: ${{ secrets.FOLIO_REGISTRY_USERNAME }}
+      registry-password: ${{ secrets.FOLIO_REGISTRY_PASSWORD }}
