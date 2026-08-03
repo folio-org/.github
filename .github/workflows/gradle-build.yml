@@ -19,7 +19,7 @@ on:
         description: Gradle command.
         required: false
         type: string
-        default: "clean build"
+        default: "assemble"
 
 jobs:
 
@@ -58,7 +58,7 @@ jobs:
         run: |
           ./gradlew \
             ${{ inputs.build-command }} \
-            --stacktrace \
+            --console plain \
             --no-daemon
 
       - name: Upload application JAR
