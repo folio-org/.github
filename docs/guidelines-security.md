@@ -63,5 +63,4 @@ This arises due to not double-quoting the `$GITHUB_STEP_SUMMARY` and similar var
 Fixing this across the board will enable to stop avoiding `SC2086` in the local actionlint [invocation](https://github.com/folio-org/.github/tree/master#use-actionlint-prior-to-commit) and the [actionlint.yml](https://github.com/folio-org/.github/blob/7505c4cc4dad8e6013c76ca5fa9d877caeee2436/.github/workflows/_actionlint.yml#L27) Workflow.
 That will allow actionlint to report other situations which might be important.
 
-
-
+See ticket [FOLIO-4555](https://folio-org.atlassian.net/browse/FOLIO-4555).
