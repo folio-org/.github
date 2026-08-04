@@ -57,7 +57,7 @@ jobs:
             --repo-url "${GITHUB_SERVER_URL}/${GITHUB_REPOSITORY}" \
             --module-name "$ARTIFACT_ID" \
             --description "$DESCRIPTION" \
-            --output-file dockerhub-description.md ${option_md}
+            --output-file dockerhub-description.md "${option_md}"
 
       - name: Show description output
         run: cat dockerhub-description.md

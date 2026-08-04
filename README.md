@@ -33,7 +33,11 @@ Install [actionlint](https://github.com/rhysd/actionlint#quick-start).
 
 While developing Workflows run actionlint prior to each commit. It is very helpful for identifying syntax and mis-configuration problems, which are otherwise difficult to diagnose.
 
-It includes "shellcheck". The following typical invocation skips some well-known shellcheck basic issues:
+```
+actionlint *.yml
+```
+
+It includes "shellcheck". The following invocation skips some well-known shellcheck basic issues (but it is best to fix them before commit):
 
 ```
 SHELLCHECK_OPTS='--exclude=SC2086,SC2046' actionlint *.yml

@@ -39,9 +39,9 @@ jobs:
       - name: Notify whether doing docker push
         run: |
           if ${{ inputs.do-docker-push == 'True' }}; then
-            echo "Will do docker build and push, i.e. publish=true" | tee -a $GITHUB_STEP_SUMMARY
+            echo "Will do docker build and push, i.e. publish=true" | tee -a "$GITHUB_STEP_SUMMARY"
           else
-            echo "Will do docker build, but will not push, i.e. publish=false" | tee -a $GITHUB_STEP_SUMMARY
+            echo "Will do docker build, but will not push, i.e. publish=false" | tee -a "$GITHUB_STEP_SUMMARY"
           fi
 
       - name: Checkout ${{ github.repository }}

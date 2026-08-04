@@ -42,15 +42,15 @@ jobs:
         run: |
           uploadBaseDir="upload/${{ inputs.artifact-id }}"
           if [ "${{ inputs.is-release }}" == 'True' ]; then
-            versionMajMin=$(echo ${{ inputs.artifact-version }} | awk -F '.' '{ print $1 "." $2 }')
+            versionMajMin="$(echo ${{ inputs.artifact-version }} | awk -F '.' '{ print $1 "." $2 }')"
             uploadDir="${uploadBaseDir}/${versionMajMin}/u"
           else
             uploadDir="${uploadBaseDir}/u"
           fi
-          mkdir -p ${uploadDir}
-          find ./apidocs/*.* | sed 's|^.*/||' > ${uploadDir}/files-upload.txt
-          cp apidocs/*.* ${uploadDir}
-          cat ${uploadDir}/files-upload.txt
+          mkdir -p "${uploadDir}"
+          find ./apidocs/*.* | sed 's|^.*/||' > "${uploadDir}/files-upload.txt"
+          cp apidocs/*.* "${uploadDir}"
+          cat "${uploadDir}/files-upload.txt"
 
       - name: Publish to AWS S3
         uses: sai-sharan/aws-s3-sync-action@v0.1.0
