@@ -40,7 +40,7 @@ jobs:
     steps:
       - name: Show documentation
         run: |
-          echo "Documentation: https://github.com/folio-org/.github/blob/master/README-go.md" | tee -a $GITHUB_STEP_SUMMARY
+          echo "Documentation: https://github.com/folio-org/.github/blob/master/README-go.md" | tee -a "$GITHUB_STEP_SUMMARY"
 
   set-shared-variables:
     name: Set shared variables
@@ -83,27 +83,27 @@ jobs:
       - id: vars1
         name: Determine first set of other variables
         run: |
-          echo "artifact-id=${GITHUB_REPOSITORY##*/}" | tee -a $GITHUB_OUTPUT
-          echo "repo-description=${{ github.event.repository.description }}" | tee -a $GITHUB_OUTPUT
+          echo "artifact-id=${GITHUB_REPOSITORY##*/}" | tee -a "$GITHUB_OUTPUT"
+          echo "repo-description=${{ github.event.repository.description }}" | tee -a "$GITHUB_OUTPUT"
           # On a fork, the default branch might be other:
           if ${{ github.ref == 'refs/heads/main' || github.ref  == 'refs/heads/master' }}; then
-            echo "is-main-branch=True" | tee -a $GITHUB_OUTPUT
-            echo "IS_MAIN_BRANCH=True" >> $GITHUB_ENV
+            echo "is-main-branch=True" | tee -a "$GITHUB_OUTPUT"
+            echo "IS_MAIN_BRANCH=True" >> "$GITHUB_ENV"
           else
-            echo "is-main-branch=False" | tee -a $GITHUB_OUTPUT
-            echo "IS_MAIN_BRANCH=False" >> $GITHUB_ENV
+            echo "is-main-branch=False" | tee -a "$GITHUB_OUTPUT"
+            echo "IS_MAIN_BRANCH=False" >> "$GITHUB_ENV"
           fi
 
       - id: vars2
         name: Determine second set of other variables
         run: |
           if ${{ env.IS_RELEASE == 'True' }}; then
-            echo "do-docker-push=True" | tee -a $GITHUB_OUTPUT
+            echo "do-docker-push=True" | tee -a "$GITHUB_OUTPUT"
           else
             if ${{ env.IS_MAIN_BRANCH == 'True' }}; then
-              echo "do-docker-push=True" | tee -a $GITHUB_OUTPUT
+              echo "do-docker-push=True" | tee -a "$GITHUB_OUTPUT"
             else
-              echo "do-docker-push=False" | tee -a $GITHUB_OUTPUT
+              echo "do-docker-push=False" | tee -a "$GITHUB_OUTPUT"
             fi
           fi
 
