@@ -87,7 +87,7 @@ jobs:
     steps:
       - name: Show documentation
         run: |
-          echo "Documentation: ${{ env.documentation }}" | tee -a $GITHUB_STEP_SUMMARY
+          echo "Documentation: ${{ env.documentation }}" | tee -a "$GITHUB_STEP_SUMMARY"
 
   set-shared-variables:
     name: Set shared variables
@@ -129,30 +129,30 @@ jobs:
       - id: vars1
         name: Determine first set of other variables
         run: |
-          echo "repo-name=${GITHUB_REPOSITORY##*/}" | tee -a $GITHUB_OUTPUT
-          echo "repo-description=${{ github.event.repository.description }}" | tee -a $GITHUB_OUTPUT
+          echo "repo-name=${GITHUB_REPOSITORY##*/}" | tee -a "$GITHUB_OUTPUT"
+          echo "repo-description=${{ github.event.repository.description }}" | tee -a "$GITHUB_OUTPUT"
           if [ "${{ github.event_name }}" == "pull_request" ]; then
-            echo "branch-name=${GITHUB_HEAD_REF}" | tee -a $GITHUB_OUTPUT
+            echo "branch-name=${GITHUB_HEAD_REF}" | tee -a "$GITHUB_OUTPUT"
           else
-            echo "branch-name=${GITHUB_REF_NAME}" | tee -a $GITHUB_OUTPUT
+            echo "branch-name=${GITHUB_REF_NAME}" | tee -a "$GITHUB_OUTPUT"
           fi
           # On a fork, the default branch might be other:
           if ${{ github.ref_name == github.event.repository.default_branch }}; then
-            echo "is-main-branch=True" | tee -a $GITHUB_OUTPUT
+            echo "is-main-branch=True" | tee -a "$GITHUB_OUTPUT"
           else
-            echo "is-main-branch=False" | tee -a $GITHUB_OUTPUT
+            echo "is-main-branch=False" | tee -a "$GITHUB_OUTPUT"
           fi
 
       - id: vars2
         name: Determine second set of other variables
         run: |
           if ${{ steps.logic.outputs.is-release == 'True' }}; then
-            echo "do-docker-push=True" | tee -a $GITHUB_OUTPUT
+            echo "do-docker-push=True" | tee -a "$GITHUB_OUTPUT"
           else
             if ${{ steps.vars1.outputs.is-main-branch == 'True' }}; then
-              echo "do-docker-push=True" | tee -a $GITHUB_OUTPUT
+              echo "do-docker-push=True" | tee -a "$GITHUB_OUTPUT"
             else
-              echo "do-docker-push=False" | tee -a $GITHUB_OUTPUT
+              echo "do-docker-push=False" | tee -a "$GITHUB_OUTPUT"
             fi
           fi
 

@@ -94,7 +94,7 @@ jobs:
 
       - name: Print some information to job summary
         run: |
-          echo "Head commit SHA: $(git rev-parse --short HEAD)" | tee -a $GITHUB_STEP_SUMMARY
+          echo "Head commit SHA: $(git rev-parse --short HEAD)" | tee -a "$GITHUB_STEP_SUMMARY"
 
       - name: (Release only) Discover release dependencies that are snapshots
         if: ${{ inputs.is-release == 'True' }}
@@ -111,7 +111,7 @@ jobs:
         id: discover-apidocs
         run: |
           if test -d "target/apidocs"; then
-            echo "has-maven-apidocs=True" | tee -a $GITHUB_OUTPUT
+            echo "has-maven-apidocs=True" | tee -a "$GITHUB_OUTPUT"
           fi
 
       - name: Upload apidocs as build artifact
@@ -155,11 +155,11 @@ jobs:
         id: discover-docker
         # TODO: Enable lower-level Dockerfile, specified via project input variable. FOLIO-4424
         run: |
-          echo "do-docker=${{ inputs.do-docker }}" | tee -a $GITHUB_STEP_SUMMARY
+          echo "do-docker=${{ inputs.do-docker }}" | tee -a "$GITHUB_STEP_SUMMARY"
           if test -f "Dockerfile"; then
-            echo "has-docker=True" | tee -a $GITHUB_OUTPUT
-            echo "has-docker=True" >> $GITHUB_STEP_SUMMARY
+            echo "has-docker=True" | tee -a "$GITHUB_OUTPUT"
+            echo "has-docker=True" >> "$GITHUB_STEP_SUMMARY"
           else
-            echo "has-docker=False" | tee -a $GITHUB_OUTPUT
-            echo "has-docker=False (only looking for top-level, see README)" >> $GITHUB_STEP_SUMMARY
+            echo "has-docker=False" | tee -a "$GITHUB_OUTPUT"
+            echo "has-docker=False (only looking for top-level, see README)" >> "$GITHUB_STEP_SUMMARY"
           fi

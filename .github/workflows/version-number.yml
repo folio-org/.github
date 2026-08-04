@@ -39,14 +39,14 @@ jobs:
         if: ${{ inputs.is-release == 'False' }}
         name: Calculate version number, if not a release tag
         # FIXME: not yet sure how we will get a snapshot version
-        run: echo version=$(./folio-tools/github-actions-scripts/go-calculate-folioci-version.sh) | tee -a $GITHUB_OUTPUT
+        run: echo "version=$(./folio-tools/github-actions-scripts/go-calculate-folioci-version.sh)" | tee -a "$GITHUB_OUTPUT"
         env:
           JOB_ID: ${{ github.run_number }}
 
       - id: tag-version
         if: ${{ inputs.is-release == 'True' }}
         name: Get release tag version number, if applicable
-        run: echo version=${GITHUB_REF#refs/tags/v} | tee -a $GITHUB_OUTPUT
+        run: echo "version=${GITHUB_REF#refs/tags/v}" | tee -a "$GITHUB_OUTPUT"
 
       # used to aggregate tag and non-tag versions into a single output
       # the irrelevant one will be an empty string
@@ -55,5 +55,5 @@ jobs:
         env:
           VERSION: ${{ steps.calculate.outputs.version }}${{ steps.tag-version.outputs.version }}
         run: |
-          echo "version=$VERSION" | tee -a $GITHUB_OUTPUT
-          echo "Module version: $VERSION" | tee -a $GITHUB_STEP_SUMMARY
+          echo "version=$VERSION" | tee -a "$GITHUB_OUTPUT"
+          echo "Module version: $VERSION" | tee -a "$GITHUB_STEP_SUMMARY"
