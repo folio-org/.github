@@ -45,9 +45,9 @@ jobs:
       - name: Notify whether doing docker push
         run: |
           if ${{ inputs.do-docker-push == 'True' }}; then
-            echo "Will do docker build and push, i.e. publish=true" | tee -a $GITHUB_STEP_SUMMARY
+            echo "Will do docker build and push, i.e. publish=true" | tee -a "$GITHUB_STEP_SUMMARY"
           else
-            echo "Will do docker build, but will not push, i.e. publish=false" | tee -a $GITHUB_STEP_SUMMARY
+            echo "Will do docker build, but will not push, i.e. publish=false" | tee -a "$GITHUB_STEP_SUMMARY"
           fi
 
       - name: Checkout ${{ github.repository }}
@@ -58,7 +58,7 @@ jobs:
       - name: Create default .dockerignore file if missing
         if: ${{ hashFiles('.dockerignore') == '' }}
         run: |
-          echo "Missing .dockerignore file. Creating default." | tee -a $GITHUB_STEP_SUMMARY
+          echo "Missing .dockerignore file. Creating default." | tee -a "$GITHUB_STEP_SUMMARY"
           cat > .dockerignore << EOF
           *
           !Dockerfile
@@ -110,17 +110,17 @@ jobs:
       - name: Prepare the Docker test tag
         id: prepare-docker-test-tag
         run: |
-          echo "docker-test-tag=folioci/${{ inputs.artifact-id }}:test" | tee -a $GITHUB_OUTPUT
+          echo "docker-test-tag=folioci/${{ inputs.artifact-id }}:test" | tee -a "$GITHUB_OUTPUT"
 
           if ${{ inputs.docker-health-command != '' }}; then
-            echo "docker-health-command='${{ inputs.docker-health-command }}'" | tee -a $GITHUB_STEP_SUMMARY
+            echo "docker-health-command='${{ inputs.docker-health-command }}'" | tee -a "$GITHUB_STEP_SUMMARY"
           else
-            echo "> [!WARNING]" >> $GITHUB_STEP_SUMMARY
+            echo "> [!WARNING]" >> "$GITHUB_STEP_SUMMARY"
             {
               echo "> Not doing docker health check. The inputs.docker-health-command is not declared."
               echo "> The docker image might not be reliable."
               echo "> Refer to [documentation](https://github.com/folio-org/.github/blob/master/README-maven.md#configuration-docker-health-command)."
-            } | tee -a $GITHUB_STEP_SUMMARY
+            } | tee -a "$GITHUB_STEP_SUMMARY"
           fi
 
       - name: Build and test Docker image
@@ -136,7 +136,7 @@ jobs:
           max_startup_wait=60
           for ((i = 1; i < max_startup_wait; i++))
           do
-            health=$(docker inspect $cid | jq -r '.[].State.Health.Status')
+            health=$(docker inspect "$cid" | jq -r '.[].State.Health.Status')
             echo "Current status: ${health}"
             if [ "${health}" == "starting" ]; then
               sleep 1
@@ -145,15 +145,15 @@ jobs:
             fi
           done
           if [ "${health}" != "healthy" ]; then
-            echo "> [!IMPORTANT]" >> $GITHUB_STEP_SUMMARY
+            echo "> [!IMPORTANT]" >> "$GITHUB_STEP_SUMMARY"
             {
               echo "> ERROR: Container health check failed: $health"
               echo "> Verify your source-code and Dockerfile and inputs.docker-health-command."
               echo "> The docker image might not be reliable."
-            } | tee -a $GITHUB_STEP_SUMMARY
+            } | tee -a "$GITHUB_STEP_SUMMARY"
             exit 1
           else
-            echo "Container health check passed." | tee -a $GITHUB_STEP_SUMMARY
+            echo "Container health check passed." | tee -a "$GITHUB_STEP_SUMMARY"
           fi
           echo "loop-count=$i (max_startup_wait=$max_startup_wait)"
 

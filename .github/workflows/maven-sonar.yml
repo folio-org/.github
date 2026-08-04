@@ -62,7 +62,7 @@ jobs:
 
       - name: Format Sonar exclusions list
         id: format-exclusions
-        run: echo formatted=$(tr -d '[:blank:]' <<< "${{ inputs.sonar-exclusions }}") | tee -a $GITHUB_OUTPUT
+        run: echo "formatted=$(tr -d '[:blank:]' <<< "${{ inputs.sonar-exclusions }}")" | tee -a "$GITHUB_OUTPUT"
 
       - name: Run SonarCloud scan (v${{ env.SONAR_VERSION }})
         run: |

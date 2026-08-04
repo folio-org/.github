@@ -49,7 +49,7 @@ jobs:
       # from being generated if one does not exist. This breaks publication of the `yarn.lock` artifact (and use of `yarn list`).
       - name: Check if lockfile should be frozen
         id: check-yarn-lock
-        run: echo install-args=$(test -f yarn.lock && echo --frozen-lockfile) | tee -a $GITHUB_OUTPUT
+        run: echo "install-args=$(test -f yarn.lock && echo --frozen-lockfile)" | tee -a "$GITHUB_OUTPUT"
 
       - name: Install dependencies
         run: yarn install ${{ steps.check-yarn-lock.outputs.install-args }} --ignore-scripts --non-interactive
