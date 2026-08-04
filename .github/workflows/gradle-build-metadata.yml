@@ -62,6 +62,11 @@ jobs:
           echo "Git ref: ${REF_NAME} (${REF_TYPE})"
 
           if [[ "${REF_TYPE}" == "tag" ]]; then
+            TAG_VERSION="${REF_NAME#v}"
+            if [[ "${TAG_VERSION}" != "${GRADLE_VERSION}" ]]; then
+              echo "ERROR: Git tag '${REF_NAME}' does not match project version '${GRADLE_VERSION} from gradle.properties."
+              exit 1
+            fi
             ARTIFACT_VERSION="${GRADLE_VERSION}"
             IS_RELEASE=true
             DOCKER_REGISTRY="folioorg"
@@ -83,7 +88,9 @@ jobs:
 
           if [[ "${EVENT_NAME}" == "pull_request" ]]; then
             DO_DOCKER_PUSH=false
-          elif [[ "${IS_RELEASE}" == "true" || "${IS_MAIN_BRANCH}" == "true" ]]; then
+          elif [[ "${IS_RELEASE}" == "true" ]]; then
+            DO_DOCKER_PUSH=true
+          elif [[ "${GRADLE_VERSION}" == *"-SNAPSHOT" && "${IS_MAIN_BRANCH}" == "true" ]]; then
             DO_DOCKER_PUSH=true
           else
             DO_DOCKER_PUSH=false
@@ -107,4 +114,5 @@ jobs:
             echo "| Release Build | ${IS_RELEASE} |"
             echo "| Main Branch | ${IS_MAIN_BRANCH} |"
             echo "| Docker Push | ${DO_DOCKER_PUSH} |"
+            echo "| Git Ref | ${REF_NAME} (${REF_TYPE}) |"
           } >> "$GITHUB_STEP_SUMMARY"
