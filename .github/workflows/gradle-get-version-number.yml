@@ -45,7 +45,7 @@ jobs:
         working-directory: ${{ inputs.gradle-directory }}
         shell: bash
         run: |
-          VERSION="$(./gradlew properties --quiet | awk -F': ' '/^version:/ {print $2}')"
+          VERSION="$(awk -F= '/^appVersion=/ {print $2}' gradle.properties)"
 
           if [[ -z "$VERSION" ]]; then
             echo "Unable to determine Gradle project version."
