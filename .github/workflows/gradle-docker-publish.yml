@@ -104,14 +104,14 @@ jobs:
           echo "docker-test-tag=folioci/${{ inputs.artifact-id }}:test" >> "$GITHUB_OUTPUT"
 
           if ${{ inputs.docker-health-command != '' }}; then
-            echo "docker-health-command='${{ inputs.docker-health-command }}'" | tee -a $GITHUB_STEP_SUMMARY
+            echo "docker-health-command='${{ inputs.docker-health-command }}'" | tee -a "$GITHUB_STEP_SUMMARY"
           else
-            echo "> [!WARNING]" >> $GITHUB_STEP_SUMMARY
+            echo "> [!WARNING]" >> "$GITHUB_STEP_SUMMARY"
             {
               echo "> Not doing docker health check. The inputs.docker-health-command is not declared."
               echo "> The docker image might not be reliable."
               echo "> Refer to [documentation](https://github.com/folio-org/.github/blob/master/README-maven.md#configuration-docker-health-command)."
-            } | tee -a $GITHUB_STEP_SUMMARY
+            } | tee -a "$GITHUB_STEP_SUMMARY"
           fi
 
       # Build and validate Docker image
@@ -134,7 +134,7 @@ jobs:
             --health-cmd='${{ inputs.docker-health-command }}' \
             "${{ steps.prepare-docker-test-tag.outputs.docker-test-tag }}"
 
-          cid=$(cat docker_test.cid)
+          cid="$(cat docker_test.cid)"
           echo "Waiting for container health..."
           max_startup_wait=60
           for ((i=1;i<=max_startup_wait;i++)); do
