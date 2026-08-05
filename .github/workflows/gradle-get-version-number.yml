@@ -36,7 +36,7 @@ jobs:
         with:
           distribution: temurin
           java-version: '17'
-          
+
       - name: Read Gradle version
         id: version
         working-directory: ${{ inputs.gradle-directory }}
