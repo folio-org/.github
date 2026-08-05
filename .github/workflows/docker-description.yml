@@ -55,7 +55,7 @@ jobs:
             --output-file dockerhub-description.md
           )
           [ "$PUBLISH_MODULE_DESCRIPTOR" = "true" ] && options=("${options[@]}" --module-descriptor ModuleDescriptor.json)
-          echo "options=${options[@]}"
+          echo "options:" "${options[@]}"
           python3 folio-tools/github-actions-scripts/generate_dockerhub_description.py "${options[@]}"
 
       - name: Show description output
