@@ -7,31 +7,26 @@ on:
         description: Artifact/module name (e.g. mod-agreements).
         required: true
         type: string
-
       gradle-directory:
         description: Directory containing the Gradle project.
         required: false
         default: service
         type: string
-
       module-descriptor-registry:
         description: Okapi ModuleDescriptor registry URL.
         required: false
         default: https://folio-registry.dev.folio.org
         type: string
-
       docker-health-command:
         description: Docker health check command.
         required: false
         default: ""
         type: string
-
       docker-label-documentation:
         description: OCI documentation label.
         required: false
         default: ""
         type: string
-
     secrets:
       DOCKERHUB_USERNAME:
         required: true
@@ -91,7 +86,6 @@ jobs:
       docker-health-command: ${{ inputs.docker-health-command }}
       docker-label-documentation: ${{ inputs.docker-label-documentation }}
       do-docker-push: ${{ fromJSON(needs.metadata.outputs.do-docker-push) }}
-
     secrets:
       dockerhub-username: ${{ secrets.DOCKERHUB_USERNAME }}
       dockerhub-token: ${{ secrets.DOCKERHUB_TOKEN}}
@@ -106,7 +100,6 @@ jobs:
     uses: ./.github/workflows/gradle-module-descriptor-publish.yml
     with:
       module-descriptor-registry: ${{ inputs.module-descriptor-registry }}
-
     secrets:
       registry-username: ${{ secrets.FOLIO_REGISTRY_USERNAME }}
       registry-password: ${{ secrets.FOLIO_REGISTRY_PASSWORD }}

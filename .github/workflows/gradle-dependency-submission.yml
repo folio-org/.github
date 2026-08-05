@@ -8,7 +8,6 @@ on:
         required: false
         type: string
         default: service
-
       java-version:
         description: Java version.
         required: false
@@ -16,23 +15,17 @@ on:
         default: "17"
 
 jobs:
-
   dependency-submission:
-
     runs-on: ubuntu-latest
-
     timeout-minutes: 15
-
     permissions:
       contents: write
-
     defaults:
       run:
         shell: bash
         working-directory: ${{ inputs.gradle-directory }}
 
     steps:
-
       - name: Checkout source
         uses: actions/checkout@v6
         with:

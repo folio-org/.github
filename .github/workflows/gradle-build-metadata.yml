@@ -12,19 +12,15 @@ on:
       artifact-version:
         description: Final artifact version.
         value: ${{ jobs.metadata.outputs.artifact-version }}
-
       docker-registry:
         description: Docker Hub organization.
         value: ${{ jobs.metadata.outputs.docker-registry }}
-
       is-release:
         description: Whether this is a release build.
         value: ${{ jobs.metadata.outputs.is-release }}
-
       is-main-branch:
         description: Whether this build is running on the default branch.
         value: ${{ jobs.metadata.outputs.is-main-branch }}
-
       do-docker-push:
         description: Whether Docker images should be pushed.
         value: ${{ jobs.metadata.outputs.do-docker-push }}
@@ -32,9 +28,7 @@ on:
 jobs:
   metadata:
     name: Generate Build Metadata
-
     runs-on: ubuntu-latest
-
     timeout-minutes: 10
 
     outputs:

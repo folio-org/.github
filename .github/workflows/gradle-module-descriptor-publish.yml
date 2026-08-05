@@ -7,28 +7,20 @@ on:
         description: URL of the ModuleDescriptor registry.
         required: true
         type: string
-
     secrets:
       registry-username:
         required: true
-
       registry-password:
         required: true
 
 jobs:
   publish:
-
     name: Publish ModuleDescriptor
-
     runs-on: ubuntu-latest
-
     timeout-minutes: 10
-
     permissions:
       contents: read
-
     steps:
-
       # Download ModuleDescriptor produced by gradle-build.yml
       - name: Download ModuleDescriptor
         uses: actions/download-artifact@v8

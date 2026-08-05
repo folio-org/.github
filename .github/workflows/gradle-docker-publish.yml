@@ -7,49 +7,39 @@ on:
         description: Docker image name.
         required: true
         type: string
-
       artifact-version:
         description: Artifact version.
         required: true
         type: string
-
       docker-registry:
         description: Docker registry/organization.
         required: true
         type: string
-
       docker-health-command:
         description: Docker health check command.
         required: false
         type: string
         default: ''
-
       do-docker-push:
         description: Whether to publish the Docker image.
         required: true
         type: boolean
-
       docker-label-documentation:
         description: Documentation URL for OCI label.
         required: false
         type: string
         default: ''
-
     secrets:
       dockerhub-username:
         required: true
-
       dockerhub-token:
         required: true
 
 jobs:
   docker:
     name: Docker Build${{ inputs.do-docker-push && ' and Publish' || '' }}
-
     runs-on: ubuntu-latest
-
     timeout-minutes: 30
-
     permissions:
       contents: read
 
@@ -145,39 +135,25 @@ jobs:
             "${{ steps.prepare-docker-test-tag.outputs.docker-test-tag }}"
 
           cid=$(cat docker_test.cid)
-
           echo "Waiting for container health..."
-
           max_startup_wait=60
-
           for ((i=1;i<=max_startup_wait;i++)); do
-
             health=$(docker inspect "$cid" | jq -r '.[0].State.Health.Status')
-
             echo "Current status: ${health}"
-
             if [[ "${health}" == "starting" ]]; then
               sleep 1
             else
               break
             fi
-
           done
-
           if [[ "${health}" != "healthy" ]]; then
-
             echo "Container health check failed."
-
             echo "========== Docker Logs =========="
             docker logs "$cid" || true
-
             echo "========== Docker Inspect =========="
             docker inspect "$cid" || true
-
             exit 1
-
           fi
-
           echo "Container health check passed."
 
       # Build and optionally publish Docker image

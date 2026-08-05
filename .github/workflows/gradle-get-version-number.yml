@@ -17,11 +17,8 @@ on:
 jobs:
   version:
     name: Determine Gradle Version
-
     runs-on: ubuntu-latest
-
     timeout-minutes: 10
-
     outputs:
       gradle-version: ${{ steps.version.outputs.gradle-version }}
 
@@ -39,18 +36,16 @@ jobs:
         with:
           distribution: temurin
           java-version: '17'
-
+          
       - name: Read Gradle version
         id: version
         working-directory: ${{ inputs.gradle-directory }}
         shell: bash
         run: |
           VERSION="$(awk -F= '/^appVersion=/ {print $2}' gradle.properties)"
-
           if [[ -z "$VERSION" ]]; then
             echo "Unable to determine Gradle project version."
             exit 1
           fi
-
           echo "Detected Gradle version: $VERSION"
           echo "gradle-version=$VERSION" >> "$GITHUB_OUTPUT"
