@@ -36,12 +36,12 @@ jobs:
       - name: Get project artifact-id
         id: get-artifact-id
         run: |
-          echo artifact-id="$(mvn help:evaluate -Dexpression=project.artifactId -q -DforceStdout)" | tee -a $GITHUB_OUTPUT
+          echo artifact-id="$(mvn help:evaluate -Dexpression=project.artifactId -q -DforceStdout)" | tee -a "$GITHUB_OUTPUT"
 
       - name: Get project version
         id: get-version
         run: |
-          echo project-version="$(mvn help:evaluate -Dexpression=project.version -q -DforceStdout)" | tee -a $GITHUB_OUTPUT
+          echo project-version="$(mvn help:evaluate -Dexpression=project.version -q -DforceStdout)" | tee -a "$GITHUB_OUTPUT"
 
       - id: calculate
         if: ${{ inputs.is-release == 'False' }}
@@ -49,17 +49,17 @@ jobs:
         run: |
           base_number=2000
           build_number=$(( base_number + GITHUB_RUN_NUMBER ))
-          echo version="${{ steps.get-version.outputs.project-version }}.${build_number}" | tee -a $GITHUB_OUTPUT
+          echo version="${{ steps.get-version.outputs.project-version }}.${build_number}" | tee -a "$GITHUB_OUTPUT"
         env:
           JOB_ID: ${{ github.run_number }}
 
       - id: tag-version
         if: ${{ inputs.is-release == 'True' }}
         name: Get release tag version number, if applicable
-        run: echo version=${GITHUB_REF#refs/tags/v} | tee -a $GITHUB_OUTPUT
+        run: echo "version=${GITHUB_REF#refs/tags/v}" | tee -a "$GITHUB_OUTPUT"
 
       # used to aggregate tag and non-tag versions into a single output
       # the irrelevant one will be an empty string
       - id: final
         name: Get version from previous steps
-        run: echo version=${{ steps.calculate.outputs.version }}${{ steps.tag-version.outputs.version }} | tee -a $GITHUB_OUTPUT
+        run: echo version=${{ steps.calculate.outputs.version }}${{ steps.tag-version.outputs.version }} | tee -a "$GITHUB_OUTPUT"

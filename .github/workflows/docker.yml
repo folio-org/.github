@@ -39,12 +39,12 @@ jobs:
           echo "We are on ref: $GITHUB_REF"
           if [[ "$GITHUB_REF" =~ ^refs/tags/v[0-9]+\.. ]]; then
             echo "  We are on a tag vX.Y"
-            echo "is-release=True" | tee -a $GITHUB_OUTPUT
-            echo "docker-registry=folioorg" | tee -a $GITHUB_OUTPUT
+            echo "is-release=True" | tee -a "$GITHUB_OUTPUT"
+            echo "docker-registry=folioorg" | tee -a "$GITHUB_OUTPUT"
           else
             echo "  We are not on a version tag"
-            echo "is-release=False" | tee -a $GITHUB_OUTPUT
-            echo "docker-registry=folioci" | tee -a $GITHUB_OUTPUT
+            echo "is-release=False" | tee -a "$GITHUB_OUTPUT"
+            echo "docker-registry=folioci" | tee -a "$GITHUB_OUTPUT"
           fi
 
       - id: vars
@@ -52,12 +52,12 @@ jobs:
         env:
           DESCRIPTION: ${{ github.event.repository.description }}
         run: |
-          echo "artifact-id=${GITHUB_REPOSITORY##*/}" | tee -a $GITHUB_OUTPUT
+          echo "artifact-id=${GITHUB_REPOSITORY##*/}" | tee -a "$GITHUB_OUTPUT"
           # multi line description
           UUID=$(uuidgen)
-          echo "repo-description<<$UUID" | tee -a $GITHUB_OUTPUT
-          echo "$DESCRIPTION" | tee -a $GITHUB_OUTPUT
-          echo "$UUID" | tee -a $GITHUB_OUTPUT
+          echo "repo-description<<$UUID" | tee -a "$GITHUB_OUTPUT"
+          echo "$DESCRIPTION" | tee -a "$GITHUB_OUTPUT"
+          echo "$UUID" | tee -a "$GITHUB_OUTPUT"
 
   version-number:
     needs: [set-shared-variables]

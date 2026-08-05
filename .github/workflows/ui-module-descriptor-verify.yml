@@ -28,7 +28,7 @@ jobs:
 
       - id: okapi-ip
         name: Get container IP address
-        run: echo "ip=$(docker inspect --format='{{range .NetworkSettings.Networks}}{{.IPAddress}}{{end}}' okapi)" | tee -a $GITHUB_OUTPUT
+        run: echo "ip=$(docker inspect --format='{{range .NetworkSettings.Networks}}{{.IPAddress}}{{end}}' okapi)" | tee -a "$GITHUB_OUTPUT"
 
       - name: Wait until Okapi is ready
         env:
