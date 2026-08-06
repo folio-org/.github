@@ -37,11 +37,11 @@ While developing Workflows run actionlint prior to each commit. It is very helpf
 actionlint *.yml
 ```
 
-It includes "shellcheck". The following invocation skips some well-known shellcheck basic issues (but it is best to fix them before commit):
+It includes "shellcheck".
 
-```
-SHELLCHECK_OPTS='--exclude=SC2086,SC2046' actionlint *.yml
-```
+If there is a false positive disable it at the line level. Avoid diabling it at the file or run level because we want linting for future file changes.
+
+For details see [ShellCheck Ignore](https://github.com/koalaman/shellcheck/wiki/ignore).
 
 There is an automated workflow that will run `actionlint` on pull-requests.
 

@@ -46,18 +46,17 @@ jobs:
           ARTIFACT_ID: ${{ inputs.artifact-id }}
           DESCRIPTION: ${{ inputs.repo-description }}
         run: |
-          if [ "$PUBLISH_MODULE_DESCRIPTOR" = "true" ]; then
-            option_md="--module-descriptor ModuleDescriptor.json"
-          else
-            option_md=""
-          fi
-          echo "option_md=${option_md}"
-          python3 folio-tools/github-actions-scripts/generate_dockerhub_description.py \
-            --loglevel debug \
-            --repo-url "${GITHUB_SERVER_URL}/${GITHUB_REPOSITORY}" \
-            --module-name "$ARTIFACT_ID" \
-            --description "$DESCRIPTION" \
-            --output-file dockerhub-description.md "${option_md}"
+          # Use array for proper quoting: https://github.com/koalaman/shellcheck/wiki/SC2086#exceptions
+          options=(
+            --loglevel debug
+            --repo-url "${GITHUB_SERVER_URL}/${GITHUB_REPOSITORY}"
+            --module-name "$ARTIFACT_ID"
+            --description "$DESCRIPTION"
+            --output-file dockerhub-description.md
+          )
+          [ "$PUBLISH_MODULE_DESCRIPTOR" = "true" ] && options=("${options[@]}" --module-descriptor ModuleDescriptor.json)
+          echo "options:" "${options[@]}"
+          python3 folio-tools/github-actions-scripts/generate_dockerhub_description.py "${options[@]}"
 
       - name: Show description output
         run: cat dockerhub-description.md
