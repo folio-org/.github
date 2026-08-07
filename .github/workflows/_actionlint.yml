@@ -22,6 +22,5 @@ jobs:
 
       - name: actionlint
         uses: raven-actions/actionlint@v2
-#        with:
-#          # overly pedantic quoting requirements
-#          flags: -ignore SC2046 -ignore SC2086
+        # do NOT ignore errors at the run level or at the file level; ignore them at the line level only:
+        # https://github.com/koalaman/shellcheck/wiki/ignore
