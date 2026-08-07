@@ -5,14 +5,12 @@ on:
     inputs:
       gradle-directory:
         description: Directory containing the Gradle project.
-        required: false
+        required: true
         type: string
-        default: service
       java-version:
         description: Java version.
-        required: false
+        required: true
         type: string
-        default: "17"
       build-command:
         description: Gradle command.
         required: false

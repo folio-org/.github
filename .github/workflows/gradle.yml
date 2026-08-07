@@ -12,6 +12,11 @@ on:
         required: false
         default: service
         type: string
+      publish-module-descriptor:
+        description: Publish module descriptor?
+        required: false
+        type: boolean
+        default: true
       module-descriptor-registry:
         description: Okapi ModuleDescriptor registry URL.
         required: false
@@ -27,6 +32,11 @@ on:
         required: false
         default: ""
         type: string
+      java-version:
+        description: Java version.
+        required: false
+        type: string
+        default: "17"
     secrets:
       DOCKERHUB_USERNAME:
         required: true
@@ -62,6 +72,7 @@ jobs:
     uses: ./.github/workflows/gradle-build.yml
     with:
       gradle-directory: ${{ inputs.gradle-directory }}
+      java-version: ${{ inputs.java-version }}
 
 # Dependency submission
   dependency-submission:
@@ -71,6 +82,7 @@ jobs:
     uses: ./.github/workflows/gradle-dependency-submission.yml
     with:
       gradle-directory: ${{ inputs.gradle-directory }}
+      java-version: ${{ inputs.java-version }}
 
 # Docker build
   docker-build:
@@ -90,10 +102,29 @@ jobs:
       dockerhub-username: ${{ secrets.DOCKERHUB_USERNAME }}
       dockerhub-token: ${{ secrets.DOCKERHUB_TOKEN}}
 
+# Docker image description
+  docker-description:
+    name: Publish image description
+    needs:
+      - metadata
+      - docker-build
+    if: |
+      !cancelled() && needs.metadata.outputs.do-docker-push == 'true'
+    uses: ./.github/workflows/docker-description.yml
+    with:
+      artifact-id: ${{ inputs.artifact-id }}
+      docker-registry: ${{ needs.metadata.outputs.docker-registry }}
+      repo-description: ${{ needs.metadata.outputs.repo-description }}
+      publish-module-descriptor: ${{ inputs.publish-module-descriptor }}
+    secrets:
+      dockerhub-username: ${{ secrets.DOCKERHUB_USERNAME }}
+      dockerhub-token: ${{ secrets.DOCKERHUB_TOKEN }}
+
 # Publish ModuleDescriptor
   publish-module-descriptor:
     name: Publish ModuleDescriptor
-    if: needs.metadata.outputs.do-docker-push == 'true'
+    if: |
+      !cancelled() && inputs.publish-module-descriptor && needs.metadata.outputs.do-docker-push == 'true'
     needs:
       - metadata
       - docker-build
