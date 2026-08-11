@@ -1,6 +1,6 @@
 # Centralised GitHub Workflows for Gradle
 
-<!-- ../okapi/doc/md2toc -l 2 -h 3 README-maven.md -->
+<!-- ../okapi/doc/md2toc -l 2 -h 3 README-gradle.md -->
 * [Introduction](#introduction)
 * [Usage](#usage)
 * [Configuration](#configuration)
@@ -24,17 +24,17 @@
 
 ## Introduction
 
-The Workflows in this repository named `maven*.yml` are for building Maven-based back-end modules.
+The Workflows in this repository named `gradle*.yml` are for building Maven-based back-end modules.
 Docker images are published to FOLIO Docker Hub.
 ModuleDescriptors are published to the FOLIO Registry.
 
-Refer to example build system and workflows at https://github.com/folio-org/mod-settings
+Refer to example build system and workflows at https://github.com/folio-org/mod-agreements
 
 ## Usage
 
-Create a `.github/workflows` directory in the root of the module repository, and add a file named `maven.yml` with the following content.
+Create a `.github/workflows` directory in the root of the module repository, and add a file named `gradle.yml` with the following content.
 
-If there is already a workflow named maven.yml for verifying basic Maven builds, then rename that file.
+If there is already a workflow named gradle.yml for verifying basic Maven builds, then rename that file.
 It will ease management to have the same filename at every repository.
 
 Follow [Install the caller Workflow](#install-the-caller-workflow) section below to install the initial workflow.
@@ -43,29 +43,30 @@ After the first Actions run, do not rename the filename of this caller workflow,
 
 
 ```yaml
-# https://github.com/folio-org/.github/blob/master/README-maven.md
+# https://github.com/folio-org/.github/blob/master/README-gradle.md
 
-name: Maven central workflow
+name: Gradle Central Workflow
 
 on:
   push:
+    branches: ['FOLIO-4554-gradle-workflows']
   pull_request:
   workflow_dispatch:
 
-permissions:
-  contents: read
-
 jobs:
-  maven:
-    uses: folio-org/.github/.github/workflows/maven.yml@v1
+  gradle:
+    uses: folio-org/.github/.github/workflows/gradle.yml@FOLIO-4554-gradle-workflows
     # Only handle push events from the main branch or tags, to decrease PR noise
-    if: github.ref_name == github.event.repository.default_branch || github.event_name != 'push' || github.ref_type == 'tag'
+    if: github.ref_name == github.event.repository.default_branch || github.event_name != 'push' || github.ref_type == 'tag' || github.ref_name == 'FOLIO-4554-gradle-workflows'
     secrets: inherit
+    with:
+      artifact-id: mod-agreements
+      docker-label-documentation: https://github.com/folio-org/mod-agreements/tree/master/docs
 ```
 
 ## Configuration
 
-If there is a need to over-ride defaults, then add configuration variables to the single "with:" section of the module maven.yml Workflow.
+If there is a need to over-ride defaults, then add configuration variables to the single "with:" section of the module gradle.yml Workflow.
 
 Add the section at the end of the Workflow immediately after the "secrets" item.
 For example:
@@ -77,7 +78,13 @@ For example:
       java-version: '17'
       # Add configuration variables here if needed.
 ```
+### Configuration: artifact-id
 
+
+### Configuration: gradle-directory
+
+
+module-descriptor-registry
 ### Configuration: java-version
 
 Allowed values: 17 or 21 or 25
@@ -91,7 +98,7 @@ Optional. Default = '21'
 
 ### Configuration: publish-module-descriptor
 
-Some Maven-based projects do not have a ModuleDescriptor.
+Some Gradle-based projects do not have a ModuleDescriptor.
 
 Optional. Default = true
 
@@ -100,82 +107,8 @@ Optional. Default = true
       publish-module-descriptor: false
 ```
 
-### Configuration: allow-snapshots-release
 
-Normally a release must not use dependencies that are "snapshot" versions.
 
-On rare occasions this might be needed.
-
-Optional. Default = false
-
-```yaml
-    with:
-      allow-snapshots-release: true
-```
-
-### Configuration: apt-packages
-
-Some Maven-based repositories need extra dependencies, e.g. mod-copycat.
-
-There is a restricted list of packages that can be installed via apt-get. \
-The current list: 'libyaz5'
-
-Note that the GitHub runner already provides various other software.
-Visit the "Set up job > Runner Image" section of a recent run to see the "Included Software" list.
-
-If there is another dependency needed, then follow the FAQ [How to raise a DevOps Jira ticket](https://dev.folio.org/faqs/how-to-raise-devops-ticket/).
-
-This configuration variable is a comma-separated list.
-
-Optional. Default = '' (i.e. none)
-
-```yaml
-    with:
-      apt-packages: 'libyaz5'
-```
-
-### Configuration: do-sonar-scan
-
-Sonar can be disabled if that is needed, for example when a new project is not yet ready to commence the scans.
-
-Optional. Default = true
-
-```yaml
-    with:
-      do-sonar-scan: false
-```
-
-### Configuration: do-docker
-
-Some Maven-based projects do not utilise Docker. If so then provide this variable as "false".
-
-If this variable is "false", then also no ModuleDescriptor will be published.
-
-> [!NOTE]
-> See [Limitations - Only top-level Dockerfile](#only-top-level-dockerfile) at this stage.
-
-Optional. Default = true
-
-```yaml
-    with:
-      do-docker: false
-```
-
-### Configuration: docker-enable-other-artifacts
-
-If this variable is provided and "true", then do download the "build-artifacts" artifact which was prepared via the earlier job.
-(Otherwise only the default "built-jars" artifact is downloaded.)
-
-This will include everything from the "target" directory.
-
-Be sure to use the `.dockerignore` file to filter only the desired pieces.
-
-Optional. Default = false
-
-```yaml
-    with:
-      docker-enable-other-artifacts: true
-```
 
 ### Configuration: docker-health-command
 
@@ -220,11 +153,11 @@ See also the  [Configuration: docker-label-documentation](#configuration-docker-
 ## Install the caller Workflow
 
 > [!NOTE]
-> If there is not yet a JIRA ticket at the co-ordination Epic [FOLIO-4443](https://folio-org.atlassian.net/browse/FOLIO-4443) then please raise one in a similar manner to the others, and add that as the Parent.
+> If there is not yet a JIRA ticket at the co-ordination Epic [FOLIO-4554](https://folio-org.atlassian.net/browse/FOLIO-4554) then please raise one in a similar manner to the others, and add that as the Parent.
 
 Create a new branch at the module repository.
 
-Create a file at `.github/workflows/maven.yml` as explained at the [Usage](#usage) section.
+Create a file at `.github/workflows/gradle.yml` as explained at the [Usage](#usage) section.
 
 Add other [Configuration](#configuration) variables to suit the needs of the module, e.g. `docker-health-command` variable.
 Align properties with the old Jenkinsfile (noting the defaults shown in the [Configuration](#configuration) section).
@@ -234,7 +167,7 @@ Do `git mv Jenkinsfile Jenkinsfile-disabled` (so that it can be restored quickly
 Commit and push.
 
 (If it is desired to do a branch run prior to raising the pull-request, then "dispatch" the workflow on that branch.
-However the line 12 "if:" will need to be temporarily commented-out for one run, because the workflow does not yet exist on mainline branch.)
+However the line 13 "if:" will need to be temporarily commented-out for one run, because the workflow does not yet exist on mainline branch.)
 
 Raise the pull-request, and review the run results.
 
@@ -243,7 +176,7 @@ The merge will be denied. The "check" for the old Jenkins "pr-merge" will fail.
 Edit "Branch protection" to delete that check, and add a new `GitHub Actions` check:
 
 For most Docker-providing repositories the check will be: \
-`maven / docker-publish / Docker build`
+`gradle / docker-publish / Docker build`
 
 For non-Docker repositories the check will be: \
 `maven / Build / Build`
@@ -259,12 +192,12 @@ Merge and watch the mainline branch run.
 Review the results for the Docker image and ModuleDescriptor. The identifier for all modules will use base number 2000 plus the sequential workflow run_number (e.g. 2002 for the second run).
 
 Visit the following resources (adjusted for the relevant repository name):
-* https://hub.docker.com/r/folioci/mod-settings/tags
-* https://hub.docker.com/r/folioci/mod-settings (for new generated description)
-* https://folio-registry.dev.folio.org/_/proxy/modules?filter=mod-settings&latest=1
-* https://folio-registry.dev.folio.org/_/proxy/modules?filter=mod-settings&latest=1&full=true
-* https://repository.folio.org/#browse/browse:maven-snapshots:org%2Ffolio%2Fmod-settings
-* https://sonarcloud.io/project/overview?id=org.folio:mod-settings
+* https://hub.docker.com/r/folioci/mod-agreements/tags
+* https://hub.docker.com/r/folioci/mod-agreements (for new generated description)
+* https://folio-registry.dev.folio.org/_/proxy/modules?filter=mod-agreements&latest=1
+* https://folio-registry.dev.folio.org/_/proxy/modules?filter=mod-agreements&latest=1&full=true
+* https://repository.folio.org/#browse/browse:maven-snapshots:org%2Ffolio%2Fmod-agreements
+* https://sonarcloud.io/project/overview?id=org.folio:mod-agreements
 
 Await success of the subsequent "Platform hourly build" and see snapshot branch updated.
 
@@ -272,62 +205,11 @@ If there is a need to quickly revert to Jenkins-based build, then [delete](https
 
 ## Release procedures
 
-1. Create a temporary release branch `tmp-release-X.Y.Z`;
-2. Commit all relevant changes and this release's date to `NEWS.md`;
-   - `git log --pretty=format:"%s" $(git describe --tags --abbrev=0)..HEAD | grep -e '^.[A-Z]\+-[0-9]\+' | sort -u` can be used to grab all commits with Jira-like names since the last tag
-4. Run `mvn -DautoVersionSubmodules=true release:clean release:prepare` and follow the interactive instructions:
-   - Ensure all snapshot dependencies are resolved (unless the workflow has [allow-snapshots-release](#configuration-allow-snapshots-release) enabled),
-   - Use the format `vX.Y.Z` for the created tag,
-   - Set the new development version by:
-     - Incrementing the **minor** version for regular releases (`X.Y+1.0`) or
-     - Incrementing the **patch version** for bugfix releases (`X.Y.Z+1`);
-5. Push the temporary branch to GitHub and create a pull request against the mainline branch;
-6. Once the PR passes, merge the pull request (do _not_ use a squash commit — merge the full release branch history) and push the tag (`git push --tags`);
-7. Wait for the tag's GitHub Actions build to run (you can find it in the list under the `Actions` tab — look for the middle column specifying the tag's name);
-8. Announce it to the world:
-   - Create a release on GitHub using the tag already pushed; the description should be the same as the entries in `NEWS.md` and `latest` should be set if applicable;
-   - Send an annoucement to [#folio-releases on Slack](https://open-libr-foundation.slack.com/archives/CGPMHLX9B);
-   - Ensure all applicable Jira tickets were given the proper `Fix version`; and
-   - Mark the Jira version as released and create a new one; and
-9. Prepare for future development locally by running `mvn release:clean`.
+
 
 ### Release procedures FAQ
 
-<details>
-  <summary><strong>Can't use Maven's release plugin due to failing tests?</strong></summary>
 
-  If you are unable to use the Maven release plugin due to test issues (e.g. unable to run tests on your machine's architecture), you may skip tests with the following command:
-  ```sh
-  mvn -DskipTests -Darguments=-DskipTests -DautoVersionSubmodules=true release:clean release:prepare
-  ```
-</details>
-
-<details>
-  <summary><strong>Don't want to use Maven's release plugin whatsoever?</strong></summary>
-
-  If you don't want to use the release plugin, you may perform its steps manually. Instead of running step 3 manually, do the following (and then resume the normal release procedure):
-  1. Resolve all snapshot dependencies, remove the `-SNAPSHOT` from the POM's current version, and set the source control's `<scm><tag>` to the current `vX.Y.Z` (see [this example](https://github.com/folio-org/mod-lists/pull/265/changes/b00c3820f01f741f22c94bd21a703e357883ff95));
-  2. Commit these changes to your branch and create a tag `vX.Y.Z`;
-  3. Restore snapshot dependencies as applicable, restore the source control's tag to `HEAD`, and set the POM's version to the next snapshot; and
-  4. Commit these changes as a separate commit.
-</details>
-
-<details>
-  <summary><strong>Doing a hotfix to an older branch of your repository that still uses Jenkins?</strong></summary>
-
-  You have two options if you need to release on an older branch that does not use the new GitHub Actions workflow.
-
-  However note that Option 1 is preferred because Jenkins might go away soon.
-
-  1. Migrate the branch to GitHub Actions (see [Usage](#usage)); or
-  2. Use Jenkins for the release.
-
-  If using Jenkins, everything will be the same except step six. Instead, navigate to the tag's build page at `https://jenkins-aws.indexdata.com/job/folio-org/job/mod-MY-MODULE/view/tags/job/vX.Y.Z/` and click `Build now` in the sidebar. Once this is complete, resume the normal release procedure.
-</details>
-
-> [!NOTE]
->
-> Skipping local test execution (in the plugin or by bypassing the plugin entirely) will only skip tests locally — tests still **must** pass in GitHub Actions for the release to proceed.
 
 ## Limitations
 
