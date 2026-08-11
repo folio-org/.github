@@ -4,13 +4,11 @@
 * [Introduction](#introduction)
 * [Usage](#usage)
 * [Configuration](#configuration)
-    * [Configuration: java-version](#configuration-java-version)
-    * [Configuration: publish-module-descriptor](#configuration-publish-module-descriptor)
-    * [Configuration: allow-snapshots-release](#configuration-allow-snapshots-release)
-    * [Configuration: apt-packages](#configuration-apt-packages)
-    * [Configuration: do-sonar-scan](#configuration-do-sonar-scan)
-    * [Configuration: do-docker](#configuration-do-docker)
-    * [Configuration: docker-enable-other-artifacts](#configuration-docker-enable-other-artifacts)
+    * [Configuration: artifact-id](#configuration-artifact-id)
+    * [Configuration: publish-module-descriptor](#configuration-gradle-directory)
+    * [Configuration: allow-snapshots-release](#configuration-module-descriptor-registry)
+    * [Configuration: apt-packages](#configuration-java-version)
+    * [Configuration: apt-packages](#configuration-publish-module-descriptor)
     * [Configuration: docker-health-command](#configuration-docker-health-command)
     * [Configuration: docker-label-documentation](#configuration-docker-label-documentation)
 * [Docker image metadata](#docker-image-metadata)
@@ -80,11 +78,35 @@ For example:
 ```
 ### Configuration: artifact-id
 
+This is the name of the module being built e.g mod-agreements. It's required as it's the name of the build artifact and docker image that would be built and pushed.
+
+```yaml
+    with:
+      artifact-id: mod-agreements
+```
 
 ### Configuration: gradle-directory
 
+The directory containing the Gradle project to be built.
 
-module-descriptor-registry
+Optional. Default = 'service'
+
+```yaml
+    with:
+      gradle-directory: service
+```
+
+### Configuration: module-descriptor-registry
+
+Okapi Module descriptor registry URL
+
+Optional. Default = 'https://folio-registry.dev.folio.org'
+
+```yaml
+    with:
+      module-descriptor-registry: 'https://folio-registry.dev.folio.org'
+```
+
 ### Configuration: java-version
 
 Allowed values: 17 or 21 or 25
@@ -107,17 +129,10 @@ Optional. Default = true
       publish-module-descriptor: false
 ```
 
-
-
-
 ### Configuration: docker-health-command
 
-If this variable is provided, then the Docker Health Check will be run prior to the final building of the image.
-If it fails, then no Docker image is built, and a ModuleDescriptor will not be published.
+If this variable is provided, then the Docker Health Check will be run prior to the final building of the image. If it fails, then no Docker image is built, and a ModuleDescriptor will not be published.
 
-> [!IMPORTANT]
-> The Health Check is required for Docker-providing modules.
-> Refer to [DR-000007 - Back End Module Health Check Protocol](https://folio-org.atlassian.net/wiki/x/kiJN).
 
 Note that the workflow will utilise this variable if provided, but does not enforce it.
 The status will be reported to the workflow "Summary".
