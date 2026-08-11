@@ -13,12 +13,7 @@
     * [Configuration: docker-label-documentation](#configuration-docker-label-documentation)
 * [Docker image metadata](#docker-image-metadata)
 * [Install the caller Workflow](#install-the-caller-workflow)
-* [Release procedures](#release-procedures)
-  * [Release procedures FAQ](#release-procedures-faq)
-* [Limitations](#limitations)
-    * [Only top-level Dockerfile](#only-top-level-dockerfile)
-* [Oddities](#oddities)
-    * [Timeout at ModuleDescriptor registry](#timeout-at-moduledescriptor-registry)
+
 
 ## Introduction
 
