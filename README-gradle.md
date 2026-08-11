@@ -17,7 +17,7 @@
 
 ## Introduction
 
-The Workflows in this repository named `gradle*.yml` are for building Maven-based back-end modules.
+The Workflows in this repository named `gradle*.yml` are for building Gradle-based back-end modules.
 Docker images are published to FOLIO Docker Hub.
 ModuleDescriptors are published to the FOLIO Registry.
 
@@ -27,7 +27,7 @@ Refer to example build system and workflows at https://github.com/folio-org/mod-
 
 Create a `.github/workflows` directory in the root of the module repository, and add a file named `gradle.yml` with the following content.
 
-If there is already a workflow named gradle.yml for verifying basic Maven builds, then rename that file.
+If there is already a workflow named gradle.yml for verifying basic Gradle builds, then rename that file.
 It will ease management to have the same filename at every repository.
 
 Follow [Install the caller Workflow](#install-the-caller-workflow) section below to install the initial workflow.
@@ -42,15 +42,14 @@ name: Gradle Central Workflow
 
 on:
   push:
-    branches: ['FOLIO-4554-gradle-workflows']
   pull_request:
   workflow_dispatch:
 
 jobs:
   gradle:
-    uses: folio-org/.github/.github/workflows/gradle.yml@FOLIO-4554-gradle-workflows
+    uses: folio-org/.github/.github/workflows/gradle.yml@v1
     # Only handle push events from the main branch or tags, to decrease PR noise
-    if: github.ref_name == github.event.repository.default_branch || github.event_name != 'push' || github.ref_type == 'tag' || github.ref_name == 'FOLIO-4554-gradle-workflows'
+    if: github.ref_name == github.event.repository.default_branch || github.event_name != 'push' || github.ref_type == 'tag'
     secrets: inherit
     with:
       artifact-id: mod-agreements
@@ -84,7 +83,7 @@ This is the name of the module being built e.g mod-agreements. It's required as 
 
 The directory containing the Gradle project to be built.
 
-Optional. Default = 'service'
+Optional. Default = service
 
 ```yaml
     with:
@@ -104,9 +103,7 @@ Optional. Default = 'https://folio-registry.dev.folio.org'
 
 ### Configuration: java-version
 
-Allowed values: 17 or 21 or 25
-
-Optional. Default = '21'
+Optional. Default = '17'
 
 ```yaml
     with:
@@ -162,9 +159,6 @@ See also the  [Configuration: docker-label-documentation](#configuration-docker-
 
 ## Install the caller Workflow
 
-> [!NOTE]
-> If there is not yet a JIRA ticket at the co-ordination Epic [FOLIO-4554](https://folio-org.atlassian.net/browse/FOLIO-4554) then please raise one in a similar manner to the others, and add that as the Parent.
-
 Create a new branch at the module repository.
 
 Create a file at `.github/workflows/gradle.yml` as explained at the [Usage](#usage) section.
@@ -177,10 +171,19 @@ Do `git mv Jenkinsfile Jenkinsfile-disabled` (so that it can be restored quickly
 Commit and push.
 
 (If it is desired to do a branch run prior to raising the pull-request, then "dispatch" the workflow on that branch.
-However the line 13 "if:" will need to be temporarily commented-out for one run, because the workflow does not yet exist on mainline branch.)
+However the line 12 "if:" will need to be temporarily commented-out for one run, because the workflow does not yet exist on mainline branch.)
 
 Raise the pull-request, and review the run results.
 
+The merge will be denied. The "check" for the old Jenkins "pr-merge" will fail.
+
+Edit "Branch protection" to delete that check, and add a new `GitHub Actions` check:
+
+For most Docker-providing repositories the check will be: \
+`gradle / Docker Build / Docker Build`
+
+For non-Docker repositories the check will be: \
+`gradle / Gradle Build / build`
 
 
 If assistance is needed with "Branch protection" then [contact](https://dev.folio.org/faqs/how-to-raise-devops-ticket/#general-folio-devops) FOLIO DevOps and advise the checks that you need.
@@ -198,8 +201,6 @@ Visit the following resources (adjusted for the relevant repository name):
 * https://hub.docker.com/r/folioci/mod-agreements (for new generated description)
 * https://folio-registry.dev.folio.org/_/proxy/modules?filter=mod-agreements&latest=1
 * https://folio-registry.dev.folio.org/_/proxy/modules?filter=mod-agreements&latest=1&full=true
-* https://repository.folio.org/#browse/browse:maven-snapshots:org%2Ffolio%2Fmod-agreements
-* https://sonarcloud.io/project/overview?id=org.folio:mod-agreements
 
 Await success of the subsequent "Platform hourly build" and see snapshot branch updated.
 
