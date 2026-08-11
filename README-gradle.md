@@ -5,10 +5,10 @@
 * [Usage](#usage)
 * [Configuration](#configuration)
     * [Configuration: artifact-id](#configuration-artifact-id)
-    * [Configuration: publish-module-descriptor](#configuration-gradle-directory)
-    * [Configuration: allow-snapshots-release](#configuration-module-descriptor-registry)
-    * [Configuration: apt-packages](#configuration-java-version)
-    * [Configuration: apt-packages](#configuration-publish-module-descriptor)
+    * [Configuration: gradle-directory](#configuration-gradle-directory)
+    * [Configuration: module-descriptor-registry](#configuration-module-descriptor-registry)
+    * [Configuration: java-version](#configuration-java-version)
+    * [Configuration: publish-module-descriptor](#configuration-publish-module-descriptor)
     * [Configuration: docker-health-command](#configuration-docker-health-command)
     * [Configuration: docker-label-documentation](#configuration-docker-label-documentation)
 * [Docker image metadata](#docker-image-metadata)
@@ -209,27 +209,3 @@ Visit the following resources (adjusted for the relevant repository name):
 Await success of the subsequent "Platform hourly build" and see snapshot branch updated.
 
 If there is a need to quickly revert to Jenkins-based build, then [delete](https://github.com/folio-org/mod-settings/blob/master/.github/workflows/delete-test-md.yml) the published ModuleDescriptor (with great care), re-configure the branch protection checks, restore the Jenkinsfile.
-
-## Release procedures
-
-
-
-### Release procedures FAQ
-
-
-
-## Limitations
-
-### Only top-level Dockerfile
-
-At this stage only a top-level Dockerfile is utilised. So these Workflows are not yet ready for projects that have lower-level Dockerfile.
-
-## Oddities
-
-### Timeout at ModuleDescriptor registry
-
-Occasionally the job to "Publish ModuleDescriptor" gets a timeout at the registry.
-
-In this case the Docker image would be published but not the associated ModuleDescriptor.
-
-Either re-run that failed job, or "dispatch" the complete workflow again to publish a new Docker image and ModuleDescriptor.
