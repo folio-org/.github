@@ -186,15 +186,7 @@ However the line 13 "if:" will need to be temporarily commented-out for one run,
 
 Raise the pull-request, and review the run results.
 
-The merge will be denied. The "check" for the old Jenkins "pr-merge" will fail.
 
-Edit "Branch protection" to delete that check, and add a new `GitHub Actions` check:
-
-For most Docker-providing repositories the check will be: \
-`gradle / docker-publish / Docker build`
-
-For non-Docker repositories the check will be: \
-`maven / Build / Build`
 
 If assistance is needed with "Branch protection" then [contact](https://dev.folio.org/faqs/how-to-raise-devops-ticket/#general-folio-devops) FOLIO DevOps and advise the checks that you need.
 
