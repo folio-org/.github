@@ -1,0 +1,123 @@
+name: Build Metadata
+
+on:
+  workflow_call:
+    inputs:
+      gradle-version:
+        description: Version returned from get-gradle-version workflow.
+        required: true
+        type: string
+
+    outputs:
+      artifact-version:
+        description: Final artifact version.
+        value: ${{ jobs.metadata.outputs.artifact-version }}
+      docker-registry:
+        description: Docker Hub organization.
+        value: ${{ jobs.metadata.outputs.docker-registry }}
+      is-release:
+        description: Whether this is a release build.
+        value: ${{ jobs.metadata.outputs.is-release }}
+      is-main-branch:
+        description: Whether this build is running on the default branch.
+        value: ${{ jobs.metadata.outputs.is-main-branch }}
+      do-docker-push:
+        description: Whether Docker images should be pushed.
+        value: ${{ jobs.metadata.outputs.do-docker-push }}
+      repo-name:
+        description: Name of the GitHub Repository.
+        value: ${{ jobs.metadata.outputs.repo-name}}
+      repo-description:
+        description: Description of the GitHub Repository.
+        value: ${{ jobs.metadata.outputs.repo-description }}
+
+jobs:
+  metadata:
+    name: Generate Build Metadata
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+
+    outputs:
+      artifact-version: ${{ steps.metadata.outputs.artifact-version }}
+      docker-registry: ${{ steps.metadata.outputs.docker-registry }}
+      is-release: ${{ steps.metadata.outputs.is-release }}
+      is-main-branch: ${{ steps.metadata.outputs.is-main-branch }}
+      do-docker-push: ${{ steps.metadata.outputs.do-docker-push }}
+      repo-name: ${{ steps.metadata.outputs.repo-name }}
+      repo-description: ${{ steps.metadata.outputs.repo-description }}
+
+    steps:
+      - name: Generate metadata
+        id: metadata
+        shell: bash
+        env:
+          GRADLE_VERSION: ${{ inputs.gradle-version }}
+          RUN_NUMBER: ${{ github.run_number }}
+          REF_TYPE: ${{ github.ref_type }}
+          REF_NAME: ${{ github.ref_name }}
+          EVENT_NAME: ${{ github.event_name }}
+          DEFAULT_BRANCH: ${{ github.event.repository.default_branch }}
+          REPO_DESC: ${{ github.event.repository.description }}
+        run: |
+          BASE_NUMBER=2000
+          BUILD_NUMBER=$(( BASE_NUMBER + RUN_NUMBER ))
+          echo "Gradle version: ${GRADLE_VERSION}"
+          echo "Git ref: ${REF_NAME} (${REF_TYPE})"
+
+          if [[ "${REF_TYPE}" == "tag" ]]; then
+            TAG_VERSION="${REF_NAME#v}"
+            if [[ "${TAG_VERSION}" != "${GRADLE_VERSION}" ]]; then
+              echo "ERROR: Git tag '${REF_NAME}' does not match project version '${GRADLE_VERSION} from gradle.properties."
+              exit 1
+            fi
+            ARTIFACT_VERSION="${GRADLE_VERSION}"
+            IS_RELEASE=true
+            DOCKER_REGISTRY="folioorg"
+          elif [[ "${GRADLE_VERSION}" == *"-SNAPSHOT" ]]; then
+            ARTIFACT_VERSION="${GRADLE_VERSION}.${BUILD_NUMBER}"
+            IS_RELEASE=false
+            DOCKER_REGISTRY="folioci"
+          else
+            ARTIFACT_VERSION="${GRADLE_VERSION}"
+            IS_RELEASE=false
+            DOCKER_REGISTRY="folioci"
+          fi
+
+          if [[ "${REF_NAME}" == "${DEFAULT_BRANCH}" ]]; then
+            IS_MAIN_BRANCH=true
+          else
+            IS_MAIN_BRANCH=false
+          fi
+
+          if [[ "${EVENT_NAME}" == "pull_request" ]]; then
+            DO_DOCKER_PUSH=false
+          elif [[ "${IS_RELEASE}" == "true" ]]; then
+            DO_DOCKER_PUSH=true
+          elif [[ "${GRADLE_VERSION}" == *"-SNAPSHOT" && "${IS_MAIN_BRANCH}" == "true" ]]; then
+            DO_DOCKER_PUSH=true
+          else
+            DO_DOCKER_PUSH=false
+          fi
+
+          {
+            echo "artifact-version=${ARTIFACT_VERSION}"
+            echo "docker-registry=${DOCKER_REGISTRY}"
+            echo "is-release=${IS_RELEASE}"
+            echo "is-main-branch=${IS_MAIN_BRANCH}"
+            echo "do-docker-push=${DO_DOCKER_PUSH}"
+            echo "repo-name=${GITHUB_REPOSITORY##*/}"
+            echo "repo-description=${REPO_DESC}"
+          } >> "$GITHUB_OUTPUT"
+
+          {
+            echo "### Build Metadata"
+            echo ""
+            echo "| Property | Value |"
+            echo "|----------|-------|"
+            echo "| Artifact Version | ${ARTIFACT_VERSION} |"
+            echo "| Docker Registry | ${DOCKER_REGISTRY} |"
+            echo "| Release Build | ${IS_RELEASE} |"
+            echo "| Main Branch | ${IS_MAIN_BRANCH} |"
+            echo "| Docker Push | ${DO_DOCKER_PUSH} |"
+            echo "| Git Ref | ${REF_NAME} (${REF_TYPE}) |"
+          } >> "$GITHUB_STEP_SUMMARY"

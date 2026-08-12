@@ -24,6 +24,7 @@ Refer to the various types of centralized workflows, including their setup and c
 * [README-docker.md](README-docker.md) -- for repositories that only have a Dockerfile.
 * [README-go.md](README-go.md) and [README-go-lint.md](README-go-lint.md) -- for Go-based back-end repositories.
 * [README-maven.md](README-maven.md) -- for Maven-based back-end repositories.
+* [README-gradle.md](README-gradle.md) -- for Gradle-based back-end repositories.
 
 ## Development
 

@@ -1,0 +1,136 @@
+name: Gradle Backend Module
+
+on:
+  workflow_call:
+    inputs:
+      artifact-id:
+        description: Artifact/module name (e.g. mod-agreements).
+        required: true
+        type: string
+      gradle-directory:
+        description: Directory containing the Gradle project.
+        required: false
+        default: service
+        type: string
+      publish-module-descriptor:
+        description: Publish module descriptor?
+        required: false
+        type: boolean
+        default: true
+      module-descriptor-registry:
+        description: Okapi ModuleDescriptor registry URL.
+        required: false
+        default: https://folio-registry.dev.folio.org
+        type: string
+      docker-health-command:
+        description: Docker health check command.
+        required: false
+        default: ""
+        type: string
+      docker-label-documentation:
+        description: OCI documentation label.
+        required: false
+        default: ""
+        type: string
+      java-version:
+        description: Java version.
+        required: false
+        type: string
+        default: "17"
+    secrets:
+      DOCKERHUB_USERNAME:
+        required: true
+      DOCKERHUB_TOKEN:
+        required: true
+      FOLIO_REGISTRY_USERNAME:
+        required: true
+      FOLIO_REGISTRY_PASSWORD:
+        required: true
+
+# Determine Gradle version
+jobs:
+  get-gradle-version:
+    name: Determine Gradle Version
+    uses: ./.github/workflows/gradle-get-version-number.yml
+    with:
+      gradle-directory: ${{ inputs.gradle-directory }}
+
+# Build metadata
+  metadata:
+    name: Build Metadata
+    needs:
+      - get-gradle-version
+    uses: ./.github/workflows/gradle-build-metadata.yml
+    with:
+      gradle-version: ${{ needs.get-gradle-version.outputs.gradle-version }}
+
+# Build application
+  gradle-build:
+    name: Gradle Build
+    needs:
+      - metadata
+    uses: ./.github/workflows/gradle-build.yml
+    with:
+      gradle-directory: ${{ inputs.gradle-directory }}
+      java-version: ${{ inputs.java-version }}
+
+# Dependency submission
+  dependency-submission:
+    name: Dependency Submission
+    needs:
+      - gradle-build
+    uses: ./.github/workflows/gradle-dependency-submission.yml
+    with:
+      gradle-directory: ${{ inputs.gradle-directory }}
+      java-version: ${{ inputs.java-version }}
+
+# Docker build
+  docker-build:
+    name: Docker Build
+    needs:
+      - metadata
+      - gradle-build
+    uses: ./.github/workflows/gradle-docker-publish.yml
+    with:
+      artifact-id: ${{ inputs.artifact-id }}
+      artifact-version: ${{ needs.metadata.outputs.artifact-version }}
+      docker-registry: ${{ needs.metadata.outputs.docker-registry }}
+      docker-health-command: ${{ inputs.docker-health-command }}
+      docker-label-documentation: ${{ inputs.docker-label-documentation }}
+      do-docker-push: ${{ fromJSON(needs.metadata.outputs.do-docker-push) }}
+    secrets:
+      dockerhub-username: ${{ secrets.DOCKERHUB_USERNAME }}
+      dockerhub-token: ${{ secrets.DOCKERHUB_TOKEN}}
+
+# Docker image description
+  docker-description:
+    name: Publish image description
+    needs:
+      - metadata
+      - docker-build
+    if: |
+      !cancelled() && needs.metadata.outputs.do-docker-push == 'true'
+    uses: ./.github/workflows/docker-description.yml
+    with:
+      artifact-id: ${{ inputs.artifact-id }}
+      docker-registry: ${{ needs.metadata.outputs.docker-registry }}
+      repo-description: ${{ needs.metadata.outputs.repo-description }}
+      publish-module-descriptor: ${{ inputs.publish-module-descriptor }}
+    secrets:
+      dockerhub-username: ${{ secrets.DOCKERHUB_USERNAME }}
+      dockerhub-token: ${{ secrets.DOCKERHUB_TOKEN }}
+
+# Publish ModuleDescriptor
+  publish-module-descriptor:
+    name: Publish ModuleDescriptor
+    if: |
+      !cancelled() && inputs.publish-module-descriptor && needs.metadata.outputs.do-docker-push == 'true'
+    needs:
+      - metadata
+      - docker-build
+    uses: ./.github/workflows/gradle-module-descriptor-publish.yml
+    with:
+      module-descriptor-registry: ${{ inputs.module-descriptor-registry }}
+    secrets:
+      registry-username: ${{ secrets.FOLIO_REGISTRY_USERNAME }}
+      registry-password: ${{ secrets.FOLIO_REGISTRY_PASSWORD }}

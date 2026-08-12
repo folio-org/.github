@@ -1,0 +1,44 @@
+name: Get Gradle Version
+
+on:
+  workflow_call:
+    inputs:
+      gradle-directory:
+        description: Directory containing the Gradle project.
+        required: true
+        type: string
+
+    outputs:
+      gradle-version:
+        description: Version reported by Gradle.
+        value: ${{ jobs.version.outputs.gradle-version }}
+
+jobs:
+  version:
+    name: Determine Gradle Version
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    outputs:
+      gradle-version: ${{ steps.version.outputs.gradle-version }}
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v6
+        with:
+          fetch-depth: 1
+
+      - name: Validate Gradle Wrapper
+        uses: gradle/actions/wrapper-validation@v6
+
+      - name: Read Gradle version
+        id: version
+        working-directory: ${{ inputs.gradle-directory }}
+        shell: bash
+        run: |
+          VERSION="$(awk -F= '/^appVersion=/ {print $2}' gradle.properties)"
+          if [[ -z "$VERSION" ]]; then
+            echo "Unable to determine Gradle project version."
+            exit 1
+          fi
+          echo "Detected Gradle version: $VERSION"
+          echo "gradle-version=$VERSION" >> "$GITHUB_OUTPUT"

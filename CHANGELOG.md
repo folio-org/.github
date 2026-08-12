@@ -3,6 +3,7 @@
 ## IN PROGRESS
 
 * FOLIO-4555 Double-quote variables - in #164, #166
+* FOLIO-4554 Create Reusable workflows for Gradle based modules - in #165
 * (Add more progress summary items here.)
 
 ## [1.16.3](https://github.com/folio-org/.github/tree/v1.16.3) (2026-07-14)
