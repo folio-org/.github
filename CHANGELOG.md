@@ -2,9 +2,13 @@
 
 ## IN PROGRESS
 
+* (Add more progress summary items above here.)
+
+## [1.17.0](https://github.com/folio-org/.github/tree/v1.17.0) (2026-08-12)
+[Full Changelog](https://github.com/folio-org/.github/compare/v1.16.3...v1.17.0)
+
 * FOLIO-4555 Double-quote variables - in #164, #166
 * FOLIO-4554 Create Reusable workflows for Gradle based modules - in #165
-* (Add more progress summary items here.)
 
 ## [1.16.3](https://github.com/folio-org/.github/tree/v1.16.3) (2026-07-14)
 [Full Changelog](https://github.com/folio-org/.github/compare/v1.16.2...v1.16.3)
