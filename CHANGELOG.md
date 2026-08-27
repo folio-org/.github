@@ -2,8 +2,12 @@
 
 ## IN PROGRESS
 
-* FOLIO-4382: golangci-lint 2.13 fixing go 1.27.0 math/rand/v2 issue - in #168
 * (Add more progress summary items above here.)
+
+## [1.17.1](https://github.com/folio-org/.github/tree/v1.17.1) (2026-08-27)
+[Full Changelog](https://github.com/folio-org/.github/compare/v1.17.0...v1.17.1)
+
+* FOLIO-4382: golangci-lint 2.13 fixing go 1.27.0 math/rand/v2 issue - in #168
 
 ## [1.17.0](https://github.com/folio-org/.github/tree/v1.17.0) (2026-08-12)
 [Full Changelog](https://github.com/folio-org/.github/compare/v1.16.3...v1.17.0)
