@@ -2,6 +2,8 @@
 
 ## IN PROGRESS
 
+* FOLIO-xxxx: Use npm-folio to install UI deps on release branches.
+
 * (Add more progress summary items above here.)
 
 ## [1.17.1](https://github.com/folio-org/.github/tree/v1.17.1) (2026-08-27)
