@@ -178,7 +178,7 @@ jobs:
             print("  We are not on a version tag")
             is_release = False
 
-          if re.match(r'^refs/branches/b\d+\.d+\.', ref):
+          if re.match(r'^refs/branches/b\d+\.d+', ref):
             print("  We are on a release branch bX.Y")
             is_release_branch = True
           else:
