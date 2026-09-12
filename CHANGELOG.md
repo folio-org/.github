@@ -2,9 +2,9 @@
 
 ## IN PROGRESS
 
-* (Add more progress summary items above here.)
-
 * FOLIO-4554: add write permissions to dependency submission - in #171
+
+* (Add more progress summary items above here.)
 
 ## [1.17.1](https://github.com/folio-org/.github/tree/v1.17.1) (2026-08-27)
 [Full Changelog](https://github.com/folio-org/.github/compare/v1.17.0...v1.17.1)
