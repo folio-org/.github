@@ -77,6 +77,8 @@ jobs:
 # Dependency submission
   dependency-submission:
     name: Dependency Submission
+    permissions:
+      contents: write
     needs:
       - gradle-build
     uses: ./.github/workflows/gradle-dependency-submission.yml
