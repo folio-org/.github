@@ -2,10 +2,13 @@
 
 ## IN PROGRESS
 
+* (Add more progress summary items above here.)
+
+## [1.17.2](https://github.com/folio-org/.github/tree/v1.17.2) (2026-09-15)
+[Full Changelog](https://github.com/folio-org/.github/compare/v1.17.1...v1.17.2)
+
 * FOLIO-4569: Use npm-folio to install UI deps on release branches - in #170
 * FOLIO-4554: add write permissions to dependency submission - in #171
-
-* (Add more progress summary items above here.)
 
 ## [1.17.1](https://github.com/folio-org/.github/tree/v1.17.1) (2026-08-27)
 [Full Changelog](https://github.com/folio-org/.github/compare/v1.17.0...v1.17.1)
