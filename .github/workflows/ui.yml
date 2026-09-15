@@ -178,11 +178,18 @@ jobs:
             print("  We are not on a version tag")
             is_release = False
 
+          if re.match(r'^refs/branches/b\d+\.d+', ref):
+            print("  We are on a release branch bX.Y")
+            is_release_branch = True
+          else:
+            print("  We are not on a release branch")
+            is_release_branch = False
+
           print("Current npm registry:", current_npm_registry)
           print("Current npm registry auth:", current_npm_registry_auth)
           if current_npm_registry == "":
             print("  No npm registry provided, using default")
-            if is_release:
+            if is_release or is_release_branch:
               current_npm_registry = "https://repository.folio.org/repository/npm-folio/"
             else:
               current_npm_registry = "https://repository.folio.org/repository/npm-folioci/"

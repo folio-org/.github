@@ -2,6 +2,7 @@
 
 ## IN PROGRESS
 
+* FOLIO-4569: Use npm-folio to install UI deps on release branches - in #170
 * FOLIO-4554: add write permissions to dependency submission - in #171
 
 * (Add more progress summary items above here.)
