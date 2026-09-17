@@ -19,6 +19,10 @@ on:
         required: false
         type: boolean
         default: true
+      coverage-path:
+        required: false
+        type: string
+        default: 'src/coverage.*'
     secrets:
       # these need to be non-required to allow anything here for forks
       # however, the sub-workflows will fail appropriately if these are not present, as applicable
@@ -113,6 +117,7 @@ jobs:
     uses: ./.github/workflows/go-build.yml
     with:
       artifact-id: ${{ needs.set-shared-variables.outputs.artifact-id }}
+      coverage-path: ${{ inputs.coverage-path }}
 
   version-number:
     needs: [set-shared-variables]
