@@ -7,9 +7,8 @@ on:
         required: true
         type: string
       coverage-path:
-        required: false
+        required: true
         type: string
-        default: 'src/coverage.*'
 
 jobs:
   run:
@@ -42,6 +41,8 @@ jobs:
         uses: actions/upload-artifact@v7
         with:
           name: coverage
-          path: ${{ inputs.coverage-path }}
+          env:
+            COVERAGE_PATH: ${{ inputs.coverage-path }}
+          path: "$COVERAGE_PATH"
           if-no-files-found: error
           retention-days: 1
