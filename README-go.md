@@ -92,6 +92,22 @@ Add the following section at the end of the Workflow after the "secrets" item:
 
 The top-level `go.mod` file is consulted for the Go version to be used.
 
+### Location of coverage reports
+
+The build uploads the test-coverage reports as the "coverage" artifact, for later use by the SonarCloud analysis.
+By default they are expected at `src/coverage.*`, which suits modules whose Go sources live in a `src` directory.
+
+If `make test` leaves the reports elsewhere, then declare the path with a "with:" section at the end of the Workflow after the "secrets" item:
+
+```yaml
+...
+    with:
+      ...
+      coverage-path: 'reporting/coverage.*'
+```
+
+The reports are flattened when the artifact is downloaded, so `sonar-project.properties` continues to refer to them as `coverage.out` and `coverage.json` regardless of where they were built.
+
 ### SonarCloud code analysis
 
 For a new project repository, if not yet ready for code analysis then add the following configuration variable to a "with:" section at the end of the Workflow after the "secrets" item:
