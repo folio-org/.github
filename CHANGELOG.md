@@ -2,8 +2,12 @@
 
 ## IN PROGRESS
 
-* FOLIO-4572: Add optional `coverage-path` input for Go modules whose sources are not in `src`
 * (Add more progress summary items above here.)
+
+## [1.17.3](https://github.com/folio-org/.github/tree/v1.17.3) (2026-09-22)
+[Full Changelog](https://github.com/folio-org/.github/compare/v1.17.2...v1.17.3)
+
+* FOLIO-4572: Add optional `coverage-path` input for Go modules whose sources are not in `src` - in #173
 
 ## [1.17.2](https://github.com/folio-org/.github/tree/v1.17.2) (2026-09-15)
 [Full Changelog](https://github.com/folio-org/.github/compare/v1.17.1...v1.17.2)
