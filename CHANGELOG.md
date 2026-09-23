@@ -4,6 +4,11 @@
 
 * (Add more progress summary items above here.)
 
+## [1.17.4](https://github.com/folio-org/.github/tree/v1.17.4) (2026-09-23)
+[Full Changelog](https://github.com/folio-org/.github/compare/v1.17.3...v1.17.4)
+
+* Skip integration tests during Maven deploy - in #175
+
 ## [1.17.3](https://github.com/folio-org/.github/tree/v1.17.3) (2026-09-22)
 [Full Changelog](https://github.com/folio-org/.github/compare/v1.17.2...v1.17.3)
 
