@@ -50,7 +50,7 @@ jobs:
           restore-keys: ${{ runner.os }}-maven
 
       - name: Deploy to Nexus
-        run: mvn --batch-mode deploy -DskipTests
+        run: mvn --batch-mode deploy -DskipTests -DskipITs
         env:
           MAVEN_USERNAME: ${{ secrets.nexus-username }}
           MAVEN_PASSWORD: ${{ secrets.nexus-password }}
