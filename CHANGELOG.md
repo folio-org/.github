@@ -2,6 +2,7 @@
 
 ## IN PROGRESS
 
+* Gradle: Set the ModuleDescriptor identifier and Docker image from the artifact version, as the Maven workflow does
 * (Add more progress summary items above here.)
 
 ## [1.17.4](https://github.com/folio-org/.github/tree/v1.17.4) (2026-09-23)

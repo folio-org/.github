@@ -11,6 +11,18 @@ on:
         description: Java version.
         required: true
         type: string
+      artifact-id:
+        description: Artifact/module name (e.g. mod-agreements).
+        required: true
+        type: string
+      artifact-version:
+        description: Final artifact version.
+        required: true
+        type: string
+      docker-registry:
+        description: Docker Hub organization.
+        required: true
+        type: string
       build-command:
         description: Gradle command.
         required: false
@@ -60,6 +72,24 @@ jobs:
           name: built-jars
           path: |
             ${{ inputs.gradle-directory }}/build/libs/*.jar
+
+      # The build does not know the artifact version or the Docker Hub organization.
+      - name: Update ModuleDescriptor identifiers
+        env:
+          MODULE_ID: ${{ inputs.artifact-id }}-${{ inputs.artifact-version }}
+          DOCKER_IMAGE: ${{ inputs.docker-registry }}/${{ inputs.artifact-id }}:${{ inputs.artifact-version }}
+        run: |
+          MD=build/resources/main/okapi/ModuleDescriptor.json
+          if [[ ! -f "$MD" ]]; then
+            echo "No ModuleDescriptor found."
+            exit 0
+          fi
+          mv "$MD" "$MD.orig"
+          jq --arg id "$MODULE_ID" --arg image "$DOCKER_IMAGE" \
+            '.id |= $id | if has("launchDescriptor") then
+              .launchDescriptor.dockerImage |= $image |
+              .launchDescriptor.dockerPull |= "true" else . end' \
+            "$MD.orig" > "$MD"
 
       - name: Upload ModuleDescriptor
         uses: actions/upload-artifact@v7
