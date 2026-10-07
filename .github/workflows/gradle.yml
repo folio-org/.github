@@ -73,6 +73,9 @@ jobs:
     with:
       gradle-directory: ${{ inputs.gradle-directory }}
       java-version: ${{ inputs.java-version }}
+      artifact-id: ${{ inputs.artifact-id }}
+      artifact-version: ${{ needs.metadata.outputs.artifact-version }}
+      docker-registry: ${{ needs.metadata.outputs.docker-registry }}
 
 # Dependency submission
   dependency-submission:
