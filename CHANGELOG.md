@@ -2,9 +2,13 @@
 
 ## IN PROGRESS
 
-* FOLIO-4582 Upgrade go-lint staticcheck from 2026.1 to 2026.2.2 - in #180
-
 * (Add more progress summary items above here.)
+
+## [1.17.6](https://github.com/folio-org/.github/tree/v1.17.6) (2026-10-28)
+[Full Changelog](https://github.com/folio-org/.github/compare/v1.17.5...v1.17.6)
+
+* Update golangci-lint version to v2.15 - in #179
+* FOLIO-4582 Upgrade go-lint staticcheck from 2026.1 to 2026.2.2 - in #180
 
 ## [1.17.5](https://github.com/folio-org/.github/tree/v1.17.5) (2026-10-12)
 [Full Changelog](https://github.com/folio-org/.github/compare/v1.17.4...v1.17.5)
